@@ -1,6 +1,9 @@
 #include <iostream>  // Include the input/output library
 #include <SFML/Graphics.hpp>  // Include the SFML graphics module
 #include "utils/network.hpp"
+#include "layout/toolbar.hpp"
+#include "theme.hpp"
+
 
 int main() {
     std::cout << "Booting..." << std::endl;
@@ -21,9 +24,11 @@ int main() {
                 window.close();
             }
         }
-        window.clear(sf::Color::White);
+        window.clear(Theme::Background);
 
  		std::string ip = Network::getIp();
+
+        Toolbar::draw(window, font);
 
         window.display();
     }
