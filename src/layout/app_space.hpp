@@ -7,11 +7,17 @@
 
 class AppSpace {
 public:
-    static void draw(sf::RenderWindow& window, const sf::Font& font, const std::vector<std::unique_ptr<App>> &apps, int activeTab);
+    AppSpace(sf::RenderWindow &window, const sf::Font &font);
+
+    void draw(const std::vector<std::unique_ptr<App>> &apps, int activeTab);
 
 private:
-    static void drawTabs(sf::RenderWindow &window, const sf::Font &font, const std::vector<std::unique_ptr<App>> &apps, int activeTab);
-    static void drawAppArea(sf::RenderWindow& window, const std::vector<std::unique_ptr<App>> &apps, int activeTab);
+    sf::RenderWindow& window;  // Reference to the SFML render window
+    const sf::Font& font;      // Reference to the font
+    void drawTabs(const std::vector<std::unique_ptr<App>> &apps, int activeTab);
+    void drawAppArea();
+
+    void drawActiveApp(App * app);
 };
 
 

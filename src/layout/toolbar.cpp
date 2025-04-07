@@ -4,7 +4,12 @@
 #include "../theme.hpp"
 #include <iostream>
 
-void Toolbar::draw(sf::RenderWindow& window, const sf::Font& font) {
+Toolbar::Toolbar(sf::RenderWindow &window, const sf::Font &font)
+    : window(window), font(font) {
+}
+
+
+void Toolbar::draw() {
     sf::Text leftText(font, "Ostrich");
     leftText.setCharacterSize(12);
     leftText.setFillColor(Theme::Text);

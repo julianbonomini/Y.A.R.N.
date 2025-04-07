@@ -20,6 +20,9 @@ int main() {
     }
     sf::Text text(font);
 
+    Toolbar toolbar(window, font);
+    AppSpace appSpace(window, font);
+
     int activeTab = 0; // You can change this with key input, etc.
     std::vector<std::unique_ptr<App>> apps;
     apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
@@ -39,8 +42,8 @@ int main() {
 
  		std::string ip = Network::getIp();
 
-        Toolbar::draw(window, font);
-        AppSpace::draw(window, font, apps, activeTab);
+        toolbar.draw();
+        appSpace.draw(apps, activeTab);
 
         window.display();
     }
