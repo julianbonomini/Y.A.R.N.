@@ -1,6 +1,6 @@
 #include "main_window.hpp"
 #include <SFML/Graphics.hpp>
-#include "../../theme/theme.hpp"
+#include "../../globals/theme.hpp"
 
 float padding = 8.f;
 float tabHeight = 30.f;
