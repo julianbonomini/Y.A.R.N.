@@ -7,7 +7,7 @@
 #include "globals/theme.hpp"
 #include "apps/info/info_app.hpp"
 #include "layout/main_window/main_window.hpp"
-#include "state_machine/state_machine.hpp"
+#include "core/state_machine.hpp"
 
 
 int main() {
@@ -31,7 +31,7 @@ int main() {
 
     std::vector<std::unique_ptr<App>> apps;
     apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
-    apps.push_back(std::make_unique<ConfigApp>(window, font, "Config"));
+    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "Config"));
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {

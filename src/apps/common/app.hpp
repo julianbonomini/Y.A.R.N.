@@ -6,8 +6,8 @@
 class App {
 public:
     // Constructor to initialize the window, font, and tab name
-    App(sf::RenderWindow& window, const sf::Font& font, const std::string &appName)
-        : window(window), font(font), appName(appName) {}
+    App(const std::string &appName)
+        : appName(appName) {}
 
     virtual ~App() = default;
 
@@ -18,8 +18,8 @@ public:
     std::string appName; // The name of the tab associated with this app
 
 protected:
-    sf::RenderWindow& window;
-    const sf::Font& font;
+    // sf::RenderWindow& window;
+    // const sf::Font& font;
     const sf::Vector2f TOP_LEFT = sf::Vector2f(Theme::PADDING, Theme::TOOLBAR_OFFSET + Theme::TAB_HEIGHT + Theme::PADDING);
     const sf::Vector2f TOP_RIGHT = sf::Vector2f(Theme::WINDOW_WIDTH - Theme::PADDING, Theme::TOOLBAR_OFFSET + Theme::TAB_HEIGHT + Theme::PADDING);
     const sf::Vector2f BOTTOM_LEFT = sf::Vector2f(Theme::PADDING, Theme::WINDOW_HEIGHT - Theme::PADDING);

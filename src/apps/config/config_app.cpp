@@ -1,33 +1,39 @@
 #include "config_app.hpp"
 
-#include<iostream>
-#include <SFML/Graphics.hpp>
-#include <string>
+#include <iostream>
+#include <sstream>
 
-ConfigApp::ConfigApp(sf::RenderWindow& window, const sf::Font& font, const std::string& appName)
-    : App(window, font, appName), window(window), font(font) {
-    configLabels.push_back("Test:");
-}
-
-
-void ConfigApp::draw() {
-
-    float labelPositionX = TOP_LEFT.x + Theme::PADDING;
-    float valuePositionX = TOP_LEFT.x + Theme::PADDING + 150.f;
-    float verticalOffset = Theme::PADDING;
-    float labelSpacing = 15.f;
-
-    for (const auto& entry : configLabels) {
-        sf::Text labelText(font, entry);
-        labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
-        labelText.setFillColor(Colors::Text);
-        labelText.setCharacterSize(TextSizes::LABEL);
-
-        // Draw label and value
-        window.draw(labelText);
-
-        // Increase the vertical offset for the next pair
-        verticalOffset += labelSpacing; // Adjust spacing between each pair
+ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
+    : App(appName), window(window), font(font), stateMachine(stateMachine)
+{
+    // Sync selectedRefreshRateIndex with the actual config value
+    int configRefreshRate = stateMachine.getOsConfig().refreshRate;
+    for (size_t i = 0; i < refreshRateOptions.size(); ++i) {
+        if (refreshRateOptions[i] == configRefreshRate) {
+            selectedRefreshRateIndex = static_cast<int>(i);
+            break;
+        }
     }
 }
 
+void ConfigApp::draw() {
+    sf::Text title(font, "Settings", TextSizes::TITLE);
+    title.setFillColor(Colors::Text);
+    title.setPosition({50.f, 30.f});
+    window.draw(title);
+
+    // Draw Refresh Rate Label
+    sf::Text label(font, "Refresh Rate:", TextSizes::LABEL);
+    label.setFillColor(Colors::Text);
+    label.setPosition({50.f, 100.f});
+    window.draw(label);
+
+    // Draw Refresh Rate Value
+    std::stringstream ss;
+    ss << refreshRateOptions[selectedRefreshRateIndex] << " Hz";
+
+    sf::Text value(font, ss.str(), TextSizes::VALUE);
+    value.setFillColor(Colors::Text);
+    value.setPosition({250.f, 100.f});
+    window.draw(value);
+}
