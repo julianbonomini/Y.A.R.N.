@@ -19,7 +19,7 @@ int main() {
     }
     sf::Text text(font);
 
-    std::vector<std::string> tabs = { "Info", "Weather", "Stocks", "Settings" };
+    std::vector<std::string> apps = { "Info", "Weather", "Stocks", "Settings" };
     int activeTab = 0; // You can change this with key input, etc.
 
     while (window.isOpen()) {
@@ -27,9 +27,9 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-                activeTab = (activeTab - 1 + tabs.size()) % tabs.size();
+                activeTab = (activeTab - 1 + apps.size()) % apps.size();
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-                    activeTab = (activeTab + 1) % tabs.size();
+                    activeTab = (activeTab + 1) % apps.size();
             }
         }
         window.clear(Theme::Background);
@@ -37,7 +37,7 @@ int main() {
  		std::string ip = Network::getIp();
 
         Toolbar::draw(window, font);
-        AppSpace::draw(window, font, tabs, activeTab);
+        AppSpace::draw(window, font, apps, activeTab);
 
         window.display();
     }

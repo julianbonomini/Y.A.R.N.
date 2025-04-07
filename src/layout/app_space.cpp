@@ -2,15 +2,20 @@
 #include <SFML/Graphics.hpp>
 #include "../theme.hpp"
 
-void AppSpace::draw(sf::RenderWindow& window, const sf::Font& font, const std::vector<std::string>& tabs, int activeTab) {
-    float padding = 8.f;
-    float tabWidth = 120.f;
-    float tabHeight = 30.f;
-    float topOffset = 40.f + padding;  // Toolbar height + padding
-    float textOffsetY = 6.f;
+float padding = 8.f;
+float tabHeight = 30.f;
+float topOffset = 40.f + padding;
 
+void AppSpace::draw(sf::RenderWindow& window, const sf::Font& font, const std::vector<std::string>& apps, int activeTab) {
     // --- Tabs ---
-    for (size_t i = 0; i < tabs.size(); ++i) {
+    drawTabs(window, font, apps, activeTab);
+    drawAppArea(window);
+}
+
+void AppSpace::drawTabs(sf::RenderWindow& window, const sf::Font& font, const std::vector<std::string>& apps, int activeTab) {
+    float tabWidth = 120.f;
+    float textOffsetY = 6.f;
+    for (size_t i = 0; i < apps.size(); ++i) {
         float x = padding + i * (tabWidth + padding);
 
         sf::RectangleShape tab(sf::Vector2f(tabWidth, tabHeight));
@@ -20,12 +25,14 @@ void AppSpace::draw(sf::RenderWindow& window, const sf::Font& font, const std::v
         tab.setFillColor(bg);
         window.draw(tab);
 
-        sf::Text label(font, tabs[i], 12);
+        sf::Text label(font, apps[i], 12);
         label.setFillColor(Theme::Text);
         label.setPosition({x + padding, topOffset + textOffsetY});
         window.draw(label);
     }
+}
 
+void AppSpace::drawAppArea(sf::RenderWindow& window) {
     // --- Content area ---
     float contentX = padding;
     float contentY = topOffset + tabHeight + padding;

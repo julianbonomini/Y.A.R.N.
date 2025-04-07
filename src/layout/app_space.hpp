@@ -5,7 +5,11 @@
 
 class AppSpace {
 public:
-    static void draw(sf::RenderWindow& window, const sf::Font& font, const std::vector<std::string>& tabs, int activeTab);
+    static void draw(sf::RenderWindow& window, const sf::Font& font, const std::vector<std::string>& apps, int activeTab);
+
+    static void drawTabs(sf::RenderWindow &window, const sf::Font &font, const std::vector<std::string> &apps, int activeTab);
+
+    static void drawAppArea(sf::RenderWindow &window);
 };
 
 #endif //APP_SPACE_H
