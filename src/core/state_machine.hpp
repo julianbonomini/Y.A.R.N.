@@ -5,6 +5,7 @@
 
 struct OsConfig {
     int refreshRate;
+    int defaultTab;
 };
 
 class StateMachine {
@@ -17,9 +18,9 @@ public:
     OsConfig& getOsConfig();
     const OsConfig& getOsConfig() const;
 
-    // function to save/load configuration
-    bool loadConfigFromDisk(const std::string& path);
-    bool saveConfigToDisk(const std::string &path) const;
+    // function to save/load os configuration
+    bool loadOsConfigFromDisk();
+    bool saveOsConfigToDisk() const;
 
 private:
     int activeTab;

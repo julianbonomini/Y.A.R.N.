@@ -13,12 +13,11 @@
 int main() {
     std::cout << "Booting..." << std::endl;
     // Create the StateMachine instance to manage app state.
+    std::cout << "Initializing state machine from disk..." << std::endl;
     StateMachine stateMachine(0);
-    std::cout << "Initial active tab: " << stateMachine.getActiveTab() << std::endl;
 
     auto window = sf::RenderWindow(sf::VideoMode({800, 480}), "TickPi", sf::Style::Default, sf::State::Windowed);
-    // sf::State::Fullscreen for full screen
-    window.setFramerateLimit(120);
+    window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/FiraCodeNerdFont-Medium.ttf")) {
         std::cout << "Error loading default font" << std::endl;
