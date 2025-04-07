@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "utils/network.hpp"
 #include "layout/toolbar.hpp"
-#include "theme.hpp"
+#include "theme/theme.hpp"
 #include "apps/info/info_app.hpp"
 #include "layout/app_space.hpp"
 

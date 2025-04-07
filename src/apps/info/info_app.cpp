@@ -1,6 +1,6 @@
 #include "info_app.hpp"
 #include <SFML/Graphics.hpp>
-#include "../../theme.hpp"
+#include "../../theme/theme.hpp"
 
 InfoApp::InfoApp(sf::RenderWindow& window, const sf::Font& font, const std::string& appName)
     : App(window, font, appName), window(window), font(font) {

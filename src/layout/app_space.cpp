@@ -1,6 +1,6 @@
 #include "app_space.hpp"
 #include <SFML/Graphics.hpp>
-#include "../theme.hpp"
+#include "../theme/theme.hpp"
 
 float padding = 8.f;
 float tabHeight = 30.f;
