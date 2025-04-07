@@ -1,13 +1,13 @@
-#ifndef APP_SPACE_H
-#define APP_SPACE_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
 #include <SFML/Graphics.hpp>
 
-#include "../apps/common/app.hpp"
+#include "../../apps/common/app.hpp"
 
-class AppSpace {
+class MainWindow {
 public:
-    AppSpace(sf::RenderWindow &window, const sf::Font &font);
+    MainWindow(sf::RenderWindow &window, const sf::Font &font);
 
     void draw(const std::vector<std::unique_ptr<App>> &apps, int activeTab);
 
@@ -21,4 +21,4 @@ private:
 };
 
 
-#endif //APP_SPACE_H
+#endif //MAIN_WINDOW_H

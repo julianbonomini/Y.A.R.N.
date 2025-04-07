@@ -1,10 +1,10 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "utils/network.hpp"
-#include "layout/toolbar.hpp"
+#include "layout/toolbar/toolbar.hpp"
 #include "theme/theme.hpp"
 #include "apps/info/info_app.hpp"
-#include "layout/app_space.hpp"
+#include "layout/main_window/main_window.hpp"
 
 
 int main() {
@@ -21,7 +21,7 @@ int main() {
     sf::Text text(font);
 
     Toolbar toolbar(window, font);
-    AppSpace appSpace(window, font);
+    MainWindow main_window(window, font);
 
     int activeTab = 0; // You can change this with key input, etc.
     std::vector<std::unique_ptr<App>> apps;
@@ -43,7 +43,7 @@ int main() {
  		std::string ip = Network::getIp();
 
         toolbar.draw();
-        appSpace.draw(apps, activeTab);
+        main_window.draw(apps, activeTab);
 
         window.display();
     }

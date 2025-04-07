@@ -1,17 +1,17 @@
-#include "app_space.hpp"
+#include "main_window.hpp"
 #include <SFML/Graphics.hpp>
-#include "../theme/theme.hpp"
+#include "../../theme/theme.hpp"
 
 float padding = 8.f;
 float tabHeight = 30.f;
 float topOffset = 40.f + padding;
 
-AppSpace::AppSpace(sf::RenderWindow& window, const sf::Font& font)
+MainWindow::MainWindow(sf::RenderWindow& window, const sf::Font& font)
     : window(window), font(font) {
     // Constructor logic can go here (optional)
 }
 
-void AppSpace::draw(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
+void MainWindow::draw(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
     // --- Tabs ---
     drawTabs(apps, activeTab);
 
@@ -24,7 +24,7 @@ void AppSpace::draw(const std::vector<std::unique_ptr<App>>& apps, int activeTab
     window.setView(window.getDefaultView());  // Reset to default view after app content
 }
 
-void AppSpace::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
+void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
     float tabWidth = 120.f;
     float textOffsetY = 6.f;
     for (size_t i = 0; i < apps.size(); ++i) {
@@ -44,7 +44,7 @@ void AppSpace::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int activ
     }
 }
 
-void AppSpace::drawAppArea() {
+void MainWindow::drawAppArea() {
     // --- Content area ---
     float contentX = padding;
     float contentY = topOffset + tabHeight + padding;
@@ -60,7 +60,7 @@ void AppSpace::drawAppArea() {
     window.draw(contentArea);
 }
 
-void AppSpace::drawActiveApp(App * activeApp) {
+void MainWindow::drawActiveApp(App * activeApp) {
     // --- Set view for the active app's space ---
     // --- Set view for the active app's space ---
     float contentX = padding;
