@@ -6,8 +6,7 @@
 using json = nlohmann::json;
 
 StateMachine::StateMachine(int default_tab)
-    : activeTab(default_tab)
-{
+    : activeTab(default_tab) {
     // Load the config file on startup
     std::cout << "Loading OS config..." << std::endl;
     loadOsConfigFromDisk();
@@ -23,7 +22,7 @@ void StateMachine::setActiveTab(int newActiveTab) {
     activeTab = newActiveTab;
 }
 
-OsConfig& StateMachine::getOsConfig() {
+OsConfig &StateMachine::getOsConfig() {
     return osConfig;
 }
 

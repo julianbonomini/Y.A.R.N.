@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-InfoApp::InfoApp(sf::RenderWindow& window, const sf::Font& font, const std::string& appName)
+InfoApp::InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
     : App(appName), window(window), font(font) {
     infoData.push_back({"VERSION:", "Ostrich 0.0.1"});
     infoData.push_back({"CPU:", "Intel Core i7 3.6 GHz"});
@@ -15,19 +15,18 @@ InfoApp::InfoApp(sf::RenderWindow& window, const sf::Font& font, const std::stri
     infoData.push_back({"NETWORK:", "Ethernet: Connected"});
 }
 
-void InfoApp::handleEvent(const sf::Event::KeyPressed& keyPressed) {
+void InfoApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 }
 
 
 void InfoApp::draw() {
-
     float labelPositionX = TOP_LEFT.x + Theme::PADDING;
     float valuePositionX = TOP_LEFT.x + Theme::PADDING + 150.f;
     float verticalOffset = Theme::PADDING;
     float labelSpacing = 15.f;
 
     // Iterate over all key-value pairs
-    for (const auto& entry : infoData) {
+    for (const auto &entry: infoData) {
         sf::Text labelText(font, entry.first);
         labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
         labelText.setFillColor(Colors::Text);
@@ -46,4 +45,3 @@ void InfoApp::draw() {
         verticalOffset += labelSpacing; // Adjust spacing between each pair
     }
 }
-

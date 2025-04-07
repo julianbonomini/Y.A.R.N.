@@ -13,13 +13,16 @@ public:
     StateMachine(int default_tab);
 
     int getActiveTab() const;
+
     void setActiveTab(int newActiveTab);
 
-    OsConfig& getOsConfig();
-    const OsConfig& getOsConfig() const;
+    OsConfig &getOsConfig();
+
+    const OsConfig &getOsConfig() const;
 
     // function to save/load os configuration
     bool loadOsConfigFromDisk();
+
     bool saveOsConfigToDisk() const;
 
 private:

@@ -24,14 +24,13 @@ void Toolbar::draw() {
     sf::Text rightText(font, timeStr);
     rightText.setCharacterSize(12);
     rightText.setFillColor(Colors::Text);
-    rightText.setPosition({window.getSize().x - 145.f, 10.f});  // Position the text
+    rightText.setPosition({window.getSize().x - 145.f, 10.f});
     // Draw a thin horizontal line below the text
-    sf::RectangleShape line(sf::Vector2f(window.getSize().x, 1.f)); // Full-width line, 1 pixel tall
-    line.setFillColor(Colors::Text); // Line color (same as text color)
-    line.setPosition({0.f, 32.f});    // Position the line below the text
-    window.draw(line);  // Draw the line
+    sf::RectangleShape line(sf::Vector2f(window.getSize().x, 1.f));
+    line.setFillColor(Colors::Text);
+    line.setPosition({0.f, 32.f});
+    window.draw(line);
 
     window.draw(leftText);
     window.draw(rightText);
 }
-

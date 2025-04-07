@@ -5,13 +5,13 @@
 
 class Toolbar {
 public:
-  Toolbar(sf::RenderWindow &window, const sf::Font &font);
+    Toolbar(sf::RenderWindow &window, const sf::Font &font);
 
-  void draw();
+    void draw();
 
 private:
-  sf::RenderWindow& window;  // Reference to the SFML render window
-  const sf::Font& font;      // Reference to the font
+    sf::RenderWindow &window; // Reference to the SFML render window
+    const sf::Font &font; // Reference to the font
 };
 
 #endif //TOOLBAR_H

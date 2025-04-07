@@ -8,18 +8,19 @@
 
 class MainWindow {
 public:
-    MainWindow(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine);
+    MainWindow(sf::RenderWindow &window, const sf::Font &font);
 
-    void draw(const std::vector<std::unique_ptr<App>> &apps);
+    void draw(const std::vector<std::unique_ptr<App> > &apps, int activeTab);
 
 private:
     sf::RenderWindow &window;
     const sf::Font &font;
-    StateMachine stateMachine;
-    void drawTabs(const std::vector<std::unique_ptr<App>> &apps);
+
+    void drawTabs(const std::vector<std::unique_ptr<App> > &apps, int activeTab);
+
     void drawAppArea();
 
-    void drawActiveApp(App * app);
+    void drawActiveApp(App *app);
 };
 
 

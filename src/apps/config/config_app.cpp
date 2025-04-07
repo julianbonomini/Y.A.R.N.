@@ -4,17 +4,14 @@
 #include <sstream>
 
 ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : App(appName), window(window), font(font), stateMachine(stateMachine)
-{
+    : App(appName), window(window), font(font), stateMachine(stateMachine) {
     populateConfigOptions();
 }
 
-void ConfigApp::handleEvent(const sf::Event::KeyPressed& keyPressed) {
-    // if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
-            std::cout << "Down pressed in InfoApp!" << std::endl;
+        std::cout << "Down pressed in InfoApp!" << std::endl;
     }
-    // }
 }
 
 void ConfigApp::draw() {

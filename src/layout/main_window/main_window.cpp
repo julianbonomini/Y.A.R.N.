@@ -1,30 +1,27 @@
 #include "main_window.hpp"
-
 #include <SFML/Graphics.hpp>
-
-#include "../../core/state_machine.hpp"
 #include "../../globals/theme.hpp"
 
 
-MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine)
-    : window(window), font(font), stateMachine(stateMachine) {
+MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font)
+    : window(window), font(font) {
     // Constructor logic can go here (optional)
 }
 
-void MainWindow::draw(const std::vector<std::unique_ptr<App>>& apps) {
+void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
     // --- Tabs ---
-    drawTabs(apps);
+    drawTabs(apps, activeTab);
 
     // --- Draw App Area (Constrain drawing to app area) ---
     drawAppArea();
 
-    drawActiveApp(apps[stateMachine.getActiveTab()].get());
+    drawActiveApp(apps[activeTab].get());
 
     // --- Reset the view to default for the rest of the UI ---
-    window.setView(window.getDefaultView());  // Reset to default view after app content
+    window.setView(window.getDefaultView()); // Reset to default view after app content
 }
 
-void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps) {
+void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
     float textOffsetY = 6.f;
     for (size_t i = 0; i < apps.size(); ++i) {
         float x = Theme::PADDING + i * (Theme::TAB_WIDTH + Theme::PADDING);
@@ -32,7 +29,7 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps) {
         sf::RectangleShape tab(sf::Vector2f(Theme::TAB_WIDTH, Theme::TAB_HEIGHT));
         tab.setPosition({x, Theme::TOOLBAR_OFFSET});
 
-        sf::Color bg = i == stateMachine.getActiveTab() ? Colors::DarkerBackground : Colors::Background;
+        sf::Color bg = i == activeTab ? Colors::DarkerBackground : Colors::Background;
         tab.setFillColor(bg);
         window.draw(tab);
 
@@ -53,13 +50,13 @@ void MainWindow::drawAppArea() {
     sf::RectangleShape contentArea(sf::Vector2f(contentWidth, contentHeight));
     contentArea.setPosition({contentX, contentY});
     contentArea.setFillColor(Colors::Background);
-    contentArea.setOutlineColor(Colors::DarkerBackground);  // light gray
+    contentArea.setOutlineColor(Colors::DarkerBackground); // light gray
     contentArea.setOutlineThickness(2.f);
 
     window.draw(contentArea);
 }
 
-    void MainWindow::drawActiveApp(App* activeApp) {
+void MainWindow::drawActiveApp(App *activeApp) {
     // Draw the app into that view
     activeApp->draw();
 }
