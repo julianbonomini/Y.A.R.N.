@@ -1,10 +1,9 @@
 #include "main_window.hpp"
+
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "../../globals/theme.hpp"
 
-float padding = 8.f;
-float tabHeight = 30.f;
-float topOffset = 40.f + padding;
 
 MainWindow::MainWindow(sf::RenderWindow& window, const sf::Font& font)
     : window(window), font(font) {
@@ -25,13 +24,12 @@ void MainWindow::draw(const std::vector<std::unique_ptr<App>>& apps, int activeT
 }
 
 void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
-    float tabWidth = 120.f;
     float textOffsetY = 6.f;
     for (size_t i = 0; i < apps.size(); ++i) {
-        float x = padding + i * (tabWidth + padding);
+        float x = Theme::PADDING + i * (Theme::TAB_WIDTH + Theme::PADDING);
 
-        sf::RectangleShape tab(sf::Vector2f(tabWidth, tabHeight));
-        tab.setPosition({x, topOffset});
+        sf::RectangleShape tab(sf::Vector2f(Theme::TAB_WIDTH, Theme::TAB_HEIGHT));
+        tab.setPosition({x, Theme::TOOLBAR_OFFSET});
 
         sf::Color bg = (i == activeTab) ? Theme::DarkerBackground : Theme::Background;
         tab.setFillColor(bg);
@@ -39,17 +37,17 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int act
 
         sf::Text label(font, apps[i].get()->appName, 12);
         label.setFillColor(Theme::Text);
-        label.setPosition({x + padding, topOffset + textOffsetY});
+        label.setPosition({x + Theme::PADDING, Theme::TOOLBAR_OFFSET + textOffsetY});
         window.draw(label);
     }
 }
 
 void MainWindow::drawAppArea() {
     // --- Content area ---
-    float contentX = padding;
-    float contentY = topOffset + tabHeight + padding;
-    float contentWidth = window.getSize().x - 2 * padding;
-    float contentHeight = window.getSize().y - contentY - padding;
+    float contentX = Theme::PADDING;
+    float contentY = Theme::TOOLBAR_OFFSET + Theme::TAB_HEIGHT + Theme::PADDING;
+    float contentWidth = Theme::WINDOW_WIDTH - 2 * Theme::PADDING;
+    float contentHeight = Theme::WINDOW_HEIGHT - contentY - Theme::PADDING;
 
     sf::RectangleShape contentArea(sf::Vector2f(contentWidth, contentHeight));
     contentArea.setPosition({contentX, contentY});
@@ -60,24 +58,7 @@ void MainWindow::drawAppArea() {
     window.draw(contentArea);
 }
 
-void MainWindow::drawActiveApp(App * activeApp) {
-    // --- Set view for the active app's space ---
-    // --- Set view for the active app's space ---
-    float contentX = padding;
-    float contentY = topOffset + tabHeight + padding;
-    float contentWidth = Theme::WINDOW_WIDTH - ( 2 * padding );
-    float contentHeight = Theme::WINDOW_WIDTH - ( 2 * padding ) - contentY;
-
-    // Create a view centered at (contentX + contentWidth / 2, contentY + contentHeight / 2)
-    // with size (contentWidth, contentHeight)
-    sf::Vector2f center(Theme::WINDOW_WIDTH / 2, Theme::WINDOW_HEIGHT / 2);
-    sf::Vector2f size(contentWidth, contentHeight);
-    // Create the view with the center and size
-    sf::View appView(center, size);
-    appView.setCenter(center);
-    appView.setSize(size);
-    // Set the view for the active app's space
-    window.setView(appView);
-    // Draw the active app in the constrained area
-    activeApp->draw();  // Draw your app (InfoApp, etc.)
+    void MainWindow::drawActiveApp(App* activeApp) {
+    // Draw the app into that view
+    activeApp->draw();
 }
