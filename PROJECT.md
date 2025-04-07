@@ -60,7 +60,7 @@ ssh pi@<Pi-IP-address>
 2. Compile Your Code on the Pi
    To compile your C++ code, run:
 ```bash
-g++ -o my-app main.cpp `sdl2-config --cflags --libs`
+g++ -o my-app app_space.cpp `sdl2-config --cflags --libs`
 ```
 This will generate the executable my-app.
 
