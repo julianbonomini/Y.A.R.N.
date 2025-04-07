@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -I/opt/homebrew/include
+CXXFLAGS = -std=c++17 -Wall -I/opt/homebrew/include
 LDFLAGS = -L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 SRC_DIR = src

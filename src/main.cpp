@@ -37,12 +37,15 @@ int main() {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-                int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
-                stateMachine.setActiveTab(new_active_tab);
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-                int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
-                stateMachine.setActiveTab(new_active_tab);
+            }
+            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                if (keyPressed->scancode == sf::Keyboard::Scan::A) {
+                    int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
+                    stateMachine.setActiveTab(new_active_tab);
+                } else if (keyPressed->scancode == sf::Keyboard::Scan::S) {
+                    int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
+                    stateMachine.setActiveTab(new_active_tab);
+                }
             }
         }
         window.clear(Colors::Background);
