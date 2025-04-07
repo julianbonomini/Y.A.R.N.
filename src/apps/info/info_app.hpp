@@ -2,7 +2,7 @@
 #define INFO_APP_H
 
 #pragma once
-#include "../app.hpp"
+#include "../common/app.hpp"
 #include <SFML/Graphics.hpp>
 
 class InfoApp : public App {

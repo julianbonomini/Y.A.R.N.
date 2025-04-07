@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../apps/app.hpp"
+#include "../apps/common/app.hpp"
 
 class AppSpace {
 public:
