@@ -9,13 +9,12 @@ class InfoApp : public App {
 public:
     InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName);
 
-    void draw() override; // Implement the drawing logic for this app
+    void draw() override;
 
 private:
-    sf::RenderWindow& window;  // Reference to the SFML render window
-    const sf::Font& font;      // Reference to the font
+    sf::RenderWindow& window;
+    const sf::Font& font;
+    std::vector<std::pair<std::string, std::string>> infoData;
 };
-
-
 
 #endif //INFO_APP_H

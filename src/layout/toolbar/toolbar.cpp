@@ -12,7 +12,7 @@ Toolbar::Toolbar(sf::RenderWindow &window, const sf::Font &font)
 void Toolbar::draw() {
     sf::Text leftText(font, "Ostrich");
     leftText.setCharacterSize(12);
-    leftText.setFillColor(Theme::Text);
+    leftText.setFillColor(Colors::Text);
     leftText.setPosition({10.f, 10.f});
 
     // Get current date and time
@@ -23,11 +23,11 @@ void Toolbar::draw() {
 
     sf::Text rightText(font, timeStr);
     rightText.setCharacterSize(12);
-    rightText.setFillColor(Theme::Text);
+    rightText.setFillColor(Colors::Text);
     rightText.setPosition({window.getSize().x - 145.f, 10.f});  // Position the text
     // Draw a thin horizontal line below the text
     sf::RectangleShape line(sf::Vector2f(window.getSize().x, 1.f)); // Full-width line, 1 pixel tall
-    line.setFillColor(Theme::Text); // Line color (same as text color)
+    line.setFillColor(Colors::Text); // Line color (same as text color)
     line.setPosition({0.f, 32.f});    // Position the line below the text
     window.draw(line);  // Draw the line
 

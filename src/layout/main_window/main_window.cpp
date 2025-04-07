@@ -1,6 +1,5 @@
 #include "main_window.hpp"
 
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "../../globals/theme.hpp"
 
@@ -31,12 +30,12 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int act
         sf::RectangleShape tab(sf::Vector2f(Theme::TAB_WIDTH, Theme::TAB_HEIGHT));
         tab.setPosition({x, Theme::TOOLBAR_OFFSET});
 
-        sf::Color bg = (i == activeTab) ? Theme::DarkerBackground : Theme::Background;
+        sf::Color bg = (i == activeTab) ? Colors::DarkerBackground : Colors::Background;
         tab.setFillColor(bg);
         window.draw(tab);
 
-        sf::Text label(font, apps[i].get()->appName, 12);
-        label.setFillColor(Theme::Text);
+        sf::Text label(font, apps[i].get()->appName, TextSizes::TITLE);
+        label.setFillColor(Colors::Text);
         label.setPosition({x + Theme::PADDING, Theme::TOOLBAR_OFFSET + textOffsetY});
         window.draw(label);
     }
@@ -51,8 +50,8 @@ void MainWindow::drawAppArea() {
 
     sf::RectangleShape contentArea(sf::Vector2f(contentWidth, contentHeight));
     contentArea.setPosition({contentX, contentY});
-    contentArea.setFillColor(Theme::Background);
-    contentArea.setOutlineColor(Theme::DarkerBackground);  // light gray
+    contentArea.setFillColor(Colors::Background);
+    contentArea.setOutlineColor(Colors::DarkerBackground);  // light gray
     contentArea.setOutlineThickness(2.f);
 
     window.draw(contentArea);

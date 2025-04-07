@@ -1,5 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+
+#include "apps/config/config_app.hpp"
 #include "utils/network.hpp"
 #include "layout/toolbar/toolbar.hpp"
 #include "globals/theme.hpp"
@@ -29,7 +31,7 @@ int main() {
 
     std::vector<std::unique_ptr<App>> apps;
     apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
-    apps.push_back(std::make_unique<InfoApp>(window, font, "Weather"));
+    apps.push_back(std::make_unique<ConfigApp>(window, font, "Config"));
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
@@ -43,9 +45,7 @@ int main() {
                 stateMachine.setActiveTab(new_active_tab);
             }
         }
-        window.clear(Theme::Background);
-
- 		std::string ip = Network::getIp();
+        window.clear(Colors::Background);
 
         toolbar.draw();
         main_window.draw(apps, stateMachine.getActiveTab());
