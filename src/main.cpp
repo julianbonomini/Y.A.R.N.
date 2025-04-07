@@ -3,6 +3,7 @@
 #include "utils/network.hpp"
 #include "layout/toolbar.hpp"
 #include "theme.hpp"
+#include "apps/info/info_app.hpp"
 #include "layout/app_space.hpp"
 
 
@@ -19,8 +20,10 @@ int main() {
     }
     sf::Text text(font);
 
-    std::vector<std::string> apps = { "Info", "Weather", "Stocks", "Settings" };
     int activeTab = 0; // You can change this with key input, etc.
+    std::vector<std::unique_ptr<App>> apps;
+    apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
+    apps.push_back(std::make_unique<InfoApp>(window, font, "Weather"));
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
