@@ -33,7 +33,7 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
         tab.setFillColor(bg);
         window.draw(tab);
 
-        sf::Text label(font, apps[i].get()->appName, TextSizes::TITLE);
+        sf::Text label(font, apps[i].get()->appName, TextSizes::TAB);
         label.setFillColor(Colors::Text);
         label.setPosition({x + Theme::PADDING, Theme::TOOLBAR_OFFSET + textOffsetY});
         window.draw(label);

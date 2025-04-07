@@ -21,6 +21,7 @@ namespace Theme {
 
 namespace TextSizes {
     const int TITLE = 15;
+    const int TAB = 15;
     const int DESCRITPION = 8;
     const int LABEL = 12;
     const int VALUE = 12;
