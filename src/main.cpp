@@ -5,10 +5,14 @@
 #include "globals/theme.hpp"
 #include "apps/info/info_app.hpp"
 #include "layout/main_window/main_window.hpp"
+#include "state_machine/state_machine.hpp"
 
 
 int main() {
     std::cout << "Booting..." << std::endl;
+    // Create the StateMachine instance to manage app state.
+    StateMachine stateMachine(0);
+    std::cout << "Initial active tab: " << stateMachine.getActiveTab() << std::endl;
 
     auto window = sf::RenderWindow(sf::VideoMode({800, 480}), "TickPi", sf::Style::Default, sf::State::Windowed);
     // sf::State::Fullscreen for full screen
@@ -23,7 +27,6 @@ int main() {
     Toolbar toolbar(window, font);
     MainWindow main_window(window, font);
 
-    int activeTab = 0; // You can change this with key input, etc.
     std::vector<std::unique_ptr<App>> apps;
     apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
     apps.push_back(std::make_unique<InfoApp>(window, font, "Weather"));
@@ -33,9 +36,11 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-                activeTab = (activeTab - 1 + apps.size()) % apps.size();
+                int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
+                stateMachine.setActiveTab(new_active_tab);
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-                    activeTab = (activeTab + 1) % apps.size();
+                int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
+                stateMachine.setActiveTab(new_active_tab);
             }
         }
         window.clear(Theme::Background);
@@ -43,7 +48,7 @@ int main() {
  		std::string ip = Network::getIp();
 
         toolbar.draw();
-        main_window.draw(apps, activeTab);
+        main_window.draw(apps, stateMachine.getActiveTab());
 
         window.display();
     }
