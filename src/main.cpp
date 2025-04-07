@@ -40,11 +40,9 @@ int main() {
             // Global keys (tab switching)
             if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scan::A) {
-                    std::cout << "A" << std::endl;
                     int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
                     stateMachine.setActiveTab(new_active_tab);
                 } else if (keyPressed->scancode == sf::Keyboard::Scan::S) {
-                    std::cout << "S" << std::endl;
                     int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
                     stateMachine.setActiveTab(new_active_tab);
                 } else {

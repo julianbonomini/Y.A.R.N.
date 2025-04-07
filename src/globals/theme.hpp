@@ -20,10 +20,10 @@ namespace Theme {
 }
 
 namespace TextSizes {
-    const int TITLE = 12;
+    const int TITLE = 15;
     const int DESCRITPION = 8;
-    const int LABEL = 10;
-    const int VALUE = 10;
+    const int LABEL = 12;
+    const int VALUE = 12;
 }
 
 namespace Colors {
