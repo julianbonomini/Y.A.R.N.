@@ -9,6 +9,14 @@ ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachin
     populateConfigOptions();
 }
 
+void ConfigApp::handleEvent(const sf::Event::KeyPressed& keyPressed) {
+    // if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+    if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
+            std::cout << "Down pressed in InfoApp!" << std::endl;
+    }
+    // }
+}
+
 void ConfigApp::draw() {
     float labelPositionX = TOP_LEFT.x + Theme::PADDING;
     float valuePositionX = TOP_LEFT.x + Theme::PADDING + 150.f;

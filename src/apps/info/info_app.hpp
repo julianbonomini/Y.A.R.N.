@@ -9,6 +9,8 @@ class InfoApp : public App {
 public:
     InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName);
 
+    void handleEvent(const sf::Event::KeyPressed& keyPressed) override;
+
     void draw() override;
 
 private:

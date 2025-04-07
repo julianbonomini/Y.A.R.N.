@@ -26,7 +26,7 @@ int main() {
     sf::Text text(font);
 
     Toolbar toolbar(window, font);
-    MainWindow main_window(window, font);
+    MainWindow main_window(window, font, stateMachine);
 
     std::vector<std::unique_ptr<App>> apps;
     apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
@@ -37,6 +37,7 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
+            // Global keys (tab switching)
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scan::A) {
                     int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
@@ -44,13 +45,17 @@ int main() {
                 } else if (keyPressed->scancode == sf::Keyboard::Scan::S) {
                     int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
                     stateMachine.setActiveTab(new_active_tab);
+                } else {
+                    // Key is not globally used
+                    // Forward the event to the active app
+                    apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
                 }
             }
         }
         window.clear(Colors::Background);
 
         toolbar.draw();
-        main_window.draw(apps, stateMachine.getActiveTab());
+        main_window.draw(apps);
 
         window.display();
     }

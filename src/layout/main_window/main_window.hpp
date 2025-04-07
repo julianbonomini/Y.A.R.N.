@@ -4,17 +4,19 @@
 #include <SFML/Graphics.hpp>
 
 #include "../../apps/common/app.hpp"
+#include "../../core/state_machine.hpp"
 
 class MainWindow {
 public:
-    MainWindow(sf::RenderWindow &window, const sf::Font &font);
+    MainWindow(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine);
 
-    void draw(const std::vector<std::unique_ptr<App>> &apps, int activeTab);
+    void draw(const std::vector<std::unique_ptr<App>> &apps);
 
 private:
-    sf::RenderWindow& window;  // Reference to the SFML render window
-    const sf::Font& font;      // Reference to the font
-    void drawTabs(const std::vector<std::unique_ptr<App>> &apps, int activeTab);
+    sf::RenderWindow &window;
+    const sf::Font &font;
+    StateMachine stateMachine;
+    void drawTabs(const std::vector<std::unique_ptr<App>> &apps);
     void drawAppArea();
 
     void drawActiveApp(App * app);

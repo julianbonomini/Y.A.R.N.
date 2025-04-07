@@ -18,6 +18,8 @@ class ConfigApp : public App {
 public:
     ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
+    void handleEvent(const sf::Event::KeyPressed& keyPressed) override;
+
     void draw() override;
 
     // TODO: add interactivity here

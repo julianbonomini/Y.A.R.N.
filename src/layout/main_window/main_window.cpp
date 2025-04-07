@@ -1,28 +1,30 @@
 #include "main_window.hpp"
 
 #include <SFML/Graphics.hpp>
+
+#include "../../core/state_machine.hpp"
 #include "../../globals/theme.hpp"
 
 
-MainWindow::MainWindow(sf::RenderWindow& window, const sf::Font& font)
-    : window(window), font(font) {
+MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine)
+    : window(window), font(font), stateMachine(stateMachine) {
     // Constructor logic can go here (optional)
 }
 
-void MainWindow::draw(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
+void MainWindow::draw(const std::vector<std::unique_ptr<App>>& apps) {
     // --- Tabs ---
-    drawTabs(apps, activeTab);
+    drawTabs(apps);
 
     // --- Draw App Area (Constrain drawing to app area) ---
     drawAppArea();
 
-    drawActiveApp(apps[activeTab].get());
+    drawActiveApp(apps[stateMachine.getActiveTab()].get());
 
     // --- Reset the view to default for the rest of the UI ---
     window.setView(window.getDefaultView());  // Reset to default view after app content
 }
 
-void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int activeTab) {
+void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps) {
     float textOffsetY = 6.f;
     for (size_t i = 0; i < apps.size(); ++i) {
         float x = Theme::PADDING + i * (Theme::TAB_WIDTH + Theme::PADDING);
@@ -30,7 +32,7 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App>>& apps, int act
         sf::RectangleShape tab(sf::Vector2f(Theme::TAB_WIDTH, Theme::TAB_HEIGHT));
         tab.setPosition({x, Theme::TOOLBAR_OFFSET});
 
-        sf::Color bg = (i == activeTab) ? Colors::DarkerBackground : Colors::Background;
+        sf::Color bg = i == stateMachine.getActiveTab() ? Colors::DarkerBackground : Colors::Background;
         tab.setFillColor(bg);
         window.draw(tab);
 

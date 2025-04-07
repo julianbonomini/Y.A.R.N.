@@ -15,6 +15,9 @@ InfoApp::InfoApp(sf::RenderWindow& window, const sf::Font& font, const std::stri
     infoData.push_back({"NETWORK:", "Ethernet: Connected"});
 }
 
+void InfoApp::handleEvent(const sf::Event::KeyPressed& keyPressed) {
+}
+
 
 void InfoApp::draw() {
 

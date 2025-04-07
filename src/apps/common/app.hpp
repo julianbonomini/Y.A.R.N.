@@ -9,6 +9,8 @@ public:
     App(const std::string &appName)
         : appName(appName) {}
 
+    virtual void handleEvent(const sf::Event::KeyPressed& keyPressed) = 0;
+
     virtual ~App() = default;
 
     // Virtual function that all apps must implement
