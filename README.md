@@ -1,19 +1,19 @@
-# SFML Hello World C++ Project
+# Noop
 
-This project demonstrates a simple "Hello, World!" GUI program in C++ using SFML. It will display a window with the text "Hello, World!" centered on the screen.
+Noop is a Y.A.R.N. (yet another retro node) project. A BIOS inspired desk gadget to run c++ apps, either informative or interactive.
 
-## Requirements
+## Hardware
 
-### Raspberry Pi:
-- Install SFML with:
-```bash
-sudo apt-get install libsfml-dev
-```
+- Raspberry Pi 4
+- E-Ink Paper display 800x460
+
+## Setup
 
 ### MacOS
 - Install SFML with Homebrew:
 ```bash
 brew install sfml
+brew install [TODO: the json lib]
 ```
 
 ## Build
@@ -22,7 +22,9 @@ make
 ```
 
 ## Run the executable:
-./main
+```bash
+make run
+```
 
 ## Make clean
 ```bash
