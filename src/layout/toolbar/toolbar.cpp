@@ -10,7 +10,7 @@ Toolbar::Toolbar(sf::RenderWindow &window, const sf::Font &font)
 
 
 void Toolbar::draw() {
-    sf::Text leftText(font, "Ostrich");
+    sf::Text leftText(font, "NOOP");
     leftText.setCharacterSize(12);
     leftText.setFillColor(Colors::BLACK);
     leftText.setPosition({10.f, 10.f});

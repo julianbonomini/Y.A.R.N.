@@ -86,16 +86,12 @@ void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void ConfigApp::drawHelpBox() {
     // --- Content area ---
-    const float helpBoxWidth = Areas::MAIN_APP_WIDTH * 0.4;
-    const float contentX = TOP_RIGHT_ANCHOR.x - helpBoxWidth;
-    const float contentY = TOP_RIGHT_ANCHOR.y;
-
-    // Draw box
-    sf::RectangleShape contentArea(sf::Vector2f(helpBoxWidth, Areas::MAIN_APP_HEIGHT));
-    contentArea.setPosition({contentX, contentY});
+    auto contentAreaCoordinates = getGridBox(3, 0, 2, 4);
+    sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
+    contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
     contentArea.setFillColor(Colors::WHITE);
-    contentArea.setOutlineColor(Colors::GRAY); // light gray
-    contentArea.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
+    contentArea.setOutlineColor(Colors::GRAY);
+    contentArea.setOutlineThickness(Lines::LINE_THICKNESS);
     window.draw(contentArea);
 
     // Help text
@@ -107,8 +103,8 @@ void ConfigApp::drawHelpBox() {
         "<LEFT|RIGHT>          : Change values"
     };
 
-    float textX = contentX + Areas::PADDING;
-    float textY = contentY + Areas::PADDING;
+    float textX = contentAreaCoordinates.position.x + Areas::PADDING;
+    float textY = contentAreaCoordinates.position.y + Areas::PADDING;
 
     for (const auto& line : helpLines) {
         sf::Text text(font, line, TextSizes::HELP);
