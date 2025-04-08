@@ -2,6 +2,14 @@
 
 Noop is a Y.A.R.N. (yet another retro node) project. A BIOS inspired desk gadget to run c++ apps, either informative or interactive.
 
+Since name is still in progress, here is a few other options:
+```
+- F12
+- BLIP
+- Y.A.R.N. (Yet Another Retro Node. Or... Yet Another Ridiculous Name)
+- ByteMe
+```
+
 ## Hardware
 
 - Raspberry Pi 4
