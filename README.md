@@ -21,7 +21,7 @@ Since name is still in progress, here is a few other options:
 - Install SFML with Homebrew:
 ```bash
 brew install sfml
-brew install [TODO: the json lib]
+brew install nlohmann_json
 ```
 
 ## Build

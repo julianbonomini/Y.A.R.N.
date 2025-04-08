@@ -20,4 +20,4 @@ clean:
 
 # Run
 run:
-	./$(BUILD_DIR)/TickPi
+	./$(TARGET)
