@@ -21,6 +21,8 @@ private:
     void drawAppArea();
 
     void drawActiveApp(App *app);
+
+    void drawFooter();
 };
 
 

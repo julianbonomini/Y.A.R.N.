@@ -24,6 +24,6 @@ protected:
     // const sf::Font& font;
     const sf::Vector2f TOP_LEFT = sf::Vector2f(Areas::PADDING, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING);
     const sf::Vector2f TOP_RIGHT = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING);
-    const sf::Vector2f BOTTOM_LEFT = sf::Vector2f(Areas::PADDING, Areas::WINDOW_HEIGHT - Areas::HELP_BAR_HEIGHT - Areas::PADDING - Areas::PADDING);
+    const sf::Vector2f BOTTOM_LEFT = sf::Vector2f(Areas::PADDING, Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT - Areas::PADDING - Areas::PADDING);
     const sf::Vector2f BOTTOM_RIGHT = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING, Areas::WINDOW_HEIGHT - Areas::PADDING);
 };

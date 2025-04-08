@@ -14,10 +14,10 @@ namespace Areas {
     const float PADDING = 8.f;
     const float TAB_WIDTH = 120.f;
     const float TAB_HEIGHT = 30.f;
-    const float HELP_BAR_HEIGHT = 30.f;
+    const float FOOTER_HEIGHT = 30.f;
     const float TOOLBAR_OFFSET = 40.f + PADDING;
     const float MAIN_APP_WIDTH = WINDOW_WIDTH - 2 * PADDING;
-    const float MAIN_APP_HEIGHT = WINDOW_HEIGHT - TOOLBAR_OFFSET - TAB_HEIGHT - 2 * PADDING - HELP_BAR_HEIGHT;
+    const float MAIN_APP_HEIGHT = WINDOW_HEIGHT - TOOLBAR_OFFSET - TAB_HEIGHT - 2 * PADDING - FOOTER_HEIGHT;
     const float TEXT_SPACING = 25.f;
     const float LABEL_VALUE_SPACE = 250.f;
 }

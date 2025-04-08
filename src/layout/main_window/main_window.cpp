@@ -17,6 +17,8 @@ void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int active
 
     drawActiveApp(apps[activeTab].get());
 
+    drawFooter();
+
     // --- Reset the view to default for the rest of the UI ---
     window.setView(window.getDefaultView()); // Reset to default view after app content
 }
@@ -57,4 +59,18 @@ void MainWindow::drawAppArea() {
 void MainWindow::drawActiveApp(App *activeApp) {
     // Draw the app into that view
     activeApp->draw();
+}
+
+void MainWindow::drawFooter() {
+    float textX = Areas::PADDING * 2;
+    float textY = Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT;
+
+    sf::Text left(font, "<A> <- Tab", TextSizes::DESCRITPION);
+    left.setFillColor(Colors::Text); // or maybe sf::Color::Green for terminal vibes
+    left.setPosition({textX, textY});
+    window.draw(left);
+    sf::Text right(font, "<S> Tab ->", TextSizes::DESCRITPION);
+    right.setFillColor(Colors::Text); // or maybe sf::Color::Green for terminal vibes
+    right.setPosition({textX, textY  + left.getGlobalBounds().size.y + Areas::PADDING});
+    window.draw(right);
 }
