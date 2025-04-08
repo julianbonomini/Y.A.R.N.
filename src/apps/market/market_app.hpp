@@ -20,21 +20,23 @@ public:
 
     void draw() override;
 
-    void drawStandaloneSymbols();
-
     void update(float deltaTime);
-
-    void loadMockData(); // For now, simulate some data
 
 private:
     sf::Font font;
     sf::RenderWindow &window;
 
     std::vector<StockData> stocks;
+    std::vector<StockData> marketTrackers;
+    bool marketOpen = true;
 
-    void drawHeader();
+    void drawStandaloneSymbols();
 
-    void drawStockList();
+    void drawMarketTrackers();
+
+    void drawMarketStatus();
+
+    void loadMockData(); // For now, simulate some data
 };
 
 
