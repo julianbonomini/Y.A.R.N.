@@ -204,9 +204,8 @@ void MarketApp::drawMarketStatus() {
     // Center the text within the background box
     sf::FloatRect textBounds = marketStatusText.getLocalBounds();
     marketStatusText.setOrigin({textBounds.size.x / 2, textBounds.size.y / 2});
+    // TODO fix this.
     marketStatusText.setPosition({startX + SMALL_BOX_X_SIZE / 2, startY + (Areas::MAIN_APP_HEIGHT / 4) / 2});
-
-
     window.draw(marketStatusText);
 }
 
