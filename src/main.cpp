@@ -6,6 +6,7 @@
 #include "layout/toolbar/toolbar.hpp"
 #include "globals/theme.hpp"
 #include "apps/info/info_app.hpp"
+#include "apps/market/market_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine.hpp"
 
@@ -28,7 +29,10 @@ int main() {
     Toolbar toolbar(window, font);
     MainWindow main_window(window, font);
 
+
+    std::cout << "Initializing apps..." << std::endl;
     std::vector<std::unique_ptr<App> > apps;
+    apps.push_back(std::make_unique<MarketApp>(window, font, "Stonks"));
     apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
     apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "Config"));
 
