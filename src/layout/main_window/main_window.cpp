@@ -42,18 +42,19 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
         tabOutline.setPoint(5, {startingXPosition + Areas::TAB_WIDTH, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + textOffsetY}); // bottom right
         tabOutline.setOutlineThickness(Lines::LINE_THICKNESS);
         tabOutline.setOutlineColor(Colors::GRAY);
+        // tabOutline.setFillColor(Colors::GRAY);
 
 
         if (i == activeTab) {
             window.draw(tabOutline);
             sf::RectangleShape coverAreaLine(sf::Vector2f(Areas::TAB_WIDTH, Lines::LINE_THICKNESS));
             coverAreaLine.setPosition({startingXPosition, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING - 2.f});
-            coverAreaLine.setFillColor(Colors::BACKGROUND);
+            coverAreaLine.setFillColor(Colors::WHITE);
             window.draw(coverAreaLine);
         }
 
         sf::Text label(font, apps[i].get()->appName, TextSizes::TAB);
-        label.setFillColor(Colors::BLACK);
+        label.setFillColor(i == activeTab ? Colors::BLACK : Colors::GRAY);
         label.setPosition({startingXPosition + Areas::PADDING, Areas::TOOLBAR_OFFSET + textOffsetY});
         window.draw(label);
     }
@@ -66,8 +67,8 @@ void MainWindow::drawAppArea() {
 
     sf::RectangleShape contentArea(sf::Vector2f(Areas::MAIN_APP_WIDTH, Areas::MAIN_APP_HEIGHT));
     contentArea.setPosition({contentX, contentY});
-    contentArea.setFillColor(Colors::BACKGROUND);
-    contentArea.setOutlineColor(Colors::GRAY); // light gray
+    contentArea.setFillColor(Colors::WHITE);
+    contentArea.setOutlineColor(Colors::GRAY);
     contentArea.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
 
     window.draw(contentArea);

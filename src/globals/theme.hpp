@@ -32,7 +32,7 @@ namespace TextSizes {
 }
 
 namespace Colors {
-    const sf::Color BACKGROUND = sf::Color::White;
+    const sf::Color WHITE = sf::Color::White;
     const sf::Color GRAY = sf::Color(200, 200, 200);
     const sf::Color BLACK = sf::Color::Black;
     const sf::Color DEBUG = sf::Color::Red;

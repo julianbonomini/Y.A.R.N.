@@ -56,7 +56,7 @@ int main() {
                 }
             }
         }
-        window.clear(Colors::BACKGROUND);
+        window.clear(Colors::WHITE);
 
         toolbar.draw();
         main_window.draw(apps, stateMachine.getActiveTab());

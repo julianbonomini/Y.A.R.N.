@@ -20,6 +20,8 @@ public:
 
     void draw() override;
 
+    void drawStandaloneSymbols();
+
     void update(float deltaTime);
 
     void loadMockData(); // For now, simulate some data

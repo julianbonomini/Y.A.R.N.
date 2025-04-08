@@ -93,7 +93,7 @@ void ConfigApp::drawHelpBox() {
     // Draw box
     sf::RectangleShape contentArea(sf::Vector2f(helpBoxWidth, Areas::MAIN_APP_HEIGHT));
     contentArea.setPosition({contentX, contentY});
-    contentArea.setFillColor(Colors::BACKGROUND);
+    contentArea.setFillColor(Colors::WHITE);
     contentArea.setOutlineColor(Colors::GRAY); // light gray
     contentArea.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
     window.draw(contentArea);

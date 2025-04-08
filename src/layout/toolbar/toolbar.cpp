@@ -26,8 +26,8 @@ void Toolbar::draw() {
     rightText.setFillColor(Colors::BLACK);
     rightText.setPosition({window.getSize().x - 145.f, 10.f});
     // Draw a thin horizontal line below the text
-    sf::RectangleShape line(sf::Vector2f(window.getSize().x, 1.f));
-    line.setFillColor(Colors::BLACK);
+    sf::RectangleShape line(sf::Vector2f(window.getSize().x, Lines::LINE_THICKNESS));
+    line.setFillColor(Colors::GRAY);
     line.setPosition({0.f, 32.f});
     window.draw(line);
 
