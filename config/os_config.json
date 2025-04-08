@@ -1,4 +1,4 @@
 {
-  "refreshRate": 30,
-  "defaultTab": 1
+    "default_tab": "1",
+    "refresh_rate_hz": "60"
 }

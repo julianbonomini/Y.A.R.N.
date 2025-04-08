@@ -24,10 +24,10 @@ void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int active
 void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
     float textOffsetY = 6.f;
     for (size_t i = 0; i < apps.size(); ++i) {
-        float x = Theme::PADDING + i * (Theme::TAB_WIDTH + Theme::PADDING);
+        float x = Areas::PADDING + i * (Areas::TAB_WIDTH + Areas::PADDING);
 
-        sf::RectangleShape tab(sf::Vector2f(Theme::TAB_WIDTH, Theme::TAB_HEIGHT));
-        tab.setPosition({x, Theme::TOOLBAR_OFFSET});
+        sf::RectangleShape tab(sf::Vector2f(Areas::TAB_WIDTH, Areas::TAB_HEIGHT));
+        tab.setPosition({x, Areas::TOOLBAR_OFFSET});
 
         sf::Color bg = i == activeTab ? Colors::DarkerBackground : Colors::Background;
         tab.setFillColor(bg);
@@ -35,23 +35,21 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
 
         sf::Text label(font, apps[i].get()->appName, TextSizes::TAB);
         label.setFillColor(Colors::Text);
-        label.setPosition({x + Theme::PADDING, Theme::TOOLBAR_OFFSET + textOffsetY});
+        label.setPosition({x + Areas::PADDING, Areas::TOOLBAR_OFFSET + textOffsetY});
         window.draw(label);
     }
 }
 
 void MainWindow::drawAppArea() {
     // --- Content area ---
-    float contentX = Theme::PADDING;
-    float contentY = Theme::TOOLBAR_OFFSET + Theme::TAB_HEIGHT + Theme::PADDING;
-    float contentWidth = Theme::WINDOW_WIDTH - 2 * Theme::PADDING;
-    float contentHeight = Theme::WINDOW_HEIGHT - contentY - Theme::PADDING;
+    float contentX = Areas::PADDING;
+    float contentY = Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING;
 
-    sf::RectangleShape contentArea(sf::Vector2f(contentWidth, contentHeight));
+    sf::RectangleShape contentArea(sf::Vector2f(Areas::MAIN_APP_WIDTH, Areas::MAIN_APP_HEIGHT));
     contentArea.setPosition({contentX, contentY});
     contentArea.setFillColor(Colors::Background);
     contentArea.setOutlineColor(Colors::DarkerBackground); // light gray
-    contentArea.setOutlineThickness(2.f);
+    contentArea.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
 
     window.draw(contentArea);
 }

@@ -8,7 +8,6 @@ using json = nlohmann::json;
 StateMachine::StateMachine(int default_tab)
     : activeTab(default_tab) {
     // Load the config file on startup
-    std::cout << "Loading OS config..." << std::endl;
     loadOsConfigFromDisk();
     setActiveTab(getOsConfig().defaultTab);
     std::cout << "Loading APP config..." << std::endl;
@@ -27,6 +26,7 @@ OsConfig &StateMachine::getOsConfig() {
 }
 
 bool StateMachine::loadOsConfigFromDisk() {
+    std::cout << "Loading OS config..." << std::endl;
     std::ifstream file("config/os_config.json");
     if (!file.is_open()) {
         std::cout << "file not open" << std::endl;
@@ -36,10 +36,10 @@ bool StateMachine::loadOsConfigFromDisk() {
     json j;
     try {
         file >> j;
-        if (j.contains("refreshRate")) {
-            osConfig.refreshRate = j["refreshRate"];
-            osConfig.defaultTab = j["defaultTab"];
-        }
+        std::string refreshRateString = j["refresh_rate_hz"];
+        std::string defaultTabString = j["default_tab"];
+        osConfig.refreshRate = std::stoi(refreshRateString);
+        osConfig.defaultTab = std::stoi(defaultTabString);
     } catch (...) {
         return -1;
     }
@@ -47,17 +47,21 @@ bool StateMachine::loadOsConfigFromDisk() {
     return 1;
 }
 
-bool StateMachine::saveOsConfigToDisk() const {
-    std::filesystem::create_directories("config"); // Ensure the config directory exists
-
+bool StateMachine::saveOsConfigToDisk(const std::vector<ConfigOption> &configOptions) {
     std::ofstream file("config/os_config.json");
     if (!file.is_open()) {
         return false;
     }
-
     json j;
-    j["refreshRate"] = osConfig.refreshRate;
-    j["defaultTab"] = osConfig.defaultTab;
+
+    for (const auto &option: configOptions) {
+        j[option.label] = option.currentValue;
+        if (option.label == "refresh_rate_hz") {
+            osConfig.refreshRate = std::stoi(option.currentValue);
+        } else if (option.label == "default_tab") {
+            osConfig.defaultTab = std::stoi(option.currentValue);
+        }
+    }
 
     file << j.dump(4); // Pretty-print with indentation
     return true;

@@ -20,10 +20,9 @@ void InfoApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 
 void InfoApp::draw() {
-    float labelPositionX = TOP_LEFT.x + Theme::PADDING;
-    float valuePositionX = TOP_LEFT.x + Theme::PADDING + 150.f;
-    float verticalOffset = Theme::PADDING;
-    float labelSpacing = 15.f;
+    float labelPositionX = TOP_LEFT.x + Areas::PADDING;
+    float valuePositionX = TOP_LEFT.x + Areas::PADDING + Areas::LABEL_VALUE_SPACE;
+    float verticalOffset = Areas::PADDING;
 
     // Iterate over all key-value pairs
     for (const auto &entry: infoData) {
@@ -42,6 +41,6 @@ void InfoApp::draw() {
         window.draw(valueText);
 
         // Increase the vertical offset for the next pair
-        verticalOffset += labelSpacing; // Adjust spacing between each pair
+        verticalOffset += Areas::TEXT_SPACING; // Adjust spacing between each pair
     }
 }

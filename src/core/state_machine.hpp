@@ -1,7 +1,7 @@
 #ifndef STATE_MACHINE_HPP
 #define STATE_MACHINE_HPP
-
-#include <string>
+#include <vector>
+#include "../apps/config/ConfigOptions.hpp"
 
 struct OsConfig {
     int refreshRate;
@@ -23,7 +23,7 @@ public:
     // function to save/load os configuration
     bool loadOsConfigFromDisk();
 
-    bool saveOsConfigToDisk() const;
+    bool saveOsConfigToDisk(const std::vector<ConfigOption> &configOptions);
 
 private:
     int activeTab;
