@@ -9,11 +9,12 @@ MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font)
 }
 
 void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
-    // --- Tabs ---
-    drawTabs(apps, activeTab);
-
     // --- Draw App Area (Constrain drawing to app area) ---
     drawAppArea();
+
+    // --- Tabs ---
+    // Needs to be after App Area beacuse it has to cover it
+    drawTabs(apps, activeTab);
 
     drawActiveApp(apps[activeTab].get());
 
@@ -26,18 +27,34 @@ void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int active
 void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
     float textOffsetY = 6.f;
     for (size_t i = 0; i < apps.size(); ++i) {
-        float x = Areas::PADDING + i * (Areas::TAB_WIDTH + Areas::PADDING);
+        float startingXPosition = Areas::PADDING + i * (Areas::TAB_WIDTH + Areas::PADDING);
 
-        sf::RectangleShape tab(sf::Vector2f(Areas::TAB_WIDTH, Areas::TAB_HEIGHT));
-        tab.setPosition({x, Areas::TOOLBAR_OFFSET});
+        sf::ConvexShape tabOutline;
+        tabOutline.setPointCount(6);
 
-        sf::Color bg = i == activeTab ? Colors::DarkerBackground : Colors::Background;
-        tab.setFillColor(bg);
-        window.draw(tab);
+        float curve = 8.f;
+
+        tabOutline.setPoint(0, {startingXPosition, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + textOffsetY}); // bottom left
+        tabOutline.setPoint(1, {startingXPosition, Areas::TOOLBAR_OFFSET + curve}); // left curve start
+        tabOutline.setPoint(2, {startingXPosition + curve, Areas::TOOLBAR_OFFSET}); // top left curve
+        tabOutline.setPoint(3, {startingXPosition + Areas::TAB_WIDTH - curve, Areas::TOOLBAR_OFFSET}); // top right curve
+        tabOutline.setPoint(4, {startingXPosition + Areas::TAB_WIDTH, Areas::TOOLBAR_OFFSET + curve}); // right curve end
+        tabOutline.setPoint(5, {startingXPosition + Areas::TAB_WIDTH, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + textOffsetY}); // bottom right
+        tabOutline.setOutlineThickness(Lines::LINE_THICKNESS);
+        tabOutline.setOutlineColor(Colors::GRAY);
+
+
+        if (i == activeTab) {
+            window.draw(tabOutline);
+            sf::RectangleShape coverAreaLine(sf::Vector2f(Areas::TAB_WIDTH, Lines::LINE_THICKNESS));
+            coverAreaLine.setPosition({startingXPosition, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING - 2.f});
+            coverAreaLine.setFillColor(Colors::BACKGROUND);
+            window.draw(coverAreaLine);
+        }
 
         sf::Text label(font, apps[i].get()->appName, TextSizes::TAB);
-        label.setFillColor(Colors::Text);
-        label.setPosition({x + Areas::PADDING, Areas::TOOLBAR_OFFSET + textOffsetY});
+        label.setFillColor(Colors::BLACK);
+        label.setPosition({startingXPosition + Areas::PADDING, Areas::TOOLBAR_OFFSET + textOffsetY});
         window.draw(label);
     }
 }
@@ -49,8 +66,8 @@ void MainWindow::drawAppArea() {
 
     sf::RectangleShape contentArea(sf::Vector2f(Areas::MAIN_APP_WIDTH, Areas::MAIN_APP_HEIGHT));
     contentArea.setPosition({contentX, contentY});
-    contentArea.setFillColor(Colors::Background);
-    contentArea.setOutlineColor(Colors::DarkerBackground); // light gray
+    contentArea.setFillColor(Colors::BACKGROUND);
+    contentArea.setOutlineColor(Colors::GRAY); // light gray
     contentArea.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
 
     window.draw(contentArea);
@@ -66,11 +83,11 @@ void MainWindow::drawFooter() {
     float textY = Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT;
 
     sf::Text left(font, "<A> <- Tab", TextSizes::DESCRITPION);
-    left.setFillColor(Colors::Text); // or maybe sf::Color::Green for terminal vibes
+    left.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     left.setPosition({textX, textY});
     window.draw(left);
     sf::Text right(font, "<S> Tab ->", TextSizes::DESCRITPION);
-    right.setFillColor(Colors::Text); // or maybe sf::Color::Green for terminal vibes
-    right.setPosition({textX, textY  + left.getGlobalBounds().size.y + Areas::PADDING});
+    right.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
+    right.setPosition({textX, textY + left.getGlobalBounds().size.y + Areas::PADDING});
     window.draw(right);
 }

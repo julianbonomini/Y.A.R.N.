@@ -52,7 +52,7 @@ int main() {
                 }
             }
         }
-        window.clear(Colors::Background);
+        window.clear(Colors::BACKGROUND);
 
         toolbar.draw();
         main_window.draw(apps, stateMachine.getActiveTab());

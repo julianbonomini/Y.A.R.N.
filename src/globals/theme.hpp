@@ -32,14 +32,15 @@ namespace TextSizes {
 }
 
 namespace Colors {
-    const sf::Color Background = sf::Color::White;
-    const sf::Color DarkerBackground = sf::Color(200, 200, 200);
-    const sf::Color Text = sf::Color::Black;
-    const sf::Color Accent = sf::Color::Red;
+    const sf::Color BACKGROUND = sf::Color::White;
+    const sf::Color GRAY = sf::Color(200, 200, 200);
+    const sf::Color BLACK = sf::Color::Black;
+    const sf::Color DEBUG = sf::Color::Red;
 }
 
 namespace Lines {
     const float BOX_LINE_THICKNESS = 2.f;
+    const float LINE_THICKNESS = 2.f;
 }
 
 

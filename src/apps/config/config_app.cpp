@@ -93,8 +93,8 @@ void ConfigApp::drawHelpBox() {
     // Draw box
     sf::RectangleShape contentArea(sf::Vector2f(helpBoxWidth, Areas::MAIN_APP_HEIGHT));
     contentArea.setPosition({contentX, contentY});
-    contentArea.setFillColor(Colors::Background);
-    contentArea.setOutlineColor(Colors::DarkerBackground); // light gray
+    contentArea.setFillColor(Colors::BACKGROUND);
+    contentArea.setOutlineColor(Colors::GRAY); // light gray
     contentArea.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
     window.draw(contentArea);
 
@@ -112,7 +112,7 @@ void ConfigApp::drawHelpBox() {
 
     for (const auto& line : helpLines) {
         sf::Text text(font, line, TextSizes::HELP);
-        text.setFillColor(Colors::Text); // or maybe sf::Color::Green for terminal vibes
+        text.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
         text.setPosition({textX, textY});
         window.draw(text);
         textY += Areas::TEXT_SPACING; // spacing between lines
@@ -132,7 +132,7 @@ void ConfigApp::draw() {
         // Draw the label
         ConfigOption &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, TextSizes::LABEL);
-        labelText.setFillColor(Colors::Text);
+        labelText.setFillColor(Colors::BLACK);
         labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
         window.draw(labelText);
 
@@ -140,7 +140,7 @@ void ConfigApp::draw() {
         std::stringstream valueStream;
         valueStream << currentOption.currentValue;
         sf::Text valueText(font, valueStream.str(), TextSizes::VALUE);
-        valueText.setFillColor(Colors::Text);
+        valueText.setFillColor(Colors::BLACK);
         valueText.setPosition({valuePositionX, TOP_LEFT.y + verticalOffset});
         // If selected, draw background rectangle behind value
         if (currentOption.selected) {
@@ -148,7 +148,7 @@ void ConfigApp::draw() {
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
-            highlightRect.setFillColor(Colors::DarkerBackground);
+            highlightRect.setFillColor(Colors::GRAY);
             window.draw(highlightRect);
         }
         window.draw(valueText);
@@ -158,7 +158,7 @@ void ConfigApp::draw() {
             // sf::RectangleShape editRecangle(sf::Vector2f(10.f, 10.f));
             // labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
             // labelText.setFillColor(Colors::Background);
-            labelText.setOutlineColor(Colors::DarkerBackground);
+            labelText.setOutlineColor(Colors::GRAY);
 
             // debugRectangle.setPosition({window.getView().getCenter().x, window.getView().getCenter().y});
             // debugRectangle.setFillColor(sf::Color::Red);
@@ -174,7 +174,7 @@ void ConfigApp::draw() {
     // Draw if in edit mode:
     if (editModeEnabled) {
         sf::Text editModeEnabled(font, "EDIT_MODE", TextSizes::HELP);
-        editModeEnabled.setFillColor(Colors::Text);
+        editModeEnabled.setFillColor(Colors::BLACK);
         editModeEnabled.setPosition({BOTTOM_LEFT.x + Areas::PADDING, BOTTOM_LEFT.y - Areas::PADDING});
         window.draw(editModeEnabled);
     }
@@ -183,7 +183,7 @@ void ConfigApp::draw() {
     if (unsavedChangesFlag) {
         const float helpBoxWidth = Areas::MAIN_APP_WIDTH * 0.4;
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", TextSizes::HELP);
-        unsavedChanges.setFillColor(Colors::Text);
+        unsavedChanges.setFillColor(Colors::BLACK);
         unsavedChanges.setPosition({BOTTOM_RIGHT.x - helpBoxWidth - 100.f - Areas::PADDING, BOTTOM_LEFT.y - Areas::PADDING});
         window.draw(unsavedChanges);
     }

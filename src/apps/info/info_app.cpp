@@ -28,12 +28,12 @@ void InfoApp::draw() {
     for (const auto &entry: infoData) {
         sf::Text labelText(font, entry.first);
         labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
-        labelText.setFillColor(Colors::Text);
+        labelText.setFillColor(Colors::BLACK);
         labelText.setCharacterSize(TextSizes::LABEL);
 
         sf::Text valueText(font, entry.second);
         valueText.setPosition({valuePositionX, TOP_LEFT.y + verticalOffset});
-        valueText.setFillColor(Colors::Text);
+        valueText.setFillColor(Colors::BLACK);
         valueText.setCharacterSize(TextSizes::LABEL);
 
         // Draw label and value
