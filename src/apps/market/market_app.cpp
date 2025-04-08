@@ -48,58 +48,12 @@ void MarketApp::drawStandaloneSymbols() {
     window.draw(backgroundBox);
 
     // Header row
-    sf::Text headerSymbol(font, "SYMBOL");
-    headerSymbol.setPosition({labelX, startY + Areas::PADDING});
-    headerSymbol.setFillColor(Colors::BLACK);
-    headerSymbol.setCharacterSize(TextSizes::LABEL);
-    window.draw(headerSymbol);
-
-    sf::Text headerPrice(font, "PRICE");
-    headerPrice.setPosition({priceX, startY + Areas::PADDING});
-    headerPrice.setFillColor(Colors::BLACK);
-    headerPrice.setCharacterSize(TextSizes::LABEL);
-    window.draw(headerPrice);
-
-    sf::Text headerChange(font, "CHANGE");
-    headerChange.setPosition({changeX, startY + Areas::PADDING});
-    headerChange.setFillColor(Colors::BLACK);
-    headerChange.setCharacterSize(TextSizes::LABEL);
-    window.draw(headerChange);
+    drawSymbolsHeaderRow(startY, labelX, priceX, changeX);
 
     // Stock rows
     float currentY = startY + Areas::PADDING + rowHeight;
 
-    for (const auto &symbol: stocks) {
-        // Symbol
-        sf::Text labelText(font, symbol.ticker);
-        labelText.setPosition({labelX, currentY});
-        labelText.setFillColor(Colors::BLACK);
-        labelText.setCharacterSize(TextSizes::LABEL);
-        window.draw(labelText);
-
-        // Price
-        std::ostringstream priceStream;
-        priceStream << "$" << std::fixed << std::setprecision(2) << symbol.price;
-        sf::Text priceText(font, priceStream.str());
-        priceText.setPosition({priceX, currentY});
-        priceText.setFillColor(Colors::BLACK);
-        priceText.setCharacterSize(TextSizes::LABEL);
-        window.draw(priceText);
-
-        // Change %
-        std::ostringstream changeStream;
-        if (symbol.changeFromOpen > 0) {
-            changeStream << "+";
-        }
-        changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
-        sf::Text changeText(font, changeStream.str());
-        changeText.setPosition({changeX, currentY});
-        changeText.setFillColor(Colors::BLACK);
-        changeText.setCharacterSize(TextSizes::LABEL);
-        window.draw(changeText);
-
-        currentY += rowHeight;
-    }
+    drawLabelsAndValues(stocks, rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketTrackers() {
@@ -121,59 +75,12 @@ void MarketApp::drawMarketTrackers() {
     backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
     window.draw(backgroundBox);
 
-    // Header row
-    sf::Text headerSymbol(font, "SYMBOL");
-    headerSymbol.setPosition({labelX, startY + Areas::PADDING});
-    headerSymbol.setFillColor(Colors::BLACK);
-    headerSymbol.setCharacterSize(TextSizes::LABEL);
-    window.draw(headerSymbol);
-
-    sf::Text headerPrice(font, "PRICE");
-    headerPrice.setPosition({priceX, startY + Areas::PADDING});
-    headerPrice.setFillColor(Colors::BLACK);
-    headerPrice.setCharacterSize(TextSizes::LABEL);
-    window.draw(headerPrice);
-
-    sf::Text headerChange(font, "CHANGE");
-    headerChange.setPosition({changeX, startY + Areas::PADDING});
-    headerChange.setFillColor(Colors::BLACK);
-    headerChange.setCharacterSize(TextSizes::LABEL);
-    window.draw(headerChange);
+    drawSymbolsHeaderRow(startY, labelX, priceX, changeX);
 
     // Stock rows
     float currentY = startY + Areas::PADDING + rowHeight;
 
-    for (const auto &symbol: marketTrackers) {
-        // Symbol
-        sf::Text labelText(font, symbol.ticker);
-        labelText.setPosition({labelX, currentY});
-        labelText.setFillColor(Colors::BLACK);
-        labelText.setCharacterSize(TextSizes::LABEL);
-        window.draw(labelText);
-
-        // Price
-        std::ostringstream priceStream;
-        priceStream << "$" << std::fixed << std::setprecision(2) << symbol.price;
-        sf::Text priceText(font, priceStream.str());
-        priceText.setPosition({priceX, currentY});
-        priceText.setFillColor(Colors::BLACK);
-        priceText.setCharacterSize(TextSizes::LABEL);
-        window.draw(priceText);
-
-        // Change %
-        std::ostringstream changeStream;
-        if (symbol.changeFromOpen > 0) {
-            changeStream << "+";
-        }
-        changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
-        sf::Text changeText(font, changeStream.str());
-        changeText.setPosition({changeX, currentY});
-        changeText.setFillColor(Colors::BLACK);
-        changeText.setCharacterSize(TextSizes::LABEL);
-        window.draw(changeText);
-
-        currentY += rowHeight;
-    }
+    drawLabelsAndValues(marketTrackers, rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketStatus() {
@@ -238,6 +145,61 @@ void MarketApp::drawMarketSession() {
     marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
     marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
     window.draw(marketStatusText);
+}
+
+void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, const float priceX, const float changeX) {
+    // Header row
+    sf::Text headerSymbol(font, "SYMBOL");
+    headerSymbol.setPosition({labelX, startY + Areas::PADDING});
+    headerSymbol.setFillColor(Colors::BLACK);
+    headerSymbol.setCharacterSize(TextSizes::LABEL);
+    window.draw(headerSymbol);
+
+    sf::Text headerPrice(font, "PRICE");
+    headerPrice.setPosition({priceX, startY + Areas::PADDING});
+    headerPrice.setFillColor(Colors::BLACK);
+    headerPrice.setCharacterSize(TextSizes::LABEL);
+    window.draw(headerPrice);
+
+    sf::Text headerChange(font, "CHANGE");
+    headerChange.setPosition({changeX, startY + Areas::PADDING});
+    headerChange.setFillColor(Colors::BLACK);
+    headerChange.setCharacterSize(TextSizes::LABEL);
+    window.draw(headerChange);
+}
+
+void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const float rowHeight, const float labelX, const float priceX, const float changeX, float currentY) {
+    for (const auto &symbol: symbols) {
+        // Symbol
+        sf::Text labelText(font, symbol.ticker);
+        labelText.setPosition({labelX, currentY});
+        labelText.setFillColor(Colors::BLACK);
+        labelText.setCharacterSize(TextSizes::LABEL);
+        window.draw(labelText);
+
+        // Price
+        std::ostringstream priceStream;
+        priceStream << "$" << std::fixed << std::setprecision(2) << symbol.price;
+        sf::Text priceText(font, priceStream.str());
+        priceText.setPosition({priceX, currentY});
+        priceText.setFillColor(Colors::BLACK);
+        priceText.setCharacterSize(TextSizes::LABEL);
+        window.draw(priceText);
+
+        // Change %
+        std::ostringstream changeStream;
+        if (symbol.changeFromOpen > 0) {
+            changeStream << "+";
+        }
+        changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
+        sf::Text changeText(font, changeStream.str());
+        changeText.setPosition({changeX, currentY});
+        changeText.setFillColor(Colors::BLACK);
+        changeText.setCharacterSize(TextSizes::LABEL);
+        window.draw(changeText);
+
+        currentY += rowHeight;
+    }
 }
 
 void MarketApp::loadMockData() {
