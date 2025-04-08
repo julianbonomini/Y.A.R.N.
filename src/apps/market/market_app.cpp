@@ -5,8 +5,6 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-float MAIN_BOX_X_SIZE = 318.f;
-float SMALL_BOX_X_SIZE = 132.f;
 
 MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
     : App(appName), font(font), window(window) {
@@ -14,7 +12,10 @@ MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, const std::
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
-    std::cout << "Handle evet" << std::endl;
+    if (keyPressed.scancode == sf::Keyboard::Scan::T) {
+        std::cout << "DEBUG TOGGLE MARKET" << Areas::MAIN_APP_HEIGHT << std::endl;
+        marketOpen = !marketOpen;
+    }
 }
 
 void MarketApp::update(float /*deltaTime*/) {
@@ -25,21 +26,22 @@ void MarketApp::draw() {
     drawStandaloneSymbols();
     drawMarketTrackers();
     drawMarketStatus();
+    drawMarketSession();
 }
 
 void MarketApp::drawStandaloneSymbols() {
+    auto backgroundBoxCoordinates = getGridBox(0, 0, 2, 4);
     const float rowHeight = 30.f;
-    const float startX = TOP_LEFT.x + Areas::PADDING;
-    const float startY = TOP_LEFT.y + Areas::PADDING;
+    const float startX = backgroundBoxCoordinates.position.x;
+    const float startY = backgroundBoxCoordinates.position.y;
 
     const float labelX = startX + Areas::PADDING;
     const float priceX = labelX + 120.f;
     const float changeX = priceX + 100.f;
 
     // Draw background box
-    sf::RectangleShape backgroundBox;
-    backgroundBox.setPosition({startX, startY});
-    backgroundBox.setSize({changeX + 80.f - startX, Areas::MAIN_APP_HEIGHT - 2 * Areas::PADDING});
+    sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
+    backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
@@ -102,17 +104,18 @@ void MarketApp::drawStandaloneSymbols() {
 
 void MarketApp::drawMarketTrackers() {
     const float rowHeight = 30.f;
-    const float startX = TOP_LEFT.x + MAIN_BOX_X_SIZE + Areas::PADDING;
-    const float startY = TOP_LEFT.y + Areas::PADDING;
+    auto backgroundBoxCoordinates = getGridBox(2, 0, 2, 2);
+
+    const float startX = backgroundBoxCoordinates.position.x;
+    const float startY = backgroundBoxCoordinates.position.y;
 
     const float labelX = startX + Areas::PADDING;
     const float priceX = labelX + 120.f;
     const float changeX = priceX + 100.f;
 
     // Draw background box
-    sf::RectangleShape backgroundBox;
-    backgroundBox.setPosition({startX, startY});
-    backgroundBox.setSize({changeX + 80.f - startX, Areas::MAIN_APP_HEIGHT / 2 - 2 * Areas::PADDING});
+    sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
+    backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
@@ -174,17 +177,14 @@ void MarketApp::drawMarketTrackers() {
 }
 
 void MarketApp::drawMarketStatus() {
-    const float startX = TOP_LEFT.x + MAIN_BOX_X_SIZE * 2 + Areas::PADDING;
-    const float startY = TOP_LEFT.y + Areas::PADDING;
-
     // Determine background color and text color based on marketOpen
     sf::Color backgroundColor = marketOpen ? Colors::WHITE : Colors::GRAY;
     sf::Color textColor = marketOpen ? Colors::BLACK : Colors::WHITE;
 
     // Draw background box
-    sf::RectangleShape backgroundBox;
-    backgroundBox.setPosition({startX, startY});
-    backgroundBox.setSize({SMALL_BOX_X_SIZE, Areas::MAIN_APP_HEIGHT / 4 - 2 * Areas::PADDING});
+    auto backgroundBoxCoordinates = getGridBox(4, 0, 1, 1);
+    sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
+    backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(backgroundColor);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
@@ -203,9 +203,40 @@ void MarketApp::drawMarketStatus() {
 
     // Center the text within the background box
     sf::FloatRect textBounds = marketStatusText.getLocalBounds();
-    marketStatusText.setOrigin({textBounds.size.x / 2, textBounds.size.y / 2});
-    // TODO fix this.
-    marketStatusText.setPosition({startX + SMALL_BOX_X_SIZE / 2, startY + (Areas::MAIN_APP_HEIGHT / 4) / 2});
+    marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
+    window.draw(marketStatusText);
+}
+
+void MarketApp::drawMarketSession() {
+    // Determine background color and text color based on marketOpen
+    sf::Color backgroundColor = marketOpen ? Colors::WHITE : Colors::GRAY;
+    sf::Color textColor = marketOpen ? Colors::BLACK : Colors::WHITE;
+
+    // Draw background box
+    auto backgroundBoxCoordinates = getGridBox(4, 1, 1, 1);
+    sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
+    backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
+    backgroundBox.setFillColor(backgroundColor);
+    backgroundBox.setOutlineColor(Colors::GRAY);
+    backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
+    window.draw(backgroundBox);
+
+    // Draw market status text (OPEN or CLOSED)
+    sf::Text marketStatusText(font);
+    marketStatusText.setCharacterSize(20); // Adjust size as needed
+    marketStatusText.setFillColor(textColor);
+
+    if (marketOpen) {
+        marketStatusText.setString("OPEN");
+    } else {
+        marketStatusText.setString("CLOSED");
+    }
+
+    // Center the text within the background box
+    sf::FloatRect textBounds = marketStatusText.getLocalBounds();
+    marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
     window.draw(marketStatusText);
 }
 

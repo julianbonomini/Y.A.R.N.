@@ -20,19 +20,19 @@ void InfoApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 
 void InfoApp::draw() {
-    float labelPositionX = TOP_LEFT.x + Areas::PADDING;
-    float valuePositionX = TOP_LEFT.x + Areas::PADDING + Areas::LABEL_VALUE_SPACE;
+    float labelPositionX = TOP_LEFT_ANCHOR.x + Areas::PADDING;
+    float valuePositionX = TOP_LEFT_ANCHOR.x + Areas::PADDING + Areas::LABEL_VALUE_SPACE;
     float verticalOffset = Areas::PADDING;
 
     // Iterate over all key-value pairs
     for (const auto &entry: infoData) {
         sf::Text labelText(font, entry.first);
-        labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
+        labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         labelText.setFillColor(Colors::BLACK);
         labelText.setCharacterSize(TextSizes::LABEL);
 
         sf::Text valueText(font, entry.second);
-        valueText.setPosition({valuePositionX, TOP_LEFT.y + verticalOffset});
+        valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         valueText.setFillColor(Colors::BLACK);
         valueText.setCharacterSize(TextSizes::LABEL);
 

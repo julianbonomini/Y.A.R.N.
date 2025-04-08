@@ -22,8 +22,10 @@ public:
 protected:
     // sf::RenderWindow& window;
     // const sf::Font& font;
-    const sf::Vector2f TOP_LEFT = sf::Vector2f(Areas::PADDING, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING);
-    const sf::Vector2f TOP_RIGHT = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING);
-    const sf::Vector2f BOTTOM_LEFT = sf::Vector2f(Areas::PADDING, Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT - Areas::PADDING - Areas::PADDING);
-    const sf::Vector2f BOTTOM_RIGHT = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING, Areas::WINDOW_HEIGHT - Areas::PADDING);
+    const sf::Vector2f TOP_LEFT_ANCHOR = sf::Vector2f(Areas::PADDING * 2, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING * 2);
+    const sf::Vector2f TOP_RIGHT_ANCHOR = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING * 2, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING * 2);
+    const sf::Vector2f BOTTOM_LEFT_ANCHOR = sf::Vector2f(Areas::PADDING * 2, Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT - Areas::PADDING - Areas::PADDING * 2);
+    const sf::Vector2f BOTTOM_RIGHT_ANCHOR = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING * 2, Areas::WINDOW_HEIGHT - Areas::PADDING * 2);
+
+    sf::FloatRect getGridBox(int colStart, int rowStart, int colSpan, int rowSpan);
 };

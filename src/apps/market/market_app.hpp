@@ -36,6 +36,8 @@ private:
 
     void drawMarketStatus();
 
+    void drawMarketSession();
+
     void loadMockData(); // For now, simulate some data
 };
 

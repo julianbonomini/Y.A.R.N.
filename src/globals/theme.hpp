@@ -9,38 +9,46 @@
 #include <SFML/Graphics/Color.hpp>
 
 namespace Areas {
-    const float WINDOW_WIDTH = 800.f;
-    const float WINDOW_HEIGHT = 480.f;
-    const float PADDING = 8.f;
-    const float TAB_WIDTH = 120.f;
-    const float TAB_HEIGHT = 30.f;
-    const float FOOTER_HEIGHT = 30.f;
-    const float TOOLBAR_OFFSET = 40.f + PADDING;
-    const float MAIN_APP_WIDTH = WINDOW_WIDTH - 2 * PADDING;
-    const float MAIN_APP_HEIGHT = WINDOW_HEIGHT - TOOLBAR_OFFSET - TAB_HEIGHT - 2 * PADDING - FOOTER_HEIGHT;
-    const float TEXT_SPACING = 25.f;
-    const float LABEL_VALUE_SPACE = 250.f;
+    constexpr float WINDOW_WIDTH = 800.f;
+    constexpr float WINDOW_HEIGHT = 480.f;
+    constexpr float PADDING = 8.f;
+    constexpr float TAB_WIDTH = 120.f;
+    constexpr float TAB_HEIGHT = 30.f;
+    constexpr float FOOTER_HEIGHT = 30.f;
+    constexpr float TOOLBAR_OFFSET = 40.f + PADDING;
+    constexpr float MAIN_APP_WIDTH = WINDOW_WIDTH - 2 * PADDING;
+    constexpr float MAIN_APP_HEIGHT = WINDOW_HEIGHT - TOOLBAR_OFFSET - TAB_HEIGHT - 2 * PADDING - FOOTER_HEIGHT;
+    constexpr float TEXT_SPACING = 25.f;
+    constexpr float LABEL_VALUE_SPACE = 250.f;
+}
+
+namespace Grid {
+    constexpr int GRID_COLS = 5;
+    constexpr int GRID_ROWS = 4;
+
+    constexpr float CELL_WIDTH = (Areas::MAIN_APP_WIDTH - (GRID_COLS + 1) * Areas::PADDING) / GRID_COLS;
+    constexpr float CELL_HEIGHT = (Areas::MAIN_APP_HEIGHT - (GRID_ROWS + 1) * Areas::PADDING) / GRID_ROWS;
 }
 
 namespace TextSizes {
-    const int TITLE = 15;
-    const int TAB = 15;
-    const int DESCRITPION = 8;
-    const int LABEL = 15;
-    const int VALUE = 15;
-    const int HELP = 10;
+    constexpr int TITLE = 15;
+    constexpr int TAB = 15;
+    constexpr int DESCRITPION = 8;
+    constexpr int LABEL = 15;
+    constexpr int VALUE = 15;
+    constexpr int HELP = 10;
 }
 
 namespace Colors {
-    const sf::Color WHITE = sf::Color::White;
-    const sf::Color GRAY = sf::Color(200, 200, 200);
-    const sf::Color BLACK = sf::Color::Black;
-    const sf::Color DEBUG = sf::Color::Red;
+    constexpr sf::Color WHITE = sf::Color::White;
+    constexpr sf::Color GRAY = sf::Color(200, 200, 200);
+    constexpr sf::Color BLACK = sf::Color::Black;
+    constexpr sf::Color DEBUG = sf::Color::Red;
 }
 
 namespace Lines {
-    const float BOX_LINE_THICKNESS = 2.f;
-    const float LINE_THICKNESS = 2.f;
+    constexpr float BOX_LINE_THICKNESS = 2.f;
+    constexpr float LINE_THICKNESS = 2.f;
 }
 
 

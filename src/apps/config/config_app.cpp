@@ -87,8 +87,8 @@ void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 void ConfigApp::drawHelpBox() {
     // --- Content area ---
     const float helpBoxWidth = Areas::MAIN_APP_WIDTH * 0.4;
-    const float contentX = TOP_RIGHT.x - helpBoxWidth;
-    const float contentY = TOP_RIGHT.y;
+    const float contentX = TOP_RIGHT_ANCHOR.x - helpBoxWidth;
+    const float contentY = TOP_RIGHT_ANCHOR.y;
 
     // Draw box
     sf::RectangleShape contentArea(sf::Vector2f(helpBoxWidth, Areas::MAIN_APP_HEIGHT));
@@ -121,8 +121,8 @@ void ConfigApp::drawHelpBox() {
 }
 
 void ConfigApp::draw() {
-    float labelPositionX = TOP_LEFT.x + Areas::PADDING;
-    float valuePositionX = TOP_LEFT.x + Areas::PADDING +  + Areas::LABEL_VALUE_SPACE;
+    float labelPositionX = TOP_LEFT_ANCHOR.x + Areas::PADDING;
+    float valuePositionX = TOP_LEFT_ANCHOR.x + Areas::PADDING +  + Areas::LABEL_VALUE_SPACE;
     float verticalOffset = Areas::PADDING;
 
     drawHelpBox();
@@ -133,7 +133,7 @@ void ConfigApp::draw() {
         ConfigOption &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, TextSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
-        labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
+        labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         window.draw(labelText);
 
         // Draw the value for this config option
@@ -141,7 +141,7 @@ void ConfigApp::draw() {
         valueStream << currentOption.currentValue;
         sf::Text valueText(font, valueStream.str(), TextSizes::VALUE);
         valueText.setFillColor(Colors::BLACK);
-        valueText.setPosition({valuePositionX, TOP_LEFT.y + verticalOffset});
+        valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         // If selected, draw background rectangle behind value
         if (currentOption.selected) {
             sf::FloatRect bounds = valueText.getGlobalBounds();
@@ -175,7 +175,7 @@ void ConfigApp::draw() {
     if (editModeEnabled) {
         sf::Text editModeEnabled(font, "EDIT_MODE", TextSizes::HELP);
         editModeEnabled.setFillColor(Colors::BLACK);
-        editModeEnabled.setPosition({BOTTOM_LEFT.x + Areas::PADDING, BOTTOM_LEFT.y - Areas::PADDING});
+        editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Areas::PADDING, BOTTOM_LEFT_ANCHOR.y - Areas::PADDING});
         window.draw(editModeEnabled);
     }
 
@@ -184,7 +184,7 @@ void ConfigApp::draw() {
         const float helpBoxWidth = Areas::MAIN_APP_WIDTH * 0.4;
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", TextSizes::HELP);
         unsavedChanges.setFillColor(Colors::BLACK);
-        unsavedChanges.setPosition({BOTTOM_RIGHT.x - helpBoxWidth - 100.f - Areas::PADDING, BOTTOM_LEFT.y - Areas::PADDING});
+        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Areas::PADDING, BOTTOM_LEFT_ANCHOR.y - Areas::PADDING});
         window.draw(unsavedChanges);
     }
 }
