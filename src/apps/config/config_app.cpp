@@ -86,13 +86,13 @@ void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void ConfigApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle(window, "Help");
+        drawModalRectangle(window, "HELP");
     }
 }
 
 void ConfigApp::handleSettings() {
     if (settingsOpen) {
-        drawModalRectangle(window, "Settings");
+        drawModalRectangle(window, "SETTINGS");
     }
 }
 

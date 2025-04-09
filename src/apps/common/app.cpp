@@ -20,4 +20,10 @@ void App::drawModalRectangle(sf::RenderWindow &window, std::string modalTitle){
     modalRectangle.setOutlineColor(Colors::GRAY);
     modalRectangle.setOutlineThickness(Lines::LINE_THICKNESS);
     window.draw(modalRectangle);
+
+    sf::Text title(font, appName + " " + modalTitle);
+    title.setCharacterSize(TextSizes::TITLE);
+    title.setFillColor(Colors::BLACK);
+    title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Areas::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Areas::PADDING});
+    window.draw(title);
 }
