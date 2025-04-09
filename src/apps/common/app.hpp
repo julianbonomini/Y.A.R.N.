@@ -3,11 +3,14 @@
 #include <string>
 #include "../../globals/theme.hpp"
 
+class StateMachine;
+
 class App {
 public:
     // Constructor to initialize the window, font, and tab name
-    App(const std::string &appName)
-        : appName(appName) {}
+    App(const std::string &appName, sf::RenderWindow &window, const sf::Font &font)
+        : appName(appName), window(window), font(font) {
+    }
 
     virtual ~App() = default;
 
@@ -32,8 +35,10 @@ public:
     std::string appName; // The name of the tab associated with this app
 
 protected:
-    // sf::RenderWindow& window;
-    // const sf::Font& font;
+    sf::RenderWindow &window;
+    const sf::Font &font;
+
+
     const sf::Vector2f TOP_LEFT_ANCHOR = sf::Vector2f(Areas::PADDING * 2, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING * 2);
     const sf::Vector2f TOP_RIGHT_ANCHOR = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING * 2, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING * 2);
     const sf::Vector2f BOTTOM_LEFT_ANCHOR = sf::Vector2f(Areas::PADDING * 2, Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT - Areas::PADDING - Areas::PADDING * 2);
@@ -42,7 +47,7 @@ protected:
 
     const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f( (Areas::WINDOW_WIDTH - Areas::MODAL_WIDTH) / 2, (Areas::WINDOW_HEIGHT - Areas::MODAL_HEIGHT) / 2);
 
-    sf::RectangleShape getModalRectangle();
+    void drawModalRectangle(sf::RenderWindow &window, std::string modalTitle);
 
     sf::FloatRect getGridBox(int colStart, int rowStart, int colSpan, int rowSpan);
 };

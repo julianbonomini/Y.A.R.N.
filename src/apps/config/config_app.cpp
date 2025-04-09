@@ -4,7 +4,7 @@
 #include <sstream>
 
 ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : App(appName), window(window), font(font), stateMachine(stateMachine) {
+    : App(appName, window, font), stateMachine(stateMachine) {
     initConfigFromDisk();
 }
 
@@ -86,13 +86,13 @@ void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void ConfigApp::handleHelp() {
     if (helpOpen) {
-        window.draw(getModalRectangle());
+        drawModalRectangle(window, "Help");
     }
 }
 
 void ConfigApp::handleSettings() {
     if (settingsOpen) {
-        window.draw(getModalRectangle());
+        drawModalRectangle(window, "Settings");
     }
 }
 

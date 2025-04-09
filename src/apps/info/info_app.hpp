@@ -18,8 +18,6 @@ public:
     void handleSettings() override;
 
 private:
-    sf::RenderWindow &window;
-    const sf::Font &font;
     std::vector<std::pair<std::string, std::string> > infoData;
 };
 

@@ -20,8 +20,6 @@ public:
     void handleSettings() override;
 
 private:
-    sf::RenderWindow &window;
-    const sf::Font &font;
     StateMachine &stateMachine;
 
     std::vector<ConfigOption> configOptions;

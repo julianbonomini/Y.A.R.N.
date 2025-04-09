@@ -4,7 +4,7 @@
 #include <string>
 
 InfoApp::InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
-    : App(appName), window(window), font(font) {
+    : App(appName, window, font) {
     infoData.push_back({"VERSION:", "Ostrich 0.0.1"});
     infoData.push_back({"CPU:", "Intel Core i7 3.6 GHz"});
     infoData.push_back({"RAM:", "16GB"});
@@ -20,13 +20,13 @@ void InfoApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void InfoApp::handleHelp() {
     if (helpOpen) {
-        window.draw(getModalRectangle());
+        drawModalRectangle(window, "Help");
     }
 }
 
 void InfoApp::handleSettings() {
     if (settingsOpen) {
-        window.draw(getModalRectangle());
+        drawModalRectangle(window, "Settings");
     }
 }
 

@@ -7,7 +7,7 @@
 
 
 MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
-    : App(appName), font(font), window(window) {
+    : App(appName, window, font), font(font), window(window) {
     loadMockData();
 }
 
@@ -20,13 +20,13 @@ void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void MarketApp::handleHelp() {
     if (helpOpen) {
-        window.draw(getModalRectangle());
+        drawModalRectangle(window, "Help");
     }
 }
 
 void MarketApp::handleSettings() {
     if (settingsOpen) {
-        window.draw(getModalRectangle());
+        drawModalRectangle(window, "Settings");
     }
 }
 
