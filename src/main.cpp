@@ -4,6 +4,7 @@
 #include "apps/config/config_app.hpp"
 #include "utils/network.hpp"
 #include "layout/toolbar/toolbar.hpp"
+#include "layout/footer/footer.hpp"
 #include "globals/theme.hpp"
 #include "apps/info/info_app.hpp"
 #include "apps/market/market_app.hpp"
@@ -26,9 +27,10 @@ int main() {
     }
     sf::Text text(font);
 
+    std::cout << "Initializing main layout..." << std::endl;
     Toolbar toolbar(window, font);
     MainWindow main_window(window, font);
-
+    Footer footer(window, font);
 
     std::cout << "Initializing apps..." << std::endl;
     std::vector<std::unique_ptr<App> > apps;
@@ -58,7 +60,9 @@ int main() {
         }
         window.clear(Colors::WHITE);
 
+        // Draw everything
         toolbar.draw();
+        footer.draw();
         main_window.draw(apps, stateMachine.getActiveTab());
 
         window.display();

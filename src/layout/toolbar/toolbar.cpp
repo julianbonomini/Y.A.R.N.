@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include "../../globals/theme.hpp"
-#include <iostream>
 
 Toolbar::Toolbar(sf::RenderWindow &window, const sf::Font &font)
     : window(window), font(font) {
