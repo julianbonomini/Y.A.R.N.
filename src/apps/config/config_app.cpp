@@ -86,23 +86,13 @@ void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void ConfigApp::handleHelp() {
     if (helpOpen) {
-        sf::RectangleShape debug({100.f, 100.f});
-        debug.setPosition({Areas::WINDOW_HEIGHT / 2 - 100.f, Areas::WINDOW_WIDTH / 2 - 100.f});
-        debug.setFillColor(sf::Color::Red);
-        debug.setOutlineColor(sf::Color::Red);
-        debug.setOutlineThickness(Lines::LINE_THICKNESS);
-        window.draw(debug);
+        window.draw(getModalRectangle());
     }
 }
 
 void ConfigApp::handleSettings() {
     if (settingsOpen) {
-        sf::RectangleShape debug({100.f, 100.f});
-        debug.setPosition({Areas::WINDOW_HEIGHT / 2 - 100.f, Areas::WINDOW_WIDTH / 2 - 100.f});
-        debug.setFillColor(sf::Color::Red);
-        debug.setOutlineColor(sf::Color::Green);
-        debug.setOutlineThickness(Lines::LINE_THICKNESS);
-        window.draw(debug);
+        window.draw(getModalRectangle());
     }
 }
 

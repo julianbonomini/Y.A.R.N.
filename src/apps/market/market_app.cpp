@@ -20,23 +20,13 @@ void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void MarketApp::handleHelp() {
     if (helpOpen) {
-        sf::RectangleShape debug({100.f, 100.f});
-        debug.setPosition({Areas::WINDOW_HEIGHT / 2 - 100.f, Areas::WINDOW_WIDTH / 2 - 100.f});
-        debug.setFillColor(sf::Color::Blue);
-        debug.setOutlineColor(sf::Color::Red);
-        debug.setOutlineThickness(Lines::LINE_THICKNESS);
-        window.draw(debug);
+        window.draw(getModalRectangle());
     }
 }
 
 void MarketApp::handleSettings() {
     if (settingsOpen) {
-        sf::RectangleShape debug({100.f, 100.f});
-        debug.setPosition({Areas::WINDOW_HEIGHT / 2 - 100.f, Areas::WINDOW_WIDTH / 2 - 100.f});
-        debug.setFillColor(sf::Color::Blue);
-        debug.setOutlineColor(sf::Color::Green);
-        debug.setOutlineThickness(Lines::LINE_THICKNESS);
-        window.draw(debug);
+        window.draw(getModalRectangle());
     }
 }
 

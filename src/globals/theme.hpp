@@ -26,6 +26,8 @@ namespace Areas {
     constexpr float TOOLBAR_OFFSET = 40.f + PADDING;
     constexpr float MAIN_APP_WIDTH = WINDOW_WIDTH - 2 * PADDING;
     constexpr float MAIN_APP_HEIGHT = WINDOW_HEIGHT - TOOLBAR_OFFSET - TAB_HEIGHT - 2 * PADDING - FOOTER_HEIGHT;
+    constexpr float MODAL_WIDTH = WINDOW_WIDTH; // modal has to cover the entire screen
+    constexpr float MODAL_HEIGHT = WINDOW_HEIGHT - TOOLBAR_HEIGHT - FOOTER_HEIGHT; // modal has to cover the entire screen
     constexpr float TEXT_SPACING = 25.f;
     constexpr float LABEL_VALUE_SPACE = 250.f;
 }

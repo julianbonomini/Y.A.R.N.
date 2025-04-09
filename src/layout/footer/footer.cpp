@@ -26,4 +26,9 @@ void Footer::draw() {
     menu.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     menu.setPosition({help.getGlobalBounds().position.x + help.getGlobalBounds().size.x + Areas::PADDING * 2, textY});
     window.draw(menu);
+
+    sf::Text close(font, "<ESC> CLOSE_MODAL", TextSizes::FOOTER);
+    close.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
+    close.setPosition({menu.getGlobalBounds().position.x + menu.getGlobalBounds().size.x + Areas::PADDING * 2, textY});
+    window.draw(close);
 }

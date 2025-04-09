@@ -12,3 +12,12 @@ sf::FloatRect App::getGridBox(int colStart, int rowStart, int colSpan = 1, int r
 
     return sf::FloatRect({x, y}, {width, height});
 }
+
+sf::RectangleShape App::getModalRectangle() {
+    sf::RectangleShape modalRectangle({Areas::MODAL_WIDTH, Areas::MODAL_HEIGHT});
+    modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
+    modalRectangle.setFillColor(Colors::WHITE);
+    modalRectangle.setOutlineColor(Colors::GRAY);
+    modalRectangle.setOutlineThickness(Lines::LINE_THICKNESS);
+    return modalRectangle;
+}

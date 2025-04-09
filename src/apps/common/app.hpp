@@ -39,5 +39,10 @@ protected:
     const sf::Vector2f BOTTOM_LEFT_ANCHOR = sf::Vector2f(Areas::PADDING * 2, Areas::WINDOW_HEIGHT - Areas::FOOTER_HEIGHT - Areas::PADDING - Areas::PADDING * 2);
     const sf::Vector2f BOTTOM_RIGHT_ANCHOR = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING * 2, Areas::WINDOW_HEIGHT - Areas::PADDING * 2);
 
+
+    const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f( (Areas::WINDOW_WIDTH - Areas::MODAL_WIDTH) / 2, (Areas::WINDOW_HEIGHT - Areas::MODAL_HEIGHT) / 2);
+
+    sf::RectangleShape getModalRectangle();
+
     sf::FloatRect getGridBox(int colStart, int rowStart, int colSpan, int rowSpan);
 };
