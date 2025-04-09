@@ -56,7 +56,7 @@ int main() {
                         apps[stateMachine.getActiveTab()].get()->settingsOpen = false;
                         apps[stateMachine.getActiveTab()].get()->helpOpen = false;
                         apps[stateMachine.getActiveTab()].get()->hasOpenModal = false;
-                        std::cout << "Help is open, closing it" << std::endl;
+                        // std::cout << "Help is open, closing it" << std::endl;
                     }
                     break;
                 }
@@ -67,12 +67,11 @@ int main() {
                         apps[stateMachine.getActiveTab()].get()->settingsOpen = false;
                         apps[stateMachine.getActiveTab()].get()->helpOpen = false;
                         apps[stateMachine.getActiveTab()].get()->hasOpenModal = false;
-                        std::cout << "Settings is open, closing it" << std::endl;
+                        // std::cout << "Settings is open, closing it" << std::endl;
                         break;
                     }
                     // If not Escape, pass through to app
-                    // TODO: this needs to handle things within settings, not the app itself
-                    std::cout << "Settings is open, sending strokes to app" << std::endl;
+                    // std::cout << "Settings is open, sending strokes to app" << std::endl;
                     apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
                     break;
                 }
@@ -83,7 +82,7 @@ int main() {
                     if (keyPressed->scancode == sf::Keyboard::Scan::A) {
                         int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
                         stateMachine.setActiveTab(new_active_tab);
-                        std::cout << "move left" << std::endl;
+                        // std::cout << "move left" << std::endl;
                         break;
                     }
 
@@ -91,7 +90,7 @@ int main() {
                     if (keyPressed->scancode == sf::Keyboard::Scan::S) {
                         int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
                         stateMachine.setActiveTab(new_active_tab);
-                        std::cout << "move right" << std::endl;
+                        // std::cout << "move right" << std::endl;
                         break;
                     }
 
@@ -99,7 +98,7 @@ int main() {
                     if (keyPressed->scancode == sf::Keyboard::Scan::H) {
                         apps[stateMachine.getActiveTab()].get()->hasOpenModal = true;
                         apps[stateMachine.getActiveTab()].get()->helpOpen = true;
-                        std::cout << "Open Help" << std::endl;
+                        // std::cout << "Open Help" << std::endl;
                         break;
                     }
 
@@ -107,11 +106,11 @@ int main() {
                     if (keyPressed->scancode == sf::Keyboard::Scan::C) {
                         apps[stateMachine.getActiveTab()].get()->hasOpenModal = true;
                         apps[stateMachine.getActiveTab()].get()->settingsOpen = true;
-                        std::cout << "Open settings" << std::endl;
+                        // std::cout << "Open settings" << std::endl;
                         break;
                     }
 
-                    std::cout << "Passthru" << std::endl;
+                    // std::cout << "Passthru" << std::endl;
                     apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
 
                 }
