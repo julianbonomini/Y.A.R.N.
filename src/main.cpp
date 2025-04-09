@@ -8,6 +8,7 @@
 #include "globals/theme.hpp"
 #include "apps/info/info_app.hpp"
 #include "apps/market/market_app.hpp"
+#include "apps/pomodoro/pomodoro_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine.hpp"
 
@@ -34,9 +35,11 @@ int main() {
 
     std::cout << "Initializing apps..." << std::endl;
     std::vector<std::unique_ptr<App> > apps;
-    apps.push_back(std::make_unique<MarketApp>(window, font, "Stonks"));
-    apps.push_back(std::make_unique<InfoApp>(window, font, "Info"));
-    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "Config"));
+    // These are ordered.
+    apps.push_back(std::make_unique<MarketApp>(window, font, "STOCK"));
+    apps.push_back(std::make_unique<PomodoroApp>(window, font, "PMD_CLOCK"));
+    apps.push_back(std::make_unique<InfoApp>(window, font, "INFO"));
+    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CONFIG"));
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {

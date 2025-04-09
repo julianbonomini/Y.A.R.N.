@@ -13,7 +13,6 @@ MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, const std::
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::T) {
-        std::cout << "DEBUG TOGGLE MARKET" << Areas::MAIN_APP_HEIGHT << std::endl;
         marketOpen = !marketOpen;
     }
 }
