@@ -22,7 +22,7 @@ void Footer::draw() {
     help.setPosition({move.getGlobalBounds().position.x + move.getGlobalBounds().size.x + Areas::PADDING * 2, textY});
     window.draw(help);
 
-    sf::Text menu(font, "<M> APP_MENU", TextSizes::FOOTER);
+    sf::Text menu(font, "<C> APP_SETTINGS", TextSizes::FOOTER);
     menu.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     menu.setPosition({help.getGlobalBounds().position.x + help.getGlobalBounds().size.x + Areas::PADDING * 2, textY});
     window.draw(menu);

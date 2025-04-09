@@ -11,9 +11,13 @@ class ConfigApp : public App {
 public:
     ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
+    void draw() override;
+
     void handleEvent(const sf::Event::KeyPressed &keyPressed) override;
 
-    void draw() override;
+    void handleHelp() override;
+
+    void handleSettings() override;
 
 private:
     sf::RenderWindow &window;

@@ -84,6 +84,28 @@ void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     }
 }
 
+void ConfigApp::handleHelp() {
+    if (helpOpen) {
+        sf::RectangleShape debug({100.f, 100.f});
+        debug.setPosition({Areas::WINDOW_HEIGHT / 2 - 100.f, Areas::WINDOW_WIDTH / 2 - 100.f});
+        debug.setFillColor(sf::Color::Red);
+        debug.setOutlineColor(sf::Color::Red);
+        debug.setOutlineThickness(Lines::LINE_THICKNESS);
+        window.draw(debug);
+    }
+}
+
+void ConfigApp::handleSettings() {
+    if (settingsOpen) {
+        sf::RectangleShape debug({100.f, 100.f});
+        debug.setPosition({Areas::WINDOW_HEIGHT / 2 - 100.f, Areas::WINDOW_WIDTH / 2 - 100.f});
+        debug.setFillColor(sf::Color::Red);
+        debug.setOutlineColor(sf::Color::Green);
+        debug.setOutlineThickness(Lines::LINE_THICKNESS);
+        window.draw(debug);
+    }
+}
+
 void ConfigApp::drawHelpBox() {
     // --- Content area ---
     auto contentAreaCoordinates = getGridBox(3, 0, 2, 4);
@@ -183,6 +205,9 @@ void ConfigApp::draw() {
         unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Areas::PADDING, BOTTOM_LEFT_ANCHOR.y - Areas::PADDING});
         window.draw(unsavedChanges);
     }
+
+    handleHelp();
+    handleSettings();
 }
 
 void ConfigApp::initConfigFromDisk() {

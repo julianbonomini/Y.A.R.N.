@@ -20,6 +20,10 @@ public:
 
     void draw() override;
 
+    void handleSettings() override;
+
+    void handleHelp() override;
+
     void update(float deltaTime);
 
 private:

@@ -43,18 +43,77 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
+
+
             // Global keys (tab switching)
             if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                if (keyPressed->scancode == sf::Keyboard::Scan::A) {
-                    int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
-                    stateMachine.setActiveTab(new_active_tab);
-                } else if (keyPressed->scancode == sf::Keyboard::Scan::S) {
-                    int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
-                    stateMachine.setActiveTab(new_active_tab);
-                } else {
-                    // Key is not globally used
-                    // Forward the event to the active app
+                auto activeApp = apps[stateMachine.getActiveTab()].get();
+                bool activeAppOpenModal = activeApp->hasOpenModal;
+
+                // If help modal is open, then don't take any keystrokes except Escape
+                if (activeAppOpenModal && apps[stateMachine.getActiveTab()].get()->helpOpen) {
+                    if (keyPressed->scancode == sf::Keyboard::Scan::Escape) {
+                        apps[stateMachine.getActiveTab()].get()->settingsOpen = false;
+                        apps[stateMachine.getActiveTab()].get()->helpOpen = false;
+                        apps[stateMachine.getActiveTab()].get()->hasOpenModal = false;
+                        std::cout << "Help is open, closing it" << std::endl;
+                    }
+                    break;
+                }
+
+                // If settings modal is open, pass strokes to app expect Escape
+                if (activeAppOpenModal && apps[stateMachine.getActiveTab()].get()->settingsOpen) {
+                    if (keyPressed->scancode == sf::Keyboard::Scan::Escape) {
+                        apps[stateMachine.getActiveTab()].get()->settingsOpen = false;
+                        apps[stateMachine.getActiveTab()].get()->helpOpen = false;
+                        apps[stateMachine.getActiveTab()].get()->hasOpenModal = false;
+                        std::cout << "Settings is open, closing it" << std::endl;
+                        break;
+                    }
+                    // If not Escape, pass through to app
+                    // TODO: this needs to handle things within settings, not the app itself
+                    std::cout << "Settings is open, sending strokes to app" << std::endl;
                     apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
+                    break;
+                }
+
+                // If no active modal is open, we can handle tab switching
+                if (!activeAppOpenModal) {
+                    // Tab left
+                    if (keyPressed->scancode == sf::Keyboard::Scan::A) {
+                        int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
+                        stateMachine.setActiveTab(new_active_tab);
+                        std::cout << "move left" << std::endl;
+                        break;
+                    }
+
+                    // Tab right
+                    if (keyPressed->scancode == sf::Keyboard::Scan::S) {
+                        int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
+                        stateMachine.setActiveTab(new_active_tab);
+                        std::cout << "move right" << std::endl;
+                        break;
+                    }
+
+                    // Open help
+                    if (keyPressed->scancode == sf::Keyboard::Scan::H) {
+                        apps[stateMachine.getActiveTab()].get()->hasOpenModal = true;
+                        apps[stateMachine.getActiveTab()].get()->helpOpen = true;
+                        std::cout << "Open Help" << std::endl;
+                        break;
+                    }
+
+                    // Open settings
+                    if (keyPressed->scancode == sf::Keyboard::Scan::C) {
+                        apps[stateMachine.getActiveTab()].get()->hasOpenModal = true;
+                        apps[stateMachine.getActiveTab()].get()->settingsOpen = true;
+                        std::cout << "Open settings" << std::endl;
+                        break;
+                    }
+
+                    std::cout << "Passthru" << std::endl;
+                    apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
+
                 }
             }
         }

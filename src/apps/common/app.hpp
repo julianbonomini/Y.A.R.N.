@@ -9,12 +9,24 @@ public:
     App(const std::string &appName)
         : appName(appName) {}
 
-    virtual void handleEvent(const sf::Event::KeyPressed& keyPressed) = 0;
-
     virtual ~App() = default;
 
     // Virtual function that all apps must implement
     virtual void draw() = 0;
+
+
+    bool hasOpenModal = false;
+    bool settingsOpen = false;
+    bool helpOpen = false;
+
+    // Virtual function that all apps must implement
+    virtual void handleEvent(const sf::Event::KeyPressed& keyPressed) = 0;
+
+    // Virtual function that all apps must implement
+    virtual void handleSettings() = 0;
+
+    // Virtual function that all apps must implement
+    virtual void handleHelp() = 0;
 
     // Public variables
     std::string appName; // The name of the tab associated with this app
