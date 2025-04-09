@@ -8,13 +8,21 @@
 #pragma once
 #include <SFML/Graphics/Color.hpp>
 
+namespace Hardware {
+    constexpr int SCREEN_WIDTH = 800;
+    constexpr int SCREEN_HEIGHT = 480;
+    // constexpr int SCREEN_WIDTH = 1920;
+    // constexpr int SCREEN_HEIGHT = 1280;
+}
+
 namespace Areas {
-    constexpr float WINDOW_WIDTH = 800.f;
-    constexpr float WINDOW_HEIGHT = 480.f;
+    constexpr float WINDOW_WIDTH = Hardware::SCREEN_WIDTH;
+    constexpr float WINDOW_HEIGHT = Hardware::SCREEN_HEIGHT;
     constexpr float PADDING = 8.f;
     constexpr float TAB_WIDTH = 120.f;
     constexpr float TAB_HEIGHT = 30.f;
-    constexpr float FOOTER_HEIGHT = 30.f;
+    constexpr float FOOTER_HEIGHT = WINDOW_HEIGHT * 0.08 > 50.f ? 50.f : WINDOW_HEIGHT * 0.08;
+    constexpr float TOOLBAR_HEIGHT = 32.f;
     constexpr float TOOLBAR_OFFSET = 40.f + PADDING;
     constexpr float MAIN_APP_WIDTH = WINDOW_WIDTH - 2 * PADDING;
     constexpr float MAIN_APP_HEIGHT = WINDOW_HEIGHT - TOOLBAR_OFFSET - TAB_HEIGHT - 2 * PADDING - FOOTER_HEIGHT;
@@ -31,6 +39,7 @@ namespace Grid {
 }
 
 namespace TextSizes {
+    constexpr int TOOLBAR = 12;
     constexpr int TITLE = 15;
     constexpr int TAB = 15;
     constexpr int DESCRITPION = 8;

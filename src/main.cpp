@@ -17,7 +17,7 @@ int main() {
     std::cout << "Initializing state machine from disk..." << std::endl;
     StateMachine stateMachine(0);
 
-    auto window = sf::RenderWindow(sf::VideoMode({800, 480}), "Noop", sf::Style::Close, sf::State::Windowed);
+    auto window = sf::RenderWindow(sf::VideoMode({Hardware::SCREEN_WIDTH, Hardware::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/FiraCodeNerdFont-Medium.ttf")) {

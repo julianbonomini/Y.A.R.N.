@@ -13,7 +13,7 @@ void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int active
     drawAppArea();
 
     // --- Tabs ---
-    // Needs to be after App Area beacuse it has to cover it
+    // Needs to be after App Area because it has to cover it
     drawTabs(apps, activeTab);
 
     drawActiveApp(apps[activeTab].get());
