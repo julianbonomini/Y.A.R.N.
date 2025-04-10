@@ -5,6 +5,7 @@ uniform float CRT_CURVE_AMNTx;  // Curve amount on x
 uniform float CRT_CURVE_AMNTy;  // Curve amount on y
 uniform float scanLineMultiplier;  // SCAN_LINE_MULT value, adjusted for SFML
 uniform vec4 colorMultiplier;  // Equivalent to 'v_color' in SFML (can be used for color tinting)
+uniform float flickerFactor;  // Control flicker (0: no flicker, 1: full flicker)
 
 void main() {
     vec2 tc = gl_TexCoord[0].xy;
@@ -31,6 +32,11 @@ void main() {
 
     // Add scanline effect (sin wave for darkening effect)
     cta.rgb += sin(tc.y * scanLineMultiplier) * 0.02;
+
+    // Flicker effect logic
+    if (flickerFactor > 0.0) {
+        cta = vec4(0.5);  // Make the screen go black when flicker is triggered
+    }
 
     // Ensure the coordinates are within bounds
     if (tc.y > 1.0 || tc.x < 0.0 || tc.x > 1.0 || tc.y < 0.0) {

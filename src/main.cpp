@@ -16,6 +16,7 @@
 void log_separator() {
     std::cout << "************************************" << std::endl << std::endl << std::endl;
 }
+
 void log_attention_grabber() {
     std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 }
@@ -29,7 +30,8 @@ int main() {
     log_separator();
     StateMachine stateMachine(0);
 
-    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
+    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
+                                   sf::Style::Close, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
@@ -46,7 +48,7 @@ int main() {
     // Set up the sprite for rendering the texture
     sf::Sprite shaderSprite(renderTexture.getTexture());
 
-    if (!sf::Shader::isAvailable()){
+    if (!sf::Shader::isAvailable()) {
         log_attention_grabber();
         std::cout << "No shaders available" << std::endl;
         return 1;
@@ -75,7 +77,6 @@ int main() {
 
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
-    sf::Clock clock;
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -105,7 +106,6 @@ int main() {
                         break;
                     }
                     break;
-
                 }
 
                 // If settings modal is open, pass strokes to app expect Escape
@@ -143,7 +143,7 @@ int main() {
                     // Open settings
                     if (keyPressed->scancode == sf::Keyboard::Scan::C) {
                         // Check if app accepts config
-                        if(dynamic_cast<AppWithConfig*>(activeApp)) {
+                        if (dynamic_cast<AppWithConfig *>(activeApp)) {
                             activeApp->setHasOpenModal(true);
                             activeApp->setSettingsOpen(true);
                             break;
@@ -153,11 +153,13 @@ int main() {
 
                     // std::cout << "Passthru" << std::endl;
                     apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
-
                 }
             }
         }
 
+        // Control the update frequency (once every 0.1 seconds)
+        // if (loopClock.getElapsedTime().asSeconds() >= 0.001f) {
+        // loopClock.restart();  // Reset the clock to track the next 0.1s period
         renderTexture.clear(Colors::WHITE);
 
         // Draw everything to the render texture (pass renderTexture instead of window)
@@ -166,20 +168,31 @@ int main() {
         main_window.draw(apps, stateMachine.getActiveTab());
 
         // Apply any post-processing to the render texture (CRT effect)
-        renderTexture.display();  // Finalize render texture
+        renderTexture.display(); // Finalize render texture
 
-        crtShader.setUniform("time", (float)clock.getElapsedTime().asSeconds());
+        // Control flicker with a random chance (1 in 100)
+        float flickerFactor = 0.0f; // Default is no flicker
+        if (rand() % 1000 == 0) {
+            // 1 in 100 chance to trigger flicker
+            flickerFactor = 1.0f;
+        }
+        // Send parameters to shader
+        crtShader.setUniform("flickerFactor", flickerFactor);
+
         // Set adjustable parameters
-        crtShader.setUniform("CRT_CURVE_AMNTx", 0.1f);  // Adjust curvature on x-axis
-        crtShader.setUniform("CRT_CURVE_AMNTy", 0.1f);  // Adjust curvature on y-axis
-        crtShader.setUniform("scanLineMultiplier", 1250.0f);  // Set the scanline multiplier (original SCAN_LINE_MULT)
-        crtShader.setUniform("colorMultiplier", sf::Glsl::Vec4(1.0f, 1.0f, 1.0f, 1.0f));  // Color multiplier (use to adjust tint)
+        crtShader.setUniform("CRT_CURVE_AMNTx", 0.05f); // Adjust curvature on x-axis
+        crtShader.setUniform("CRT_CURVE_AMNTy", 0.05f); // Adjust curvature on y-axis
+        crtShader.setUniform("scanLineMultiplier", 1250.0f); // Set the scanline multiplier (original SCAN_LINE_MULT)
+        crtShader.setUniform("colorMultiplier", sf::Glsl::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        // Color multiplier (use to adjust tint)
 
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        window.draw(shaderSprite, &crtShader);  // Render the textured sprite with CRT effect
+        window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         window.display();
+
+        // }
     }
 
     return 0;
