@@ -80,7 +80,7 @@ void MarketApp::drawStandaloneSymbols() {
     const float startX = backgroundBoxCoordinates.position.x;
     const float startY = backgroundBoxCoordinates.position.y;
 
-    const float labelX = startX + Areas::PADDING;
+    const float labelX = startX + Layout::PADDING;
     const float priceX = labelX + 120.f;
     const float changeX = priceX + 100.f;
 
@@ -89,14 +89,14 @@ void MarketApp::drawStandaloneSymbols() {
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
-    backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
+    backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(backgroundBox);
 
     // Header row
     drawSymbolsHeaderRow(startY, labelX, priceX, changeX);
 
     // Stock rows
-    float currentY = startY + Areas::PADDING + rowHeight;
+    float currentY = startY + Layout::PADDING + rowHeight;
 
     drawLabelsAndValues(stocks, rowHeight, labelX, priceX, changeX, currentY);
 }
@@ -108,7 +108,7 @@ void MarketApp::drawMarketTrackers() {
     const float startX = backgroundBoxCoordinates.position.x;
     const float startY = backgroundBoxCoordinates.position.y;
 
-    const float labelX = startX + Areas::PADDING;
+    const float labelX = startX + Layout::PADDING;
     const float priceX = labelX + 120.f;
     const float changeX = priceX + 100.f;
 
@@ -117,13 +117,13 @@ void MarketApp::drawMarketTrackers() {
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
-    backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
+    backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(backgroundBox);
 
     drawSymbolsHeaderRow(startY, labelX, priceX, changeX);
 
     // Stock rows
-    float currentY = startY + Areas::PADDING + rowHeight;
+    float currentY = startY + Layout::PADDING + rowHeight;
 
     drawLabelsAndValues(marketTrackers, rowHeight, labelX, priceX, changeX, currentY);
 }
@@ -139,7 +139,7 @@ void MarketApp::drawMarketStatus() {
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(backgroundColor);
     backgroundBox.setOutlineColor(Colors::GRAY);
-    backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
+    backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(backgroundBox);
 
     // Draw market status text (OPEN or CLOSED)
@@ -171,7 +171,7 @@ void MarketApp::drawMarketSession() {
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(backgroundColor);
     backgroundBox.setOutlineColor(Colors::GRAY);
-    backgroundBox.setOutlineThickness(Lines::LINE_THICKNESS);
+    backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(backgroundBox);
 
     // Draw market status text (OPEN or CLOSED)
@@ -195,21 +195,21 @@ void MarketApp::drawMarketSession() {
 void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, const float priceX, const float changeX) {
     // Header row
     sf::Text headerSymbol(font, "SYMBOL");
-    headerSymbol.setPosition({labelX, startY + Areas::PADDING});
+    headerSymbol.setPosition({labelX, startY + Layout::PADDING});
     headerSymbol.setFillColor(Colors::BLACK);
-    headerSymbol.setCharacterSize(TextSizes::LABEL);
+    headerSymbol.setCharacterSize(FontSizes::LABEL);
     window.draw(headerSymbol);
 
     sf::Text headerPrice(font, "PRICE");
-    headerPrice.setPosition({priceX, startY + Areas::PADDING});
+    headerPrice.setPosition({priceX, startY + Layout::PADDING});
     headerPrice.setFillColor(Colors::BLACK);
-    headerPrice.setCharacterSize(TextSizes::LABEL);
+    headerPrice.setCharacterSize(FontSizes::LABEL);
     window.draw(headerPrice);
 
     sf::Text headerChange(font, "CHANGE");
-    headerChange.setPosition({changeX, startY + Areas::PADDING});
+    headerChange.setPosition({changeX, startY + Layout::PADDING});
     headerChange.setFillColor(Colors::BLACK);
-    headerChange.setCharacterSize(TextSizes::LABEL);
+    headerChange.setCharacterSize(FontSizes::LABEL);
     window.draw(headerChange);
 }
 
@@ -219,7 +219,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         sf::Text labelText(font, symbol.ticker);
         labelText.setPosition({labelX, currentY});
         labelText.setFillColor(Colors::BLACK);
-        labelText.setCharacterSize(TextSizes::LABEL);
+        labelText.setCharacterSize(FontSizes::LABEL);
         window.draw(labelText);
 
         // Price
@@ -228,7 +228,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         sf::Text priceText(font, priceStream.str());
         priceText.setPosition({priceX, currentY});
         priceText.setFillColor(Colors::BLACK);
-        priceText.setCharacterSize(TextSizes::LABEL);
+        priceText.setCharacterSize(FontSizes::LABEL);
         window.draw(priceText);
 
         // Change %
@@ -240,7 +240,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         sf::Text changeText(font, changeStream.str());
         changeText.setPosition({changeX, currentY});
         changeText.setFillColor(Colors::BLACK);
-        changeText.setCharacterSize(TextSizes::LABEL);
+        changeText.setCharacterSize(FontSizes::LABEL);
         window.draw(changeText);
 
         currentY += rowHeight;

@@ -5,25 +5,25 @@
 sf::FloatRect App::getGridBox(int colStart, int rowStart, int colSpan = 1, int rowSpan = 1) {
     const sf::Vector2f anchor = TOP_LEFT_ANCHOR;
 
-    float x = anchor.x + colStart * (Grid::CELL_WIDTH + Areas::PADDING);
-    float y = anchor.y + rowStart * (Grid::CELL_HEIGHT + Areas::PADDING);
-    float width = Grid::CELL_WIDTH * colSpan + Areas::PADDING * (colSpan - 1);
-    float height = Grid::CELL_HEIGHT * rowSpan + Areas::PADDING * (rowSpan - 1);
+    float x = anchor.x + colStart * (AppGridLayout::CELL_WIDTH + Layout::PADDING);
+    float y = anchor.y + rowStart * (AppGridLayout::CELL_HEIGHT + Layout::PADDING);
+    float width = AppGridLayout::CELL_WIDTH * colSpan + Layout::PADDING * (colSpan - 1);
+    float height = AppGridLayout::CELL_HEIGHT * rowSpan + Layout::PADDING * (rowSpan - 1);
 
     return sf::FloatRect({x, y}, {width, height});
 }
 
 void App::drawModalRectangle(std::string modalTitle){
-    sf::RectangleShape modalRectangle({Areas::MODAL_WIDTH, Areas::MODAL_HEIGHT});
+    sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
     modalRectangle.setFillColor(Colors::WHITE);
     modalRectangle.setOutlineColor(Colors::GRAY);
-    modalRectangle.setOutlineThickness(Lines::LINE_THICKNESS);
+    modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(modalRectangle);
 
     sf::Text title(font, appName + " " + modalTitle);
-    title.setCharacterSize(TextSizes::TITLE);
+    title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(Colors::BLACK);
-    title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Areas::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Areas::PADDING});
+    title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     window.draw(title);
 }

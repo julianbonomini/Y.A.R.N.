@@ -1,14 +1,10 @@
-//
-// Created by Julian Bonomini on 06/04/2025.
-//
-
 #ifndef THEME_H
 #define THEME_H
 
 #pragma once
 #include <SFML/Graphics/Color.hpp>
 
-namespace Hardware {
+namespace DisplayConfig {
     constexpr int SCREEN_WIDTH = 800; // EPAPER
     constexpr int SCREEN_HEIGHT = 480; // EPAPER
     // constexpr int SCREEN_WIDTH = 1024; // LCD
@@ -17,9 +13,9 @@ namespace Hardware {
     // constexpr int SCREEN_HEIGHT = 1280;
 }
 
-namespace Areas {
-    constexpr float WINDOW_WIDTH = Hardware::SCREEN_WIDTH;
-    constexpr float WINDOW_HEIGHT = Hardware::SCREEN_HEIGHT;
+namespace Layout {
+    constexpr float WINDOW_WIDTH = DisplayConfig::SCREEN_WIDTH;
+    constexpr float WINDOW_HEIGHT = DisplayConfig::SCREEN_HEIGHT;
     constexpr float PADDING = 8.f;
     constexpr float TAB_WIDTH = 120.f;
     constexpr float TAB_HEIGHT = 30.f;
@@ -34,15 +30,15 @@ namespace Areas {
     constexpr float LABEL_VALUE_SPACE = 250.f;
 }
 
-namespace Grid {
+namespace AppGridLayout {
     constexpr int GRID_COLS = 5;
     constexpr int GRID_ROWS = 4;
 
-    constexpr float CELL_WIDTH = (Areas::MAIN_APP_WIDTH - (GRID_COLS + 1) * Areas::PADDING) / GRID_COLS;
-    constexpr float CELL_HEIGHT = (Areas::MAIN_APP_HEIGHT - (GRID_ROWS + 1) * Areas::PADDING) / GRID_ROWS;
+    constexpr float CELL_WIDTH = (Layout::MAIN_APP_WIDTH - (GRID_COLS + 1) * Layout::PADDING) / GRID_COLS;
+    constexpr float CELL_HEIGHT = (Layout::MAIN_APP_HEIGHT - (GRID_ROWS + 1) * Layout::PADDING) / GRID_ROWS;
 }
 
-namespace TextSizes {
+namespace FontSizes {
     constexpr int TOOLBAR = 12;
     constexpr int FOOTER = 12;
     constexpr int TITLE = 15;
@@ -60,7 +56,7 @@ namespace Colors {
     constexpr sf::Color DEBUG = sf::Color::Red;
 }
 
-namespace Lines {
+namespace LineStyles {
     constexpr float BOX_LINE_THICKNESS = 2.f;
     constexpr float LINE_THICKNESS = 2.f;
 }

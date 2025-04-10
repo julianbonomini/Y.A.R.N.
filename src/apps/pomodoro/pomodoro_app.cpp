@@ -139,12 +139,12 @@ void PomodoroApp::drawStartStopButton() {
     rect.setPosition(startStopBox.position);
     rect.setFillColor(Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
-    rect.setOutlineThickness(Lines::LINE_THICKNESS);
+    rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(rect);
 
     sf::Text text(font, "START/PAUSE");
     text.setFillColor(Colors::BLACK);
-    text.setCharacterSize(TextSizes::LABEL);
+    text.setCharacterSize(FontSizes::LABEL);
 
     // Center text
     sf::FloatRect textBounds = text.getLocalBounds();
@@ -160,11 +160,11 @@ void PomodoroApp::drawResetButton() {
     rect.setPosition(box.position);
     rect.setFillColor(Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
-    rect.setOutlineThickness(Lines::LINE_THICKNESS);
+    rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(rect);
     sf::Text text(font, "RESET");
     text.setFillColor(Colors::BLACK);
-    text.setCharacterSize(TextSizes::LABEL);
+    text.setCharacterSize(FontSizes::LABEL);
     sf::FloatRect textBounds = text.getLocalBounds();
     text.setOrigin({textBounds.position.x + textBounds.size.x / 2, textBounds.position.y + textBounds.size.y / 2});
     text.setPosition(box.position + box.size / 2.f);
@@ -177,7 +177,7 @@ void PomodoroApp::drawWorkClock() {
     rect.setPosition(box.position);
     rect.setFillColor(isWorkTime ? Colors::GRAY : Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
-    rect.setOutlineThickness(Lines::LINE_THICKNESS);
+    rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(rect);
 
     std::stringstream counterStream;
@@ -189,8 +189,8 @@ void PomodoroApp::drawWorkClock() {
 
     sf::Text label(font, "WORK TIMER");
     label.setFillColor(isWorkTime ? Colors::WHITE : Colors::BLACK);
-    label.setCharacterSize(TextSizes::LABEL);
-    label.setPosition({box.position + sf::Vector2f(Areas::PADDING, Areas::PADDING)});
+    label.setCharacterSize(FontSizes::LABEL);
+    label.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     window.draw(label);
 
     sf::Text counter(font, counterStream.str());
@@ -208,7 +208,7 @@ void PomodoroApp::drawPlayClock() {
     rect.setPosition(box.position);
     rect.setFillColor(!isWorkTime ? Colors::GRAY : Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
-    rect.setOutlineThickness(Lines::LINE_THICKNESS);
+    rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(rect);
 
     std::stringstream counterStream;
@@ -219,7 +219,7 @@ void PomodoroApp::drawPlayClock() {
 
     sf::Text text(font, "BREAK TIMER");
     text.setFillColor(!isWorkTime ? Colors::WHITE : Colors::BLACK);
-    text.setCharacterSize(TextSizes::LABEL);
+    text.setCharacterSize(FontSizes::LABEL);
     text.setPosition({box.position + sf::Vector2f(10, 10)});
     window.draw(text);
 

@@ -3,32 +3,32 @@
 
 
 sf::FloatRect AppWithConfig::drawSettings() const {
-    sf::RectangleShape modalRectangle({Areas::MODAL_WIDTH, Areas::MODAL_HEIGHT});
+    sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
     modalRectangle.setFillColor(Colors::WHITE);
     modalRectangle.setOutlineColor(Colors::GRAY);
-    modalRectangle.setOutlineThickness(Lines::LINE_THICKNESS);
+    modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(modalRectangle);
     sf::FloatRect bounds = modalRectangle.getGlobalBounds();
 
     sf::Text title(font, appName + " SETTINGS");
-    title.setCharacterSize(TextSizes::TITLE);
+    title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(Colors::BLACK);
-    title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Areas::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Areas::PADDING});
+    title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     window.draw(title);
 
     return bounds;
 }
 
 void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
-    float labelPositionX = bounds.position.x + Areas::PADDING * 2;
-    float valuePositionX = bounds.position.x + Areas::PADDING * 2 + +Areas::LABEL_VALUE_SPACE;
-    float verticalOffset = Areas::PADDING;
+    float labelPositionX = bounds.position.x + Layout::PADDING * 2;
+    float valuePositionX = bounds.position.x + Layout::PADDING * 2 + +Layout::LABEL_VALUE_SPACE;
+    float verticalOffset = Layout::PADDING;
     // Loop through each config option dynamically
     for (size_t i = 0; i < configOptions.size(); ++i) {
         // Draw the label
         BaseConfigOptions &currentOption = configOptions[i];
-        sf::Text labelText(font, currentOption.label, TextSizes::LABEL);
+        sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
         labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         window.draw(labelText);
@@ -36,7 +36,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
         // Draw the value for this config option
         std::stringstream valueStream;
         valueStream << currentOption.currentValue;
-        sf::Text valueText(font, valueStream.str(), TextSizes::VALUE);
+        sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
         valueText.setFillColor(Colors::BLACK);
         valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         // If selected, draw background rectangle behind value
@@ -56,14 +56,14 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
         }
 
         // Increment the vertical offset to position the next label/value pair
-        verticalOffset += Areas::TEXT_SPACING;
+        verticalOffset += Layout::TEXT_SPACING;
     }
 
     // Draw if in changes:
     if (unsavedChangesFlag) {
-        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", TextSizes::HELP);
+        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
         unsavedChanges.setFillColor(Colors::BLACK);
-        unsavedChanges.setPosition({labelPositionX, bounds.position.y + bounds.size.y - unsavedChanges.getGlobalBounds().size.y - Areas::PADDING});
+        unsavedChanges.setPosition({labelPositionX, bounds.position.y + bounds.size.y - unsavedChanges.getGlobalBounds().size.y - Layout::PADDING});
         window.draw(unsavedChanges);
     }
 }

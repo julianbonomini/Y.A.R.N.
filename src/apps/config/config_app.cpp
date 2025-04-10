@@ -103,7 +103,7 @@ void ConfigApp::drawHelpBox() {
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
     contentArea.setFillColor(Colors::WHITE);
     contentArea.setOutlineColor(Colors::GRAY);
-    contentArea.setOutlineThickness(Lines::LINE_THICKNESS);
+    contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(contentArea);
 
     // Help text
@@ -115,23 +115,23 @@ void ConfigApp::drawHelpBox() {
         "<LEFT|RIGHT>          : Change values"
     };
 
-    float textX = contentAreaCoordinates.position.x + Areas::PADDING;
-    float textY = contentAreaCoordinates.position.y + Areas::PADDING;
+    float textX = contentAreaCoordinates.position.x + Layout::PADDING;
+    float textY = contentAreaCoordinates.position.y + Layout::PADDING;
 
     for (const auto& line : helpLines) {
-        sf::Text text(font, line, TextSizes::HELP);
+        sf::Text text(font, line, FontSizes::HELP);
         text.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
         text.setPosition({textX, textY});
         window.draw(text);
-        textY += Areas::TEXT_SPACING; // spacing between lines
+        textY += Layout::TEXT_SPACING; // spacing between lines
     }
 
 }
 
 void ConfigApp::draw() {
-    float labelPositionX = TOP_LEFT_ANCHOR.x + Areas::PADDING;
-    float valuePositionX = TOP_LEFT_ANCHOR.x + Areas::PADDING +  + Areas::LABEL_VALUE_SPACE;
-    float verticalOffset = Areas::PADDING;
+    float labelPositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING;
+    float valuePositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING +  + Layout::LABEL_VALUE_SPACE;
+    float verticalOffset = Layout::PADDING;
 
     drawHelpBox();
 
@@ -139,7 +139,7 @@ void ConfigApp::draw() {
     for (size_t i = 0; i < configOptions.size(); ++i) {
         // Draw the label
         BaseConfigOptions &currentOption = configOptions[i];
-        sf::Text labelText(font, currentOption.label, TextSizes::LABEL);
+        sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
         labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         window.draw(labelText);
@@ -147,7 +147,7 @@ void ConfigApp::draw() {
         // Draw the value for this config option
         std::stringstream valueStream;
         valueStream << currentOption.currentValue;
-        sf::Text valueText(font, valueStream.str(), TextSizes::VALUE);
+        sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
         valueText.setFillColor(Colors::BLACK);
         valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
         // If selected, draw background rectangle behind value
@@ -175,24 +175,24 @@ void ConfigApp::draw() {
         }
 
         // Increment the vertical offset to position the next label/value pair
-        verticalOffset += Areas::TEXT_SPACING;
+        verticalOffset += Layout::TEXT_SPACING;
     }
 
 
     // Draw if in edit mode:
     if (editModeEnabled) {
-        sf::Text editModeEnabled(font, "EDIT_MODE", TextSizes::HELP);
+        sf::Text editModeEnabled(font, "EDIT_MODE", FontSizes::HELP);
         editModeEnabled.setFillColor(Colors::BLACK);
-        editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Areas::PADDING, BOTTOM_LEFT_ANCHOR.y - Areas::PADDING});
+        editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         window.draw(editModeEnabled);
     }
 
     // Draw if in changes:
     if (unsavedChangesFlag) {
-        const float helpBoxWidth = Areas::MAIN_APP_WIDTH * 0.4;
-        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", TextSizes::HELP);
+        const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
+        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
         unsavedChanges.setFillColor(Colors::BLACK);
-        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Areas::PADDING, BOTTOM_LEFT_ANCHOR.y - Areas::PADDING});
+        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         window.draw(unsavedChanges);
     }
 

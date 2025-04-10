@@ -29,7 +29,7 @@ int main() {
     log_separator();
     StateMachine stateMachine(0);
 
-    auto window = sf::RenderWindow(sf::VideoMode({Hardware::SCREEN_WIDTH, Hardware::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
+    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/FiraCodeNerdFont-Medium.ttf")) {
