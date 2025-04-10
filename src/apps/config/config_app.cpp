@@ -4,7 +4,7 @@
 #include <sstream>
 
 ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : AppWithConfig(window, font, stateMachine, appName) {
+    : App(appName, window, font), stateMachine(stateMachine) {
     initConfigFromDisk();
 }
 

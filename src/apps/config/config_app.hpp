@@ -7,7 +7,7 @@
 
 #include "../common/app_with_config.hpp"
 
-class ConfigApp : public AppWithConfig {
+class ConfigApp : public App {
 public:
     ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
@@ -20,6 +20,8 @@ public:
     void handleSettings() override;
 
 private:
+    StateMachine &stateMachine;
+    std::vector<BaseConfigOptions> configOptions;
     bool editModeEnabled = false;
     bool unsavedChangesFlag = false;
 
@@ -33,7 +35,7 @@ private:
 
     void changeOptionLeft();
 
-    void initConfigFromDisk() override;
+    void initConfigFromDisk();
 
     void saveConfigToDisk();
 };

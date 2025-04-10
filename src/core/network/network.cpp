@@ -1,5 +1,5 @@
-#include "network.hpp"
-#include "execute_utils.hpp"
+#include "../utils/network.hpp"
+#include "../utils/execute_utils.hpp"
 
 
 std::string Network::getIp() {

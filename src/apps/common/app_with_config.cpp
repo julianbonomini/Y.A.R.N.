@@ -167,14 +167,14 @@ void AppWithConfig::changeOptionLeft() {
 }
 
 void AppWithConfig::closeWithoutChanges() {
-    std::cout << "Closing config - no changes" << std::endl;
+    app_log("Closing config - no changes");
     setSettingsOpen(false);
     setHasOpenModal(false);
     unsavedChangesFlag = false;
 }
 
 void AppWithConfig::closeWithUnsavedChanges() {
-    std::cout << "Closing config w/unsaved changes - reset from disk" << std::endl;
+    app_log("Closing config w/unsaved changes - reset from disk")
     setSettingsOpen(false);
     setHasOpenModal(false);
     unsavedChangesFlag = false;
@@ -182,7 +182,7 @@ void AppWithConfig::closeWithUnsavedChanges() {
 }
 
 void AppWithConfig::saveAndClose(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &toBeSaved) {
-    std::cout << "Saving config to disk - reset from disk" << std::endl;
+    app_log("Saving config to disk - reset from disk")
     stateMachine.saveAppConfigToDisk(appConfigType, toBeSaved);
     unsavedChangesFlag = false;
     initConfigFromDisk();

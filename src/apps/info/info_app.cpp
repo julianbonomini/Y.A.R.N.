@@ -56,6 +56,10 @@ void InfoApp::draw() {
         verticalOffset += Areas::TEXT_SPACING; // Adjust spacing between each pair
     }
 
-    handleHelp();
-    handleSettings();
+    if (isSettingsOpen()) {
+        handleSettings();
+    }
+    if (isHelpOpen()) {
+        handleHelp();
+    }
 }

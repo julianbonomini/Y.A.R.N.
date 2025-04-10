@@ -92,23 +92,7 @@ int main() {
 
                 // If settings modal is open, pass strokes to app expect Escape
                 if (activeAppOpenModal && activeApp->isSettingsOpen()) {
-                    // if (keyPressed->scancode == sf::Keyboard::Scan::Escape) {
-                    //     activeApp->setSettingsOpen(false);
-                    //     activeApp->setHelpOpen(false);
-                    //     activeApp->setHasOpenModal(false);
-                    //     // std::cout << "Settings is open, closing it" << std::endl;
-                    //     break;
-                    // }
-                    // if (keyPressed->scancode == sf::Keyboard::Scan::C) {
-                    //     activeApp->setSettingsOpen(false);
-                    //     activeApp->setHelpOpen(false);
-                    //     activeApp->setHasOpenModal(false);
-                    //     // std::cout << "Settings is open, closing it" << std::endl;
-                    //     break;
-                    // }
-                    // If not Escape, pass through to app
-                    // std::cout << "Settings is open, sending strokes to app" << std::endl;
-                    apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
+                    activeApp->handleEvent(*keyPressed);
                     break;
                 }
 
@@ -140,9 +124,12 @@ int main() {
 
                     // Open settings
                     if (keyPressed->scancode == sf::Keyboard::Scan::C) {
-                        activeApp->setHasOpenModal(true);
-                        activeApp->setSettingsOpen(true);
-                        // std::cout << "Open settings" << std::endl;
+                        // Check if app accepts config
+                        if(AppWithConfig* v = dynamic_cast<AppWithConfig*>(activeApp)) {
+                            activeApp->setHasOpenModal(true);
+                            activeApp->setSettingsOpen(true);
+                            break;
+                        }
                         break;
                     }
 
