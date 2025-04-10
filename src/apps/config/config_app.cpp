@@ -138,7 +138,7 @@ void ConfigApp::draw() {
     // Loop through each config option dynamically
     for (size_t i = 0; i < configOptions.size(); ++i) {
         // Draw the label
-        ConfigOption &currentOption = configOptions[i];
+        BaseConfigOptions &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, TextSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
         labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
@@ -201,11 +201,11 @@ void ConfigApp::draw() {
 }
 
 void ConfigApp::initConfigFromDisk() {
-    configOptions = std::vector<ConfigOption>();
+    configOptions = std::vector<BaseConfigOptions>();
     // Refresh Rate
-    ConfigOption refreshRateOption;
+    BaseConfigOptions refreshRateOption;
     refreshRateOption.label = "refresh_rate_hz";
-    refreshRateOption.type = "dropdown";
+    refreshRateOption.type = BaseConfigOptionType::CYCLE;;
     refreshRateOption.options = {"1", "30", "60"};
     refreshRateOption.currentValue = std::to_string(stateMachine.getOsConfig().refreshRate);
     refreshRateOption.selected = false;
@@ -213,9 +213,9 @@ void ConfigApp::initConfigFromDisk() {
     configOptions.push_back(refreshRateOption);
 
     // Default Tab
-    ConfigOption defaultTabOption;
+    BaseConfigOptions defaultTabOption;
     defaultTabOption.label = "default_tab";
-    defaultTabOption.type = "dropdown";
+    defaultTabOption.type = BaseConfigOptionType::CYCLE;;
     defaultTabOption.options = {"0", "1", "2", "3"};
     defaultTabOption.currentValue = std::to_string(stateMachine.getOsConfig().defaultTab);
     defaultTabOption.selected = false;

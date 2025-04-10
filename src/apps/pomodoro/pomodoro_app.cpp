@@ -4,9 +4,11 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <valarray>
 
-PomodoroApp::PomodoroApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
-    : App(appName, window, font) {
+PomodoroApp::PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
+    : AppWithConfig(window, font, stateMachine, appName) {
+    initConfigFromDisk();
 }
 
 void PomodoroApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
@@ -197,4 +199,37 @@ void PomodoroApp::drawPlayCounter() {
     counter.setOrigin({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
     counter.setPosition(box.position + box.size / 2.0f);
     window.draw(counter);
+}
+
+void PomodoroApp::initConfigFromDisk() {
+    configOptions = std::vector<BaseConfigOptions>();
+    // Refresh Rate
+    BaseConfigOptions defaultWorkTimeInSeconds;
+    defaultWorkTimeInSeconds.label = "default_work_time";
+    defaultWorkTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;;
+    defaultWorkTimeInSeconds.options = {};
+    int workInSeconds = stateMachine.getPomodoroConfig().defaultWorkTimeInSeconds;
+    defaultWorkTimeInSeconds.currentValue = std::to_string(workInSeconds / 60);
+    defaultWorkTimeInSeconds.selected = false;
+    defaultWorkTimeInSeconds.changed = false;
+    configOptions.push_back(defaultWorkTimeInSeconds);
+    workTimeInSeconds = sf::seconds(workInSeconds);
+    remainingTime = workTimeInSeconds;
+
+    // Default Tab
+    BaseConfigOptions defaultPlayTimeInSeconds;
+    defaultPlayTimeInSeconds.label = "default_play_time";
+    defaultPlayTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;
+    defaultPlayTimeInSeconds.options = {};
+    int playInSeconds = stateMachine.getPomodoroConfig().defaultPlayTimeInSeconds;
+    defaultPlayTimeInSeconds.currentValue = std::to_string(playInSeconds / 60);
+    defaultPlayTimeInSeconds.selected = false;
+    defaultPlayTimeInSeconds.changed = false;
+    configOptions.push_back(defaultPlayTimeInSeconds);
+    playTimeInSeconds = sf::seconds(playInSeconds);
+
+}
+
+void PomodoroApp::saveConfigToDisk() {
+    stateMachine.savePomodoroConfigToDisk(configOptions);
 }

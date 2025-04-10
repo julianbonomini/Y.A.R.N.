@@ -23,7 +23,7 @@ public:
     bool helpOpen = false;
 
     // Virtual function that all apps must implement
-    virtual void handleEvent(const sf::Event::KeyPressed& keyPressed) = 0;
+    virtual void handleEvent(const sf::Event::KeyPressed &keyPressed) = 0;
 
     // Virtual function that all apps must implement
     virtual void handleSettings() = 0;
@@ -45,7 +45,7 @@ protected:
     const sf::Vector2f BOTTOM_RIGHT_ANCHOR = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING * 2, Areas::WINDOW_HEIGHT - Areas::PADDING * 2);
 
 
-    const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f( (Areas::WINDOW_WIDTH - Areas::MODAL_WIDTH) / 2, (Areas::WINDOW_HEIGHT - Areas::MODAL_HEIGHT) / 2);
+    const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f((Areas::WINDOW_WIDTH - Areas::MODAL_WIDTH) / 2, (Areas::WINDOW_HEIGHT - Areas::MODAL_HEIGHT) / 2);
 
     void drawModalRectangle(sf::RenderWindow &window, std::string modalTitle);
 

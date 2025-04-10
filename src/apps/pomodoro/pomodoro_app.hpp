@@ -3,12 +3,13 @@
 
 
 #pragma once
-#include "../common/app.hpp"
 #include <SFML/Graphics.hpp>
 
-class PomodoroApp : public App {
+#include "../common/app_with_config.hpp"
+
+class PomodoroApp : public AppWithConfig {
 public:
-    PomodoroApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName);
+    PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
     void draw() override;
 
@@ -19,10 +20,10 @@ public:
     void handleSettings() override;
 
 private:
-    sf::Time workTimeInSeconds = sf::seconds(5); //25 * 60;
-    sf::Time playTimeInSeconds = sf::seconds(5); //5 * 60;
+    sf::Time workTimeInSeconds = sf::Time::Zero;
+    sf::Time playTimeInSeconds = sf::Time::Zero;
     sf::Time lastUpdate = sf::Time::Zero;
-    sf::Time remainingTime = workTimeInSeconds;
+    sf::Time remainingTime = sf::Time::Zero;
     sf::Clock timerClock;
 
     bool isSessionRunning = false;
@@ -37,6 +38,10 @@ private:
     void drawWorkCounter();
 
     void drawPlayCounter();
+
+    void initConfigFromDisk() override;
+
+    void saveConfigToDisk() override;
 
     void drawControls();
 

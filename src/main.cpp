@@ -37,7 +37,7 @@ int main() {
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
     apps.push_back(std::make_unique<MarketApp>(window, font, "STOCK"));
-    apps.push_back(std::make_unique<PomodoroApp>(window, font, "PMD_CLOCK"));
+    apps.push_back(std::make_unique<PomodoroApp>(window, font, stateMachine, "PMD_CLOCK"));
     apps.push_back(std::make_unique<InfoApp>(window, font, "INFO"));
     apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CONFIG"));
 

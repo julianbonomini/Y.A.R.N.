@@ -22,7 +22,7 @@ public:
 private:
     StateMachine &stateMachine;
 
-    std::vector<ConfigOption> configOptions;
+    std::vector<BaseConfigOptions> configOptions;
     bool editModeEnabled = false;
     bool unsavedChangesFlag = false;
 

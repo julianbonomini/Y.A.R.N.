@@ -1,11 +1,16 @@
 #ifndef STATE_MACHINE_HPP
 #define STATE_MACHINE_HPP
 #include <vector>
-#include "../apps/config/ConfigOptions.hpp"
+#include "../apps/common/BaseConfigOptions.hpp"
 
-struct OsConfig {
+struct OsConfigFile {
     int refreshRate;
     int defaultTab;
+};
+
+struct PomodoroConfigFile {
+    int defaultWorkTimeInSeconds;
+    int defaultPlayTimeInSeconds;
 };
 
 class StateMachine {
@@ -16,18 +21,25 @@ public:
 
     void setActiveTab(int newActiveTab);
 
-    OsConfig &getOsConfig();
+    OsConfigFile &getOsConfig();
 
-    const OsConfig &getOsConfig() const;
+    PomodoroConfigFile &getPomodoroConfig();
+
+    const OsConfigFile &getOsConfig() const;
+
+    bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
+
+    bool savePomodoroConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
+
+private:
+    int activeTab;
+    OsConfigFile osConfigFile;
+    PomodoroConfigFile pomodoroConfigFile;
 
     // function to save/load os configuration
     bool loadOsConfigFromDisk();
 
-    bool saveOsConfigToDisk(const std::vector<ConfigOption> &configOptions);
-
-private:
-    int activeTab;
-    OsConfig osConfig;
+    bool loadPomodoroAppConfigFromDisk();
 };
 
 #endif // STATE_MACHINE_HPP
