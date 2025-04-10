@@ -3,8 +3,8 @@
 #include <iostream>
 #include <sstream>
 
-ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : App(appName, window, font), stateMachine(stateMachine) {
+ConfigApp::ConfigApp(sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
+    : App(appName, target, font), stateMachine(stateMachine) {
     initConfigFromDisk();
 }
 
@@ -104,7 +104,7 @@ void ConfigApp::drawHelpBox() {
     contentArea.setFillColor(Colors::WHITE);
     contentArea.setOutlineColor(Colors::GRAY);
     contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(contentArea);
+    renderer.draw(contentArea);
 
     // Help text
     std::vector<std::string> helpLines = {
@@ -123,7 +123,7 @@ void ConfigApp::drawHelpBox() {
         text.setCharacterSize(FontSizes::TITLE);
         text.setFillColor(Colors::BLACK);
         text.setPosition({textX, textY});
-        window.draw(text);
+        renderer.draw(text);
         textY += Layout::TEXT_SPACING;
     }
 
@@ -143,7 +143,7 @@ void ConfigApp::draw() {
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
         labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
-        window.draw(labelText);
+        renderer.draw(labelText);
 
         // Draw the value for this config option
         std::stringstream valueStream;
@@ -158,9 +158,9 @@ void ConfigApp::draw() {
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
             highlightRect.setFillColor(Colors::GRAY);
-            window.draw(highlightRect);
+            renderer.draw(highlightRect);
         }
-        window.draw(valueText);
+        renderer.draw(valueText);
 
         // Draw if it's active
         if (currentOption.selected) {
@@ -169,10 +169,10 @@ void ConfigApp::draw() {
             // labelText.setFillColor(Colors::Background);
             labelText.setOutlineColor(Colors::GRAY);
 
-            // debugRectangle.setPosition({window.getView().getCenter().x, window.getView().getCenter().y});
+            // debugRectangle.setPosition({renderer.getView().getCenter().x, renderer.getView().getCenter().y});
             // debugRectangle.setFillColor(sf::Color::Red);
             // debugRectangle.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
-            // window.draw(debugRectangle);
+            // renderer.draw(debugRectangle);
         }
 
         // Increment the vertical offset to position the next label/value pair
@@ -185,7 +185,7 @@ void ConfigApp::draw() {
         sf::Text editModeEnabled(font, "EDIT_MODE", FontSizes::HELP);
         editModeEnabled.setFillColor(Colors::BLACK);
         editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
-        window.draw(editModeEnabled);
+        renderer.draw(editModeEnabled);
     }
 
     // Draw if in changes:
@@ -194,7 +194,7 @@ void ConfigApp::draw() {
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
         unsavedChanges.setFillColor(Colors::BLACK);
         unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
-        window.draw(unsavedChanges);
+        renderer.draw(unsavedChanges);
     }
 
     handleHelp();

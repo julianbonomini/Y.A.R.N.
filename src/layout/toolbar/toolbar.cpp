@@ -4,8 +4,8 @@
 #include "../../globals/theme.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
-Toolbar::Toolbar(sf::RenderWindow &window, const sf::Font &font)
-    : window(window), font(font) {
+Toolbar::Toolbar(sf::RenderTarget &renderer, const sf::Font &font)
+    : renderer(renderer), font(font) {
 }
 
 void Toolbar::draw() {
@@ -18,7 +18,7 @@ void Toolbar::draw() {
     osName.setFillColor(Colors::BLACK);
     sf::Vector2f osNamePos = UIHelpers::snapToGrid({textX, textY});
     osName.setPosition(osNamePos);
-    window.draw(osName);
+    renderer.draw(osName);
 
     // Date/time (top-right)
     time_t now = std::time(nullptr);
@@ -32,11 +32,11 @@ void Toolbar::draw() {
     float rightX = DisplayConfig::SCREEN_WIDTH - dateAndTime.getLocalBounds().size.x - Layout::PADDING;
     sf::Vector2f dateTimePos = UIHelpers::snapToGrid({rightX, textY});
     dateAndTime.setPosition(dateTimePos);
-    window.draw(dateAndTime);
+    renderer.draw(dateAndTime);
 
     // Line separator below toolbar
     sf::RectangleShape line(sf::Vector2f(DisplayConfig::SCREEN_WIDTH, LineStyles::LINE_THICKNESS));
     line.setFillColor(Colors::GRAY);
     line.setPosition({0.f, Layout::TOOLBAR_HEIGHT});
-    window.draw(line);
+    renderer.draw(line);
 }

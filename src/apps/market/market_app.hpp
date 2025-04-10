@@ -16,7 +16,7 @@ struct StockData {
 
 class MarketApp : public AppWithConfig {
 public:
-    MarketApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
+    MarketApp(sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
     void handleEvent(const sf::Event::KeyPressed &keyPressed) override;
 
@@ -29,9 +29,6 @@ public:
     void update(float deltaTime);
 
 private:
-    sf::Font font;
-    sf::RenderWindow &window;
-
     std::vector<StockData> stocks;
     std::vector<StockData> marketTrackers;
     bool marketOpen = true;

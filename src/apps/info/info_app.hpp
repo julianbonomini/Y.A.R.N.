@@ -7,7 +7,7 @@
 
 class InfoApp : public App {
 public:
-    InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName);
+    InfoApp(sf::RenderTarget &render, const sf::Font &font, const std::string &appName);
 
     void draw() override;
 

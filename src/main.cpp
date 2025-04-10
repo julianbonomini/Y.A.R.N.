@@ -40,11 +40,28 @@ int main() {
     }
     sf::Text text(font);
 
+    // Create a render texture with the same size as the window
+    sf::RenderTexture renderTexture({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT});
+
+    // Set up the sprite for rendering the texture
+    sf::Sprite shaderSprite(renderTexture.getTexture());
+
+    // Create a shader for CRT effect
+    sf::Shader crtShader;
+    if (!crtShader.loadFromFile("src/ui/shaders/vertex.vert", "src/ui/shaders/crt.frag")) {
+        std::cout << "Failed to load shader!" << std::endl;
+        return 1;
+    }
+    // Set the resolution uniform
+    // crtShader.setUniform("u_resolution", sf::Glsl::Vec2(Layout::WINDOW_WIDTH, Layout::WINDOW_HEIGHT));
+    // crtShader.setUniform("resolution", sf::Vector2f(DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT));
+
+
     std::cout << "Initializing main layout..." << std::endl;
     log_separator();
-    Toolbar toolbar(window, font);
-    MainWindow main_window(window, font);
-    Footer footer(window, font);
+    Toolbar toolbar(renderTexture, font);
+    MainWindow main_window(renderTexture, font);
+    Footer footer(renderTexture, font);
 
     std::cout << "Initializing apps..." << std::endl;
     log_separator();
@@ -57,7 +74,7 @@ int main() {
 
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
-
+    sf::Clock clock;
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -139,13 +156,30 @@ int main() {
                 }
             }
         }
-        window.clear(Colors::WHITE);
 
-        // Draw everything
+        float time = clock.getElapsedTime().asSeconds();
+
+        // Set the u_time uniform in the shader
+        // crtShader.setUniform("u_time", time);
+        renderTexture.clear(Colors::WHITE);
+
+        // Draw everything to the render texture (pass renderTexture instead of window)
         toolbar.draw();
         footer.draw();
         main_window.draw(apps, stateMachine.getActiveTab());
 
+        // Apply any post-processing to the render texture (CRT effect)
+        renderTexture.display();  // Finalize render texture
+
+        crtShader.setUniform("u_texture", sf::Shader::CurrentTexture);
+        // crtShader.setUniform("u_time", clock.getElapsedTime().asSeconds());
+        crtShader.setUniform("CRT_CURVE_AMNTx", 0.5f);  // Adjust X-axis curvature
+        crtShader.setUniform("CRT_CURVE_AMNTy", 0.5f);  // Adjust Y-axis curvature
+        crtShader.setUniform("u_resolution", sf::Vector2f(DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT));  // Resolution of the screen
+
+        // Clear the window and draw the final image
+        window.clear(Colors::WHITE);
+        window.draw(shaderSprite, &crtShader);  // Render the textured sprite with CRT effect
         window.display();
     }
 

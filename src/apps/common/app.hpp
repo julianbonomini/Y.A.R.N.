@@ -10,8 +10,8 @@ class StateMachine;
 class App {
 public:
     // Constructor to initialize the window, font, and tab name
-    App(const std::string &appName, sf::RenderWindow &window, const sf::Font &font)
-        : appName(appName), window(window), font(font) {
+    App(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font)
+        : appName(appName), renderer(renderer), font(font) {
     }
 
     virtual ~App() = default;
@@ -64,7 +64,7 @@ public:
     std::string appName; // The name of the tab associated with this app
 
 protected:
-    sf::RenderWindow &window;
+    sf::RenderTarget &renderer;
     const sf::Font &font;
 
     bool hasOpenModal = false;

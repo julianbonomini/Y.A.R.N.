@@ -9,7 +9,7 @@
 
 class PomodoroApp : public AppWithConfig {
 public:
-    PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
+    PomodoroApp(sf::RenderTarget &render, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
     void draw() override;
 

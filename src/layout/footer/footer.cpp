@@ -3,8 +3,8 @@
 #include "../../globals/theme.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
-Footer::Footer(sf::RenderWindow &window, const sf::Font &font)
-    : window(window), font(font) {
+Footer::Footer(sf::RenderTarget &renderer, const sf::Font &font)
+    : renderer(renderer), font(font) {
 }
 
 
@@ -16,23 +16,23 @@ void Footer::draw() {
     move.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     sf::Vector2f movePos = UIHelpers::snapToGrid({textX, textY});
     move.setPosition(movePos);
-    window.draw(move);
+    renderer.draw(move);
 
     sf::Text help(font, "<H> APP_HELP", FontSizes::FOOTER);
     help.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     sf::Vector2f helpPos = UIHelpers::snapToGrid({move.getGlobalBounds().position.x + move.getGlobalBounds().size.x + Layout::PADDING * 2, textY});
     help.setPosition(helpPos);
-    window.draw(help);
+    renderer.draw(help);
 
     sf::Text menu(font, "<C> APP_SETTINGS", FontSizes::FOOTER);
     menu.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     sf::Vector2f menuPos = UIHelpers::snapToGrid({help.getGlobalBounds().position.x + help.getGlobalBounds().size.x + Layout::PADDING * 2, textY});
     menu.setPosition(menuPos);
-    window.draw(menu);
+    renderer.draw(menu);
 
     sf::Text close(font, "<ESC> CLOSE_MODAL", FontSizes::FOOTER);
     close.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
     sf::Vector2f closePos = UIHelpers::snapToGrid({menu.getGlobalBounds().position.x + menu.getGlobalBounds().size.x + Layout::PADDING * 2, textY});
     close.setPosition(closePos);
-    window.draw(close);
+    renderer.draw(close);
 }
