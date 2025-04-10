@@ -66,6 +66,10 @@ void MarketApp::draw() {
     drawMarketStatus();
     drawMarketSession();
 
+    drawMarketSentiment();
+
+    drawStonksMeme();
+
     if (isSettingsOpen()) {
         handleSettings();
     }
@@ -175,21 +179,64 @@ void MarketApp::drawMarketSession() {
     window.draw(backgroundBox);
 
     // Draw market status text (OPEN or CLOSED)
-    sf::Text marketStatusText(font);
+    sf::Text marketStatusText(font, "14:23 left");
     marketStatusText.setCharacterSize(20); // Adjust size as needed
     marketStatusText.setFillColor(textColor);
-
-    if (marketOpen) {
-        marketStatusText.setString("OPEN");
-    } else {
-        marketStatusText.setString("CLOSED");
-    }
 
     // Center the text within the background box
     sf::FloatRect textBounds = marketStatusText.getLocalBounds();
     marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
     marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
     window.draw(marketStatusText);
+}
+
+void MarketApp::drawMarketSentiment() {
+    // Draw background box
+    auto backgroundBoxCoordinates = getGridBox(2, 2, 1.5, 2);
+    sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
+    backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
+    backgroundBox.setFillColor(Colors::WHITE);
+    backgroundBox.setOutlineColor(Colors::GRAY);
+    backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
+    window.draw(backgroundBox);
+
+    sf::Text text(font, "BEAR");
+    text.setCharacterSize(20);
+    text.setFillColor(Colors::BLACK);
+
+
+    // Center the text within the background box
+    sf::FloatRect textBounds = text.getLocalBounds();
+    text.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    text.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
+    window.draw(text);
+}
+
+void MarketApp::drawStonksMeme() {
+    // Draw background box
+    auto backgroundBoxCoordinates = getGridBox(3.5, 2, 1.5, 2);
+    sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
+    backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
+    backgroundBox.setFillColor(Colors::WHITE);
+    backgroundBox.setOutlineColor(Colors::GRAY);
+    backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
+    window.draw(backgroundBox);
+
+    // Load image
+    sf::Texture memeTexture;
+    if (memeTexture.loadFromFile("assets/images/stonks.png")) {
+        sf::Sprite memeSprite(memeTexture);
+
+        // Scale image to fit inside the background box
+        float scaleX = backgroundBoxCoordinates.size.x / memeTexture.getSize().x;
+        float scaleY = backgroundBoxCoordinates.size.y / memeTexture.getSize().y;
+        memeSprite.setScale({scaleX, scaleY});
+
+        // Position the image
+        memeSprite.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
+
+        window.draw(memeSprite);
+    }
 }
 
 void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, const float priceX, const float changeX) {

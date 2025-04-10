@@ -17,7 +17,7 @@ namespace Layout {
     constexpr float WINDOW_WIDTH = DisplayConfig::SCREEN_WIDTH;
     constexpr float WINDOW_HEIGHT = DisplayConfig::SCREEN_HEIGHT;
     constexpr float PADDING = 8.f;
-    constexpr float TAB_WIDTH = 120.f;
+    constexpr float TAB_WIDTH = 60.f;
     constexpr float TAB_HEIGHT = 30.f;
     constexpr float FOOTER_HEIGHT = WINDOW_HEIGHT * 0.08 > 50.f ? 50.f : WINDOW_HEIGHT * 0.08;
     constexpr float TOOLBAR_HEIGHT = 32.f;

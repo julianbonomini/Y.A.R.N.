@@ -81,5 +81,5 @@ protected:
 
     void drawModalRectangle(std::string modalTitle);
 
-    sf::FloatRect getGridBox(int colStart, int rowStart, int colSpan, int rowSpan);
+    sf::FloatRect getGridBox(float colStart, float rowStart, float colSpan, float rowSpan);
 };

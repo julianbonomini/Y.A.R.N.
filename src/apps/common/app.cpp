@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 
-sf::FloatRect App::getGridBox(int colStart, int rowStart, int colSpan = 1, int rowSpan = 1) {
+sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1, float rowSpan = 1) {
     const sf::Vector2f anchor = TOP_LEFT_ANCHOR;
 
     float x = anchor.x + colStart * (AppGridLayout::CELL_WIDTH + Layout::PADDING);

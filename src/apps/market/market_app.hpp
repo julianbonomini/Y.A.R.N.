@@ -44,6 +44,10 @@ private:
 
     void drawMarketSession();
 
+    void drawMarketSentiment();
+
+    void drawStonksMeme();
+
     void drawSymbolsHeaderRow(float startY, float labelX, float priceX, float changeX);
 
     void drawLabelsAndValues(const std::vector<StockData> &symbols, float rowHeight, float labelX, float priceX, float changeX, float currentY);

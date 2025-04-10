@@ -50,10 +50,10 @@ int main() {
     log_separator();
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
-    apps.push_back(std::make_unique<MarketApp>(window, font, stateMachine, "STOCK"));
-    apps.push_back(std::make_unique<PomodoroApp>(window, font, stateMachine, "PMD_CLOCK"));
-    apps.push_back(std::make_unique<InfoApp>(window, font, "INFO"));
-    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CONFIG"));
+    apps.push_back(std::make_unique<MarketApp>(window, font, stateMachine, "MKT"));
+    apps.push_back(std::make_unique<PomodoroApp>(window, font, stateMachine, "PMD"));
+    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CNF"));
+    apps.push_back(std::make_unique<InfoApp>(window, font, "INF"));
 
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
