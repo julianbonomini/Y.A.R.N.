@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+#include <sstream>
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "../../globals/theme.hpp"
@@ -36,6 +38,14 @@ public:
 
     virtual void setHelpOpen(bool value) {
         helpOpen = value;
+    }
+
+    template<typename... Args>
+    void app_log(Args&&... args) {
+        std::ostringstream oss;
+        oss << appName << "_LOG: ";
+        ((oss << args << " "), ...);
+        std::cout << oss.str() << std::endl;
     }
 
     // Virtual function that all apps must implement

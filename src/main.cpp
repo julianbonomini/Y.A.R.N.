@@ -13,33 +13,50 @@
 #include "core/state_machine.hpp"
 
 
+void log_separator() {
+    std::cout << "************************************" << std::endl << std::endl << std::endl;
+}
+void log_attention_grabber() {
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+}
+
 int main() {
     std::cout << "Booting..." << std::endl;
+    log_separator();
+
     // Create the StateMachine instance to manage app state.
     std::cout << "Initializing state machine from disk..." << std::endl;
+    log_separator();
     StateMachine stateMachine(0);
 
     auto window = sf::RenderWindow(sf::VideoMode({Hardware::SCREEN_WIDTH, Hardware::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/FiraCodeNerdFont-Medium.ttf")) {
+        log_attention_grabber();
         std::cout << "Error loading default font" << std::endl;
+        log_attention_grabber();
         return 1;
     }
     sf::Text text(font);
 
     std::cout << "Initializing main layout..." << std::endl;
+    log_separator();
     Toolbar toolbar(window, font);
     MainWindow main_window(window, font);
     Footer footer(window, font);
 
     std::cout << "Initializing apps..." << std::endl;
+    log_separator();
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
-    apps.push_back(std::make_unique<MarketApp>(window, font, "STOCK"));
+    apps.push_back(std::make_unique<MarketApp>(window, font, stateMachine, "STOCK"));
     apps.push_back(std::make_unique<PomodoroApp>(window, font, stateMachine, "PMD_CLOCK"));
     apps.push_back(std::make_unique<InfoApp>(window, font, "INFO"));
     apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CONFIG"));
+
+    std::cout << "Apps booted successfully..." << std::endl;
+    log_separator();
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {

@@ -5,6 +5,8 @@
 #include "../common/app.hpp"
 #include <SFML/Graphics.hpp>
 
+#include "../common/app_with_config.hpp"
+
 // Represents a single stock's data
 struct StockData {
     std::string ticker;
@@ -12,9 +14,9 @@ struct StockData {
     float changeFromOpen;
 };
 
-class MarketApp : public App {
+class MarketApp : public AppWithConfig {
 public:
-    MarketApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName);
+    MarketApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
     void handleEvent(const sf::Event::KeyPressed &keyPressed) override;
 
@@ -47,6 +49,8 @@ private:
     void drawLabelsAndValues(const std::vector<StockData> &symbols, float rowHeight, float labelX, float priceX, float changeX, float currentY);
 
     void loadMockData(); // For now, simulate some data
+
+    void initConfigFromDisk() override;
 };
 
 

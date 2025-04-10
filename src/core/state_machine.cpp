@@ -12,6 +12,7 @@ StateMachine::StateMachine(int default_tab)
     setActiveTab(getOsConfig().defaultTab);
     std::cout << "Loading APPs config..." << std::endl;
     loadPomodoroAppConfigFromDisk();
+    loadMarketAppConfigFromDisk();
 }
 
 int StateMachine::getActiveTab() const {
@@ -28,6 +29,10 @@ OsConfigFile &StateMachine::getOsConfig() {
 
 PomodoroConfigFile &StateMachine::getPomodoroConfig() {
     return pomodoroConfigFile;
+}
+
+MarketConfigFile &StateMachine::getMarketConfig() {
+    return marketConfigFile;
 }
 
 bool StateMachine::loadOsConfigFromDisk() {
@@ -123,6 +128,44 @@ bool StateMachine::savePomodoroConfigToDisk(const std::vector<BaseConfigOptions>
             pomodoroConfigFile.defaultWorkTimeInMinutes = std::stoi(option.currentValue);
         } else if (option.label == "default_play_time") {
             pomodoroConfigFile.defaultPlayTimeInMinutes = std::stoi(option.currentValue);
+        }
+    }
+
+    file << j.dump(4); // Pretty-print with indentation
+    return true;
+}
+
+bool StateMachine::loadMarketAppConfigFromDisk() {
+    std::cout << "Loading Market App config..." << std::endl;
+    std::ifstream file("config/market_config.json");
+    if (!file.is_open()) {
+        std::cout << "file not open" << std::endl;
+        return -1;
+    }
+
+    json j;
+    try {
+        file >> j;
+        std::string defaultRefreshInterval = j["refresh_interval"];
+        marketConfigFile.defaultRefreshIntervalInMinutes = std::stoi(defaultRefreshInterval);
+    } catch (...) {
+        return -1;
+    }
+
+    return 1;
+}
+
+bool StateMachine::saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions) {
+    std::ofstream file("config/market_config.json");
+    if (!file.is_open()) {
+        return false;
+    }
+    json j;
+
+    for (const auto &option: baseConfigOptions) {
+        j[option.label] = option.currentValue;
+        if (option.label == "refresh_interval") {
+            marketConfigFile.defaultRefreshIntervalInMinutes = std::stoi(option.currentValue);
         }
     }
 

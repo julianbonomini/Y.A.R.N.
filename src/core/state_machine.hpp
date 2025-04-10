@@ -19,6 +19,10 @@ struct PomodoroConfigFile {
     int defaultPlayTimeInMinutes;
 };
 
+struct MarketConfigFile {
+    int defaultRefreshIntervalInMinutes;
+};
+
 class StateMachine {
 public:
     StateMachine(int default_tab);
@@ -31,6 +35,8 @@ public:
 
     PomodoroConfigFile &getPomodoroConfig();
 
+    MarketConfigFile &getMarketConfig();
+
     const OsConfigFile &getOsConfig() const;
 
     bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
@@ -41,6 +47,7 @@ private:
     int activeTab;
     OsConfigFile osConfigFile;
     PomodoroConfigFile pomodoroConfigFile;
+    MarketConfigFile marketConfigFile;
 
     // function to save/load os configuration
     bool loadOsConfigFromDisk();
@@ -48,6 +55,10 @@ private:
     bool loadPomodoroAppConfigFromDisk();
 
     bool savePomodoroConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
+
+    bool loadMarketAppConfigFromDisk();
+
+    bool saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
 };
 
 #endif // STATE_MACHINE_HPP

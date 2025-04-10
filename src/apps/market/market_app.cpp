@@ -6,14 +6,41 @@
 #include <string>
 
 
-MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
-    : App(appName, window, font), font(font), window(window) {
+MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine,const std::string &appName)
+    : AppWithConfig(window, font, stateMachine, appName), font(font), window(window) {
     loadMockData();
+    initConfigFromDisk();
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::T) {
         marketOpen = !marketOpen;
+    }
+    if (settingsOpen) {
+        if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
+            moveDown();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Right) {
+            changeOptionRight();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Left) {
+            changeOptionLeft();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Up) {
+            moveUp();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Escape && unsavedChangesFlag) {
+            closeWithUnsavedChanges();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Escape && !unsavedChangesFlag) {
+            closeWithoutChanges();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::C && !unsavedChangesFlag) {
+            closeWithoutChanges();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Enter) {
+            saveAndClose(AppConfigTypes::MARKET, configOptions);
+        }
     }
 }
 
@@ -24,9 +51,8 @@ void MarketApp::handleHelp() {
 }
 
 void MarketApp::handleSettings() {
-    if (settingsOpen) {
-        drawModalRectangle("SETTINGS");
-    }
+    sf::FloatRect settingsBoxGlobalBounds = drawSettings();
+    drawAppConfigOptions(settingsBoxGlobalBounds);
 }
 
 
@@ -40,8 +66,12 @@ void MarketApp::draw() {
     drawMarketStatus();
     drawMarketSession();
 
-    handleHelp();
-    handleSettings();
+    if (isSettingsOpen()) {
+        handleSettings();
+    }
+    if (isHelpOpen()) {
+        handleHelp();
+    }
 }
 
 void MarketApp::drawStandaloneSymbols() {
@@ -236,4 +266,18 @@ void MarketApp::loadMockData() {
         {"ALLEUROPE", 248.59f, -3.42f},
         {"TECH100", 248.59f, -3.42f},
     };
+}
+
+void MarketApp::initConfigFromDisk() {
+    configOptions = std::vector<BaseConfigOptions>();
+
+    BaseConfigOptions refreshIntervalInMinutes;
+    refreshIntervalInMinutes.label = "refresh_interval";
+    refreshIntervalInMinutes.type = BaseConfigOptionType::FREE_NUMBER;;
+    refreshIntervalInMinutes.options = {};
+    int intervalInMinutes = stateMachine.getMarketConfig().defaultRefreshIntervalInMinutes;
+    refreshIntervalInMinutes.currentValue = std::to_string(intervalInMinutes);
+    refreshIntervalInMinutes.selected = false;
+    refreshIntervalInMinutes.changed = false;
+    configOptions.push_back(refreshIntervalInMinutes);
 }
