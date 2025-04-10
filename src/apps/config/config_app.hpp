@@ -2,12 +2,12 @@
 #define CONFIG_APP_H
 
 #pragma once
-#include "../common/app.hpp"
 #include "../../core/state_machine.hpp"
 #include <SFML/Graphics.hpp>
-#include <vector>
 
-class ConfigApp : public App {
+#include "../common/app_with_config.hpp"
+
+class ConfigApp : public AppWithConfig {
 public:
     ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
 
@@ -20,13 +20,8 @@ public:
     void handleSettings() override;
 
 private:
-    StateMachine &stateMachine;
-
-    std::vector<BaseConfigOptions> configOptions;
     bool editModeEnabled = false;
     bool unsavedChangesFlag = false;
-
-    void initConfigFromDisk();
 
     void drawHelpBox();
 
@@ -37,6 +32,10 @@ private:
     void changeOptionRight();
 
     void changeOptionLeft();
+
+    void initConfigFromDisk() override;
+
+    void saveConfigToDisk() override;
 };
 
 #endif // CONFIG_APP_H

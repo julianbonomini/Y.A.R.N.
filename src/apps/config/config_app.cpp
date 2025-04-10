@@ -4,7 +4,7 @@
 #include <sstream>
 
 ConfigApp::ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : App(appName, window, font), stateMachine(stateMachine) {
+    : AppWithConfig(window, font, stateMachine, appName) {
     initConfigFromDisk();
 }
 
@@ -221,4 +221,8 @@ void ConfigApp::initConfigFromDisk() {
     defaultTabOption.selected = false;
     defaultTabOption.changed = false;
     configOptions.push_back(defaultTabOption);
+}
+
+void ConfigApp::saveConfigToDisk() {
+    stateMachine.saveOsConfigToDisk(configOptions);
 }
