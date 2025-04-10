@@ -3,16 +3,18 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+#include "../../core/execute/execute_utils.hpp"
+
 InfoApp::InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
     : App(appName, window, font) {
-    infoData.push_back({"VERSION:", "Ostrich 0.0.1"});
-    infoData.push_back({"CPU:", "Intel Core i7 3.6 GHz"});
-    infoData.push_back({"RAM:", "16GB"});
-    infoData.push_back({"USED STORAGE:", "100GB of 500GB"});
-    infoData.push_back({"APPS:", "7"});
-    infoData.push_back({"OS:", "Ubuntu 20.04"});
-    infoData.push_back({"UPTIME:", "12 days, 4 hours"});
-    infoData.push_back({"NETWORK:", "Ethernet: Connected"});
+    infoData.push_back({"OS:", "Noop"});
+    infoData.push_back({"VERSION:", "0.0.1"});
+    infoData.push_back({"CPU:", ExecuteUtils::getCpuModel()});
+    infoData.push_back({"RAM:", ExecuteUtils::getRam()});
+    infoData.push_back({"USED STORAGE:", ExecuteUtils::getStorageUsage("/")});
+    infoData.push_back({"APPS:", "NOOP"});
+    infoData.push_back({"UPTIME:", ExecuteUtils::getUptime()});
+    infoData.push_back({"NETWORK:", ExecuteUtils::getNetworkStatus()});
 }
 
 void InfoApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {

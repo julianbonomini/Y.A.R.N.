@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "apps/config/config_app.hpp"
-#include "utils/network.hpp"
+#include "core/network/network.hpp"
 #include "layout/toolbar/toolbar.hpp"
 #include "layout/footer/footer.hpp"
 #include "globals/theme.hpp"
@@ -10,7 +10,7 @@
 #include "apps/market/market_app.hpp"
 #include "apps/pomodoro/pomodoro_app.hpp"
 #include "layout/main_window/main_window.hpp"
-#include "core/state_machine.hpp"
+#include "core/state_machine/state_machine.hpp"
 
 
 void log_separator() {

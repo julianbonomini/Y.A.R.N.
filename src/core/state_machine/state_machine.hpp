@@ -1,7 +1,7 @@
 #ifndef STATE_MACHINE_HPP
 #define STATE_MACHINE_HPP
 #include <vector>
-#include "../apps/common/BaseConfigOptions.hpp"
+#include "../../apps/common/BaseConfigOptions.hpp"
 
 enum class AppConfigTypes {
     POMODORO,

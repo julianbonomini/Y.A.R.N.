@@ -7,6 +7,18 @@
 class ExecuteUtils {
 public:
     static std::string execCommand(const std::string& cmd);
+
+    static std::string getIp();
+
+    static std::string getCpuModel();
+
+    static std::string getRam();
+
+    static std::string getStorageUsage(const std::string &path);
+
+    static std::string getUptime();
+
+    static std::string getNetworkStatus();
 };
 
 #endif //EXECUTE_UTILS_H

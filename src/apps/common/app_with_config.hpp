@@ -4,7 +4,7 @@
 #pragma once
 #include "app.hpp"
 #include <SFML/Graphics.hpp>
-#include "../../core/state_machine.hpp"
+#include "../../core/state_machine/state_machine.hpp"
 
 class AppWithConfig : public App {
 public:

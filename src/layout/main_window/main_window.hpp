@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../../apps/common/app.hpp"
-#include "../../core/state_machine.hpp"
+#include "../../core/state_machine/state_machine.hpp"
 
 class MainWindow {
 public:

@@ -2,7 +2,7 @@
 #define CONFIG_APP_H
 
 #pragma once
-#include "../../core/state_machine.hpp"
+#include "../../core/state_machine/state_machine.hpp"
 #include <SFML/Graphics.hpp>
 
 #include "../common/app_with_config.hpp"
