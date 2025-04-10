@@ -4,7 +4,6 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <string>
-#include <valarray>
 
 PomodoroApp::PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
     : AppWithConfig(window, font, stateMachine, appName) {
@@ -13,26 +12,58 @@ PomodoroApp::PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMa
 
 void PomodoroApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::Space) {
-        std::cout << "Swapping running state" << std::endl;
         startPauseTimer();
     }
 
     if (keyPressed.scancode == sf::Keyboard::Scan::R) {
-        std::cout << "Reseting" << std::endl;
         resetSession();
+    }
+
+    if (settingsOpen) {
+        if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
+            moveDown();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Right) {
+            changeOptionRight();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Left) {
+            changeOptionLeft();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Up) {
+            moveUp();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Escape && unsavedChangesFlag) {
+            closeWithUnsavedChanges();
+            isSessionRunning = false;
+            isWorkTime = true;
+            timerClock.restart();
+            remainingTime = workTimeInSeconds;
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Escape && !unsavedChangesFlag) {
+            closeWithoutChanges();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::C && !unsavedChangesFlag) {
+            closeWithoutChanges();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Enter) {
+            isSessionRunning = false;
+            isWorkTime = true;
+            timerClock.restart();
+            saveAndClose(AppConfigTypes::POMODORO, configOptions);
+            remainingTime = workTimeInSeconds;
+        }
     }
 }
 
 void PomodoroApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle(window, "HELP");
+        drawModalRectangle("HELP");
     }
 }
 
 void PomodoroApp::handleSettings() {
-    if (settingsOpen) {
-        drawModalRectangle(window, "SETTINGS");
-    }
+    sf::FloatRect settingsBoxGlobalBounds = drawSettings();
+    drawAppConfigOptions(settingsBoxGlobalBounds);
 }
 
 void PomodoroApp::updateClock() {
@@ -46,15 +77,11 @@ void PomodoroApp::updateClock() {
 
         if (elapsedSinceLastUpdate >= sf::seconds(1.0f)) {
             // Update remaining time once per second
-            std::cout << "Remaining time: " << remainingTime.asSeconds() << " -> "
-                      << (remainingTime - sf::seconds(1.0f)).asSeconds() << std::endl;
-
-            remainingTime -= sf::seconds(1.0f);  // Subtract 1 second from remaining time
-            elapsedSinceLastUpdate = sf::Time::Zero;  // Reset elapsed time tracker
+            remainingTime -= sf::seconds(1.0f); // Subtract 1 second from remaining time
+            elapsedSinceLastUpdate = sf::Time::Zero; // Reset elapsed time tracker
 
             if (remainingTime <= sf::Time::Zero) {
-                std::cout << "Time reached 0!" << std::endl;
-                isWorkTime = !isWorkTime;  // Switch between work/break modes
+                isWorkTime = !isWorkTime; // Switch between work/break modes
                 remainingTime = isWorkTime ? workTimeInSeconds : playTimeInSeconds;
                 // Avoid restarting the timer here if it's already running
             }
@@ -88,13 +115,17 @@ void PomodoroApp::resetSession() {
 }
 
 void PomodoroApp::draw() {
-    updateClock();  // Update the clock here to reflect changes
-    drawWorkCounter();
-    drawPlayCounter();
+    updateClock(); // Update the clock here to reflect changes
+    drawWorkClock();
+    drawPlayClock();
     drawControls();
 
-    handleHelp();
-    handleSettings();
+    if (isSettingsOpen()) {
+        handleSettings();
+    }
+    if (isHelpOpen()) {
+        handleHelp();
+    }
 }
 
 void PomodoroApp::drawControls() {
@@ -140,7 +171,7 @@ void PomodoroApp::drawResetButton() {
     window.draw(text);
 }
 
-void PomodoroApp::drawWorkCounter() {
+void PomodoroApp::drawWorkClock() {
     auto box = getGridBox(0, 0, 2, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
@@ -171,7 +202,7 @@ void PomodoroApp::drawWorkCounter() {
     window.draw(counter);
 }
 
-void PomodoroApp::drawPlayCounter() {
+void PomodoroApp::drawPlayClock() {
     auto box = getGridBox(3, 0, 2, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
@@ -208,12 +239,12 @@ void PomodoroApp::initConfigFromDisk() {
     defaultWorkTimeInSeconds.label = "default_work_time";
     defaultWorkTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;;
     defaultWorkTimeInSeconds.options = {};
-    int workInSeconds = stateMachine.getPomodoroConfig().defaultWorkTimeInSeconds;
-    defaultWorkTimeInSeconds.currentValue = std::to_string(workInSeconds / 60);
+    int workTimeInMinutes = stateMachine.getPomodoroConfig().defaultWorkTimeInMinutes;\
+    defaultWorkTimeInSeconds.currentValue = std::to_string(workTimeInMinutes);
     defaultWorkTimeInSeconds.selected = false;
     defaultWorkTimeInSeconds.changed = false;
     configOptions.push_back(defaultWorkTimeInSeconds);
-    workTimeInSeconds = sf::seconds(workInSeconds);
+    workTimeInSeconds = sf::seconds(workTimeInMinutes * 60);
     remainingTime = workTimeInSeconds;
 
     // Default Tab
@@ -221,15 +252,10 @@ void PomodoroApp::initConfigFromDisk() {
     defaultPlayTimeInSeconds.label = "default_play_time";
     defaultPlayTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;
     defaultPlayTimeInSeconds.options = {};
-    int playInSeconds = stateMachine.getPomodoroConfig().defaultPlayTimeInSeconds;
-    defaultPlayTimeInSeconds.currentValue = std::to_string(playInSeconds / 60);
+    int playTimeInMinutes = stateMachine.getPomodoroConfig().defaultPlayTimeInMinutes;
+    defaultPlayTimeInSeconds.currentValue = std::to_string(playTimeInMinutes);
     defaultPlayTimeInSeconds.selected = false;
     defaultPlayTimeInSeconds.changed = false;
     configOptions.push_back(defaultPlayTimeInSeconds);
-    playTimeInSeconds = sf::seconds(playInSeconds);
-
-}
-
-void PomodoroApp::saveConfigToDisk() {
-    stateMachine.savePomodoroConfigToDisk(configOptions);
+    playTimeInSeconds = sf::seconds(playTimeInMinutes * 60);
 }

@@ -3,14 +3,20 @@
 #include <vector>
 #include "../apps/common/BaseConfigOptions.hpp"
 
+enum class AppConfigTypes {
+    POMODORO,
+    MARKET,
+    WEATHER,
+};
+
 struct OsConfigFile {
     int refreshRate;
     int defaultTab;
 };
 
 struct PomodoroConfigFile {
-    int defaultWorkTimeInSeconds;
-    int defaultPlayTimeInSeconds;
+    int defaultWorkTimeInMinutes;
+    int defaultPlayTimeInMinutes;
 };
 
 class StateMachine {
@@ -29,7 +35,7 @@ public:
 
     bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
 
-    bool savePomodoroConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
+    bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions>& configOptions);
 
 private:
     int activeTab;
@@ -40,6 +46,8 @@ private:
     bool loadOsConfigFromDisk();
 
     bool loadPomodoroAppConfigFromDisk();
+
+    bool savePomodoroConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
 };
 
 #endif // STATE_MACHINE_HPP

@@ -72,6 +72,22 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
     return true;
 }
 
+bool StateMachine::saveAppConfigToDisk(const AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &configOptions) {
+    switch (appConfigType) {
+        case AppConfigTypes::POMODORO: {
+            return savePomodoroConfigToDisk(configOptions);
+        }
+        case AppConfigTypes::MARKET: {
+            std::cout << "MARKET app config not implemented" << std::endl;
+            return true;
+        }
+        case AppConfigTypes::WEATHER: {
+            std::cout << "WEATHER app config not implemented" << std::endl;
+            return true;
+        }
+    }
+}
+
 bool StateMachine::loadPomodoroAppConfigFromDisk() {
     std::cout << "Loading Pomodoro App config..." << std::endl;
     std::ifstream file("config/pomodoro_config.json");
@@ -83,10 +99,10 @@ bool StateMachine::loadPomodoroAppConfigFromDisk() {
     json j;
     try {
         file >> j;
-        std::string defaultWorkTimeInSeconds = j["default_work_time_in_seconds"];
-        std::string defaultPlayTimeInSeconds = j["default_play_time_in_seconds"];
-        pomodoroConfigFile.defaultWorkTimeInSeconds = std::stoi(defaultWorkTimeInSeconds);
-        pomodoroConfigFile.defaultPlayTimeInSeconds = std::stoi(defaultPlayTimeInSeconds);
+        std::string defaultWorkTimeInSeconds = j["default_work_time"];
+        std::string defaultPlayTimeInSeconds = j["default_play_time"];
+        pomodoroConfigFile.defaultWorkTimeInMinutes = std::stoi(defaultWorkTimeInSeconds);
+        pomodoroConfigFile.defaultPlayTimeInMinutes = std::stoi(defaultPlayTimeInSeconds);
     } catch (...) {
         return -1;
     }
@@ -103,10 +119,10 @@ bool StateMachine::savePomodoroConfigToDisk(const std::vector<BaseConfigOptions>
 
     for (const auto &option: baseConfigOptions) {
         j[option.label] = option.currentValue;
-        if (option.label == "default_work_session_length") {
-            pomodoroConfigFile.defaultWorkTimeInSeconds = std::stoi(option.currentValue);
-        } else if (option.label == "default_play_session_length") {
-            pomodoroConfigFile.defaultPlayTimeInSeconds = std::stoi(option.currentValue);
+        if (option.label == "default_work_time") {
+            pomodoroConfigFile.defaultWorkTimeInMinutes = std::stoi(option.currentValue);
+        } else if (option.label == "default_play_time") {
+            pomodoroConfigFile.defaultPlayTimeInMinutes = std::stoi(option.currentValue);
         }
     }
 

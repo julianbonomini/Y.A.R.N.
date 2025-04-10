@@ -13,7 +13,7 @@ sf::FloatRect App::getGridBox(int colStart, int rowStart, int colSpan = 1, int r
     return sf::FloatRect({x, y}, {width, height});
 }
 
-void App::drawModalRectangle(sf::RenderWindow &window, std::string modalTitle){
+void App::drawModalRectangle(std::string modalTitle){
     sf::RectangleShape modalRectangle({Areas::MODAL_WIDTH, Areas::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
     modalRectangle.setFillColor(Colors::WHITE);

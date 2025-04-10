@@ -19,13 +19,13 @@ void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void MarketApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle(window, "HELP");
+        drawModalRectangle("HELP");
     }
 }
 
 void MarketApp::handleSettings() {
     if (settingsOpen) {
-        drawModalRectangle(window, "SETTINGS");
+        drawModalRectangle("SETTINGS");
     }
 }
 

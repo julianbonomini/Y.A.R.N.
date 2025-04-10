@@ -35,13 +35,11 @@ private:
 
     void resetSession();
 
-    void drawWorkCounter();
+    void drawWorkClock();
 
-    void drawPlayCounter();
+    void drawPlayClock();
 
     void initConfigFromDisk() override;
-
-    void saveConfigToDisk() override;
 
     void drawControls();
 

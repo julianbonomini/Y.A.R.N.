@@ -20,13 +20,13 @@ void InfoApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void InfoApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle(window, "HELP");
+        drawModalRectangle("HELP");
     }
 }
 
 void InfoApp::handleSettings() {
     if (settingsOpen) {
-        drawModalRectangle(window, "SETTINGS");
+        drawModalRectangle("SETTINGS");
     }
 }
 

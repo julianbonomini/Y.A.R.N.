@@ -12,6 +12,16 @@ public:
         : App(appName, window, font), stateMachine(stateMachine) {
     }
 
+    // Override default App implementation to always set first option as active
+    void setSettingsOpen(bool value) {
+        settingsOpen = value;
+        if (value) {
+            configOptions[0].selected = true;
+            for (size_t i = 1; i < configOptions.size(); ++i) {
+                configOptions[i].selected = false;
+            }
+        }
+    }
 
     // Constructor to initialize the window, font, and tab name
     virtual ~AppWithConfig() = default;
@@ -19,11 +29,27 @@ public:
 protected:
     StateMachine &stateMachine;
     std::vector<BaseConfigOptions> configOptions;
+    bool unsavedChangesFlag = false;
 
+    sf::FloatRect drawSettings() const;
+
+    void drawAppConfigOptions(sf::FloatRect bounds);
+
+    void moveDown();
+
+    void moveUp();
+
+    void changeOptionRight();
+
+    void changeOptionLeft();
+
+    void closeWithoutChanges();
+
+    void closeWithUnsavedChanges();
+
+    void saveAndClose(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &toBeSaved);
 
     virtual void initConfigFromDisk() = 0;
-
-    virtual void saveConfigToDisk() = 0;
 };
 
 

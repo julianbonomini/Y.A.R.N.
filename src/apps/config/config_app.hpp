@@ -35,7 +35,7 @@ private:
 
     void initConfigFromDisk() override;
 
-    void saveConfigToDisk() override;
+    void saveConfigToDisk();
 };
 
 #endif // CONFIG_APP_H

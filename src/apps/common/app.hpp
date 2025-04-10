@@ -14,13 +14,32 @@ public:
 
     virtual ~App() = default;
 
+    virtual bool getHasOpenModal() const {
+        return hasOpenModal;
+    }
+
+    virtual bool isSettingsOpen() const {
+        return settingsOpen;
+    }
+
+    virtual bool isHelpOpen() const {
+        return helpOpen;
+    }
+
+    virtual void setHasOpenModal(bool value) {
+        hasOpenModal = value;
+    }
+
+    virtual void setSettingsOpen(bool value) {
+        settingsOpen = value;
+    }
+
+    virtual void setHelpOpen(bool value) {
+        helpOpen = value;
+    }
+
     // Virtual function that all apps must implement
     virtual void draw() = 0;
-
-
-    bool hasOpenModal = false;
-    bool settingsOpen = false;
-    bool helpOpen = false;
 
     // Virtual function that all apps must implement
     virtual void handleEvent(const sf::Event::KeyPressed &keyPressed) = 0;
@@ -38,6 +57,9 @@ protected:
     sf::RenderWindow &window;
     const sf::Font &font;
 
+    bool hasOpenModal = false;
+    bool settingsOpen = false;
+    bool helpOpen = false;
 
     const sf::Vector2f TOP_LEFT_ANCHOR = sf::Vector2f(Areas::PADDING * 2, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING * 2);
     const sf::Vector2f TOP_RIGHT_ANCHOR = sf::Vector2f(Areas::WINDOW_WIDTH - Areas::PADDING * 2, Areas::TOOLBAR_OFFSET + Areas::TAB_HEIGHT + Areas::PADDING * 2);
@@ -47,7 +69,7 @@ protected:
 
     const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f((Areas::WINDOW_WIDTH - Areas::MODAL_WIDTH) / 2, (Areas::WINDOW_HEIGHT - Areas::MODAL_HEIGHT) / 2);
 
-    void drawModalRectangle(sf::RenderWindow &window, std::string modalTitle);
+    void drawModalRectangle(std::string modalTitle);
 
     sf::FloatRect getGridBox(int colStart, int rowStart, int colSpan, int rowSpan);
 };

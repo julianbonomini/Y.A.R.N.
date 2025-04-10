@@ -1,4 +1,4 @@
 {
-    "default_work_time_in_seconds": "3",
-    "default_play_time_in_seconds": "3"
+    "default_play_time": "10",
+    "default_work_time": "15"
 }
