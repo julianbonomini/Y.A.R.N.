@@ -46,16 +46,18 @@ int main() {
     // Set up the sprite for rendering the texture
     sf::Sprite shaderSprite(renderTexture.getTexture());
 
+    if (!sf::Shader::isAvailable()){
+        log_attention_grabber();
+        std::cout << "No shaders available" << std::endl;
+        return 1;
+    }
     // Create a shader for CRT effect
     sf::Shader crtShader;
-    if (!crtShader.loadFromFile("src/ui/shaders/vertex.vert", "src/ui/shaders/crt.frag")) {
+    // if (!crtShader.loadFromFile("src/ui/shaders/vertex.vert", "src/ui/shaders/my_shader.frag")) {
+    if (!crtShader.loadFromFile("src/ui/shaders/my_shader.frag", sf::Shader::Type::Fragment)) {
         std::cout << "Failed to load shader!" << std::endl;
         return 1;
     }
-    // Set the resolution uniform
-    // crtShader.setUniform("u_resolution", sf::Glsl::Vec2(Layout::WINDOW_WIDTH, Layout::WINDOW_HEIGHT));
-    // crtShader.setUniform("resolution", sf::Vector2f(DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT));
-
 
     std::cout << "Initializing main layout..." << std::endl;
     log_separator();
@@ -157,10 +159,6 @@ int main() {
             }
         }
 
-        float time = clock.getElapsedTime().asSeconds();
-
-        // Set the u_time uniform in the shader
-        // crtShader.setUniform("u_time", time);
         renderTexture.clear(Colors::WHITE);
 
         // Draw everything to the render texture (pass renderTexture instead of window)
@@ -171,16 +169,11 @@ int main() {
         // Apply any post-processing to the render texture (CRT effect)
         renderTexture.display();  // Finalize render texture
 
-        crtShader.setUniform("u_texture", sf::Shader::CurrentTexture);
-        // crtShader.setUniform("u_time", clock.getElapsedTime().asSeconds());
-        crtShader.setUniform("CRT_CURVE_AMNTx", 0.5f);  // Adjust X-axis curvature
-        crtShader.setUniform("CRT_CURVE_AMNTy", 0.5f);  // Adjust Y-axis curvature
-        crtShader.setUniform("u_resolution", sf::Vector2f(DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT));  // Resolution of the screen
+        crtShader.setUniform("time", (float)clock.getElapsedTime().asSeconds());
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        window.draw(shaderSprite);  // Render the textured sprite
-        // window.draw(shaderSprite, &crtShader);  // Render the textured sprite with CRT effect
+        window.draw(shaderSprite, &crtShader);  // Render the textured sprite with CRT effect
         window.display();
     }
 
