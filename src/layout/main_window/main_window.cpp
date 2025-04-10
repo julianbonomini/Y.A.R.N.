@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include <SFML/Graphics.hpp>
 #include "../../globals/theme.hpp"
+#include "../utils/ui_helpers.hpp"
 
 
 MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font)
@@ -50,7 +51,8 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
 
         sf::Text label(font, apps[i].get()->appName, FontSizes::TAB);
         label.setFillColor(i == activeTab ? Colors::BLACK : Colors::GRAY);
-        label.setPosition({startingXPosition + Layout::PADDING, Layout::TOOLBAR_OFFSET + textOffsetY});
+        sf::Vector2f labelPosition = UIHelpers::snapToGrid({startingXPosition + Layout::PADDING, Layout::TOOLBAR_OFFSET + textOffsetY});
+        label.setPosition(labelPosition);
         window.draw(label);
     }
 }

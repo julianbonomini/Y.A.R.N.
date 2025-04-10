@@ -10,10 +10,13 @@ sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1,
     float width = AppGridLayout::CELL_WIDTH * colSpan + Layout::PADDING * (colSpan - 1);
     float height = AppGridLayout::CELL_HEIGHT * rowSpan + Layout::PADDING * (rowSpan - 1);
 
-    return sf::FloatRect({x, y}, {width, height});
+    return sf::FloatRect(
+        {std::round(x), std::round(y)},
+        {std::round(width), std::round(height)}
+    );
 }
 
-void App::drawModalRectangle(std::string modalTitle){
+void App::drawModalRectangle(std::string modalTitle) {
     sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
     modalRectangle.setFillColor(Colors::WHITE);

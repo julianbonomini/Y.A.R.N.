@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include "../../globals/theme.hpp"
+#include "../utils/ui_helpers.hpp"
 
 Toolbar::Toolbar(sf::RenderWindow &window, const sf::Font &font)
     : window(window), font(font) {
@@ -22,7 +23,8 @@ void Toolbar::draw() {
     sf::Text dateAndTime(font, timeStr);
     dateAndTime.setCharacterSize(FontSizes::TOOLBAR);
     dateAndTime.setFillColor(Colors::BLACK);
-    dateAndTime.setPosition({window.getSize().x - 145.f, 10.f});
+    sf::Vector2f dateAndTimePosition = UIHelpers::snapToGrid({window.getSize().x - 145.f, 10.f});
+    dateAndTime.setPosition(dateAndTimePosition);
     window.draw(dateAndTime);
 
     // Draw a thin horizontal line below the text
