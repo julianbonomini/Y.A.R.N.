@@ -16,7 +16,7 @@ struct StockData {
 
 class MarketApp : public AppWithConfig {
 public:
-    MarketApp(sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
+    MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine);
 
     void handleEvent(const sf::Event::KeyPressed &keyPressed) override;
 

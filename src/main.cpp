@@ -67,10 +67,10 @@ int main() {
     log_separator();
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
-    apps.push_back(std::make_unique<MarketApp>(window, font, stateMachine, "MKT"));
-    apps.push_back(std::make_unique<PomodoroApp>(window, font, stateMachine, "PMD"));
-    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CNF"));
-    apps.push_back(std::make_unique<InfoApp>(window, font, "INF"));
+    apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
 
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
@@ -179,7 +179,8 @@ int main() {
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        window.draw(shaderSprite, &crtShader);  // Render the textured sprite with CRT effect
+        window.draw(shaderSprite);  // Render the textured sprite
+        // window.draw(shaderSprite, &crtShader);  // Render the textured sprite with CRT effect
         window.display();
     }
 

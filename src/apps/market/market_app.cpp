@@ -6,8 +6,8 @@
 #include <string>
 
 
-MarketApp::MarketApp(sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine,const std::string &appName)
-    : AppWithConfig(renderer, font, stateMachine, appName) {
+MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
+    : AppWithConfig(appName, renderer, font, stateMachine) {
     loadMockData();
     initConfigFromDisk();
 }

@@ -7,8 +7,8 @@
 
 #include "../../ui/utils/ui_helpers.hpp"
 
-PomodoroApp::PomodoroApp(sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : AppWithConfig(renderer, font, stateMachine, appName) {
+PomodoroApp::PomodoroApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
+    : AppWithConfig(appName, renderer, font, stateMachine) {
     initConfigFromDisk();
 }
 

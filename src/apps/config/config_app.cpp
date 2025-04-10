@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-ConfigApp::ConfigApp(sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
+ConfigApp::ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine)
     : App(appName, target, font), stateMachine(stateMachine) {
     initConfigFromDisk();
 }

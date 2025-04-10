@@ -5,7 +5,7 @@
 
 #include "../../core/execute/execute_utils.hpp"
 
-InfoApp::InfoApp(sf::RenderTarget &render, const sf::Font &font, const std::string &appName)
+InfoApp::InfoApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font)
     : App(appName, renderer, font) {
     infoData.push_back({"OS:", "Noop"});
     infoData.push_back({"VERSION:", "0.0.1"});
@@ -31,7 +31,6 @@ void InfoApp::handleSettings() {
         drawModalRectangle("SETTINGS");
     }
 }
-
 
 void InfoApp::draw() {
     float labelPositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING;

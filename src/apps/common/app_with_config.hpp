@@ -8,7 +8,7 @@
 
 class AppWithConfig : public App {
 public:
-    AppWithConfig(sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
+    AppWithConfig(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine)
         : App(appName, target, font), stateMachine(stateMachine) {
     }
 
