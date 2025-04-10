@@ -32,7 +32,7 @@ int main() {
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
-    if (!font.openFromFile("./assets/fonts/FiraCodeNerdFont-Medium.ttf")) {
+    if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
         log_attention_grabber();
         std::cout << "Error loading default font" << std::endl;
         log_attention_grabber();
@@ -125,7 +125,7 @@ int main() {
                     // Open settings
                     if (keyPressed->scancode == sf::Keyboard::Scan::C) {
                         // Check if app accepts config
-                        if(AppWithConfig* v = dynamic_cast<AppWithConfig*>(activeApp)) {
+                        if(dynamic_cast<AppWithConfig*>(activeApp)) {
                             activeApp->setHasOpenModal(true);
                             activeApp->setSettingsOpen(true);
                             break;

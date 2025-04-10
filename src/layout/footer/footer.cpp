@@ -1,8 +1,7 @@
 #include "footer.hpp"
 #include <SFML/Graphics.hpp>
-#include <ctime>
 #include "../../globals/theme.hpp"
-#include "../utils/ui_helpers.hpp"
+#include "../../ui/utils/ui_helpers.hpp"
 
 Footer::Footer(sf::RenderWindow &window, const sf::Font &font)
     : window(window), font(font) {

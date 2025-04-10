@@ -119,11 +119,12 @@ void ConfigApp::drawHelpBox() {
     float textY = contentAreaCoordinates.position.y + Layout::PADDING;
 
     for (const auto& line : helpLines) {
-        sf::Text text(font, line, FontSizes::HELP);
-        text.setFillColor(Colors::BLACK); // or maybe sf::Color::Green for terminal vibes
+        sf::Text text(font, line);
+        text.setCharacterSize(FontSizes::TITLE);
+        text.setFillColor(Colors::BLACK);
         text.setPosition({textX, textY});
         window.draw(text);
-        textY += Layout::TEXT_SPACING; // spacing between lines
+        textY += Layout::TEXT_SPACING;
     }
 
 }

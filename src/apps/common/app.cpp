@@ -14,7 +14,7 @@ sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1,
         {std::round(x), std::round(y)},
         {std::round(width), std::round(height)}
     );
-}
+};
 
 void App::drawModalRectangle(std::string modalTitle) {
     sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
@@ -29,4 +29,4 @@ void App::drawModalRectangle(std::string modalTitle) {
     title.setFillColor(Colors::BLACK);
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     window.draw(title);
-}
+};

@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include <SFML/Graphics.hpp>
 #include "../../globals/theme.hpp"
-#include "../utils/ui_helpers.hpp"
+#include "../../ui/utils/ui_helpers.hpp"
 
 
 MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font)

@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+#include "../../ui/utils/ui_helpers.hpp"
+
 PomodoroApp::PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
     : AppWithConfig(window, font, stateMachine, appName) {
     initConfigFromDisk();
@@ -148,8 +150,9 @@ void PomodoroApp::drawStartStopButton() {
 
     // Center text
     sf::FloatRect textBounds = text.getLocalBounds();
-    text.setOrigin({textBounds.position.x + textBounds.size.x / 2, textBounds.position.y + textBounds.size.y / 2});
-    text.setPosition(startStopBox.position + startStopBox.size / 2.0f);
+    sf::Vector2f textPos = UIHelpers::snapToGrid({textBounds.position.x + textBounds.size.x / 2, textBounds.position.y + textBounds.size.y / 2});
+    text.setOrigin(textPos);
+    text.setPosition(UIHelpers::snapToGrid(startStopBox.position + startStopBox.size / 2.0f));
 
     window.draw(text);
 }
@@ -162,12 +165,15 @@ void PomodoroApp::drawResetButton() {
     rect.setOutlineColor(Colors::GRAY);
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     window.draw(rect);
+
     sf::Text text(font, "RESET");
     text.setFillColor(Colors::BLACK);
     text.setCharacterSize(FontSizes::LABEL);
+
     sf::FloatRect textBounds = text.getLocalBounds();
-    text.setOrigin({textBounds.position.x + textBounds.size.x / 2, textBounds.position.y + textBounds.size.y / 2});
-    text.setPosition(box.position + box.size / 2.f);
+    sf::Vector2f textPos = UIHelpers::snapToGrid({textBounds.position.x + textBounds.size.x / 2, textBounds.position.y + textBounds.size.y / 2});
+    text.setOrigin(textPos);
+    text.setPosition(UIHelpers::snapToGrid(box.position + box.size / 2.f));
     window.draw(text);
 }
 
@@ -190,15 +196,17 @@ void PomodoroApp::drawWorkClock() {
     sf::Text label(font, "WORK TIMER");
     label.setFillColor(isWorkTime ? Colors::WHITE : Colors::BLACK);
     label.setCharacterSize(FontSizes::LABEL);
-    label.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
+    sf::Vector2f labelPos = UIHelpers::snapToGrid({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
+    label.setPosition(labelPos);
     window.draw(label);
 
     sf::Text counter(font, counterStream.str());
     counter.setFillColor(isWorkTime ? Colors::WHITE : Colors::BLACK);
     counter.setCharacterSize(50);
     sf::FloatRect counterBounds = counter.getLocalBounds();
-    counter.setOrigin({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
-    counter.setPosition(box.position + box.size / 2.0f);
+    sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
+    counter.setOrigin(counterPos);
+    counter.setPosition(UIHelpers::snapToGrid(box.position + box.size / 2.0f));
     window.draw(counter);
 }
 
@@ -220,15 +228,16 @@ void PomodoroApp::drawPlayClock() {
     sf::Text text(font, "BREAK TIMER");
     text.setFillColor(!isWorkTime ? Colors::WHITE : Colors::BLACK);
     text.setCharacterSize(FontSizes::LABEL);
-    text.setPosition({box.position + sf::Vector2f(10, 10)});
+    text.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     window.draw(text);
 
     sf::Text counter(font, counterStream.str());
     counter.setFillColor(!isWorkTime ? Colors::WHITE : Colors::BLACK);
     counter.setCharacterSize(50);
     sf::FloatRect counterBounds = counter.getLocalBounds();
-    counter.setOrigin({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
-    counter.setPosition(box.position + box.size / 2.0f);
+    sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
+    counter.setOrigin(counterPos);
+    counter.setPosition(UIHelpers::snapToGrid(box.position + box.size / 2.0f));
     window.draw(counter);
 }
 
