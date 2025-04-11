@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 ConfigApp::ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine)
     : App(appName, target, font), stateMachine(stateMachine) {
@@ -297,10 +298,22 @@ void ConfigApp::initConfigFromDisk() {
     configOptions.push_back(shaderEnabled);
 
     // Shader
+    std::vector<std::string> shaderFiles;
+    std::string shaderDirectory = "src/ui/shaders";
+    try {
+        for (const auto& entry : std::filesystem::directory_iterator(shaderDirectory)) {
+            if (std::filesystem::is_regular_file(entry)) {
+                std::string filenameWithoutExtension = entry.path().stem().string();
+                shaderFiles.push_back(filenameWithoutExtension);
+            }
+        }
+    } catch (const std::exception& e) {
+        app_log("Error reading shader directory: ", e.what());
+    }
     BaseConfigOptions shader;
     shader.label = "shader";
     shader.type = BaseConfigOptionType::CYCLE;;
-    shader.options = {"01", "02", "03"};
+    shader.options = shaderFiles;
     shader.currentValue = stateMachine.getOsConfig().shader;
     shader.selected = false;
     shader.changed = false;
