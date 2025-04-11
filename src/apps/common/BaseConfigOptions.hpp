@@ -3,7 +3,7 @@
 
 enum class BaseConfigOptionType {
     CYCLE,
-    CHECKBOX,
+    TOGGLE,
     FREE_NUMBER
 };
 

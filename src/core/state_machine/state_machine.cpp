@@ -66,6 +66,7 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
     }
     json j;
 
+    // TODO: here we could transform into proper type, currentValue is always a stirng
     for (const auto &option: configOptions) {
         j[option.label] = option.currentValue;
         if (option.label == "refresh_rate_hz") {

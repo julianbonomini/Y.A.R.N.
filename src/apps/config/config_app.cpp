@@ -31,7 +31,7 @@ void ConfigApp::moveUp() {
 }
 
 void ConfigApp::changeOptionRight() {
-    for (auto& option : configOptions) {
+    for (auto &option: configOptions) {
         if (option.selected && !option.options.empty()) {
             auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
             if (it != option.options.end()) {
@@ -46,7 +46,7 @@ void ConfigApp::changeOptionRight() {
 }
 
 void ConfigApp::changeOptionLeft() {
-    for (auto& option : configOptions) {
+    for (auto &option: configOptions) {
         if (option.selected && !option.options.empty()) {
             auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
             if (it != option.options.end()) {
@@ -118,7 +118,7 @@ void ConfigApp::drawHelpBox() {
     float textX = contentAreaCoordinates.position.x + Layout::PADDING;
     float textY = contentAreaCoordinates.position.y + Layout::PADDING;
 
-    for (const auto& line : helpLines) {
+    for (const auto &line: helpLines) {
         sf::Text text(font, line);
         text.setCharacterSize(FontSizes::TITLE);
         text.setFillColor(Colors::BLACK);
@@ -126,12 +126,11 @@ void ConfigApp::drawHelpBox() {
         renderer.draw(text);
         textY += Layout::TEXT_SPACING;
     }
-
 }
 
 void ConfigApp::draw() {
     float labelPositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING;
-    float valuePositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING +  + Layout::LABEL_VALUE_SPACE;
+    float valuePositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING + +Layout::LABEL_VALUE_SPACE;
     float verticalOffset = Layout::PADDING;
 
     drawHelpBox();
@@ -139,42 +138,47 @@ void ConfigApp::draw() {
     // Loop through each config option dynamically
     for (size_t i = 0; i < configOptions.size(); ++i) {
         // Draw the label
+        float valueYPosition = TOP_LEFT_ANCHOR.y + verticalOffset;
         BaseConfigOptions &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
-        labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
+        labelText.setPosition({labelPositionX, valueYPosition});
         renderer.draw(labelText);
 
         // Draw the value for this config option
-        std::stringstream valueStream;
-        valueStream << currentOption.currentValue;
-        sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
-        valueText.setFillColor(Colors::BLACK);
-        valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
-        // If selected, draw background rectangle behind value
+        if (currentOption.type == BaseConfigOptionType::TOGGLE) {
+            float circleOffset = Layout::PADDING / 2;
+            // Draw the filled circle (inner part)
+            sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
+            checkboxFill.setFillColor(currentOption.currentValue == "1" ? Colors::BLACK : Colors::WHITE); // Filled if value is "1"
+            checkboxFill.setPosition({valuePositionX + 2.f, valueYPosition + circleOffset + 2.f}); // Adjust position for the gap
+            renderer.draw(checkboxFill);
+
+            // Draw the outline circle (outer part)
+            sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
+            // checkboxOutline.setFillColor(Colors::TRANSPARENT); // No fill for the outline
+            checkboxOutline.setOutlineColor(Colors::BLACK); // Outline color
+            checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
+            checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
+            renderer.draw(checkboxOutline);
+        } else {
+            std::stringstream valueStream;
+            valueStream << currentOption.currentValue;
+            sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
+            valueText.setFillColor(Colors::BLACK);
+            valueText.setPosition({valuePositionX, valueYPosition});
+            renderer.draw(valueText);
+        }
+
         if (currentOption.selected) {
-            sf::FloatRect bounds = valueText.getGlobalBounds();
+            sf::FloatRect bounds = labelText.getGlobalBounds();
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
             highlightRect.setFillColor(Colors::GRAY);
             renderer.draw(highlightRect);
+            renderer.draw(labelText);
         }
-        renderer.draw(valueText);
-
-        // Draw if it's active
-        if (currentOption.selected) {
-            // sf::RectangleShape editRecangle(sf::Vector2f(10.f, 10.f));
-            // labelText.setPosition({labelPositionX, TOP_LEFT.y + verticalOffset});
-            // labelText.setFillColor(Colors::Background);
-            labelText.setOutlineColor(Colors::GRAY);
-
-            // debugRectangle.setPosition({renderer.getView().getCenter().x, renderer.getView().getCenter().y});
-            // debugRectangle.setFillColor(sf::Color::Red);
-            // debugRectangle.setOutlineThickness(Lines::BOX_LINE_THICKNESS);
-            // renderer.draw(debugRectangle);
-        }
-
         // Increment the vertical offset to position the next label/value pair
         verticalOffset += Layout::TEXT_SPACING;
     }
@@ -222,6 +226,46 @@ void ConfigApp::initConfigFromDisk() {
     defaultTabOption.selected = false;
     defaultTabOption.changed = false;
     configOptions.push_back(defaultTabOption);
+
+    // Shader ON/OFF
+    BaseConfigOptions shaderEnabled;
+    shaderEnabled.label = "shader_enabled";
+    shaderEnabled.type = BaseConfigOptionType::TOGGLE;;
+    shaderEnabled.options = {};
+    shaderEnabled.currentValue = std::to_string(stateMachine.getOsConfig().shaderEnabled);
+    shaderEnabled.selected = false;
+    shaderEnabled.changed = false;
+    configOptions.push_back(shaderEnabled);
+
+    // Shader
+    BaseConfigOptions shader;
+    shader.label = "shader";
+    shader.type = BaseConfigOptionType::CYCLE;;
+    shader.options = {"01", "02", "03"};
+    shader.currentValue = stateMachine.getOsConfig().shader;
+    shader.selected = false;
+    shader.changed = false;
+    configOptions.push_back(shader);
+
+    // Flicker enabled
+    BaseConfigOptions flickerEnabled;
+    flickerEnabled.label = "flicker_enabled";
+    flickerEnabled.type = BaseConfigOptionType::TOGGLE;;
+    flickerEnabled.options = {};
+    flickerEnabled.currentValue = std::to_string(stateMachine.getOsConfig().flickerEnabled);
+    flickerEnabled.selected = false;
+    flickerEnabled.changed = false;
+    configOptions.push_back(flickerEnabled);
+
+    // Shader
+    BaseConfigOptions flickerIntensity;
+    flickerIntensity.label = "flicker_intensity";
+    flickerIntensity.type = BaseConfigOptionType::FREE_NUMBER;;
+    flickerIntensity.options = {};
+    flickerIntensity.currentValue = std::to_string(stateMachine.getOsConfig().flickerIntensity);
+    flickerIntensity.selected = false;
+    flickerIntensity.changed = false;
+    configOptions.push_back(flickerIntensity);
 }
 
 void ConfigApp::saveConfigToDisk() {
