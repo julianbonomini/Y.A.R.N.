@@ -1,14 +1,6 @@
-# Noop
+# Y.A.R.N.
 
-Noop is a Y.A.R.N. (yet another retro node) project. A BIOS inspired desk gadget to run c++ apps, either informative or interactive.
-
-Since name is still in progress, here is a few other options:
-```
-- F12
-- BLIP
-- Y.A.R.N. (Yet Another Retro Node. Or... Yet Another Ridiculous Name)
-- ByteMe
-```
+(yet another retro node) project. A BIOS inspired desk gadget to run c++ apps, either informative or interactive.
 
 ## Hardware
 
@@ -38,3 +30,10 @@ make run
 ```bash
 make clean
 ```
+
+## Release
+
+Tag github with eihter:
+- v[0-9]+.[0-9]+.[0-9]+
+- v[0-9]+.[0-9]+.[0-9]+-beta
+- v[0-9]+.[0-9]+.[0-9]+-alpha
