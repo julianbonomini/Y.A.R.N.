@@ -1,6 +1,6 @@
 #include "main_window.hpp"
 #include <SFML/Graphics.hpp>
-#include "../../globals/theme.hpp"
+#include "../../globals/ui_globals.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
 

@@ -5,12 +5,13 @@
 #include "core/network/network.hpp"
 #include "layout/toolbar/toolbar.hpp"
 #include "layout/footer/footer.hpp"
-#include "globals/theme.hpp"
+#include "globals/ui_globals.hpp"
 #include "apps/info/info_app.hpp"
 #include "apps/market/market_app.hpp"
 #include "apps/pomodoro/pomodoro_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
+#include "ui/themes/theme_manager.hpp"
 
 
 void log_separator() {
@@ -71,6 +72,12 @@ int main() {
         loadaedShader = initial_os_config_file.shader; // Copies the value
         log_separator();
     }
+
+
+    std::cout << "Initializing theme..." << std::endl;
+    ThemeManager::instance().setTheme("dark");
+    log_separator();
+
 
     std::cout << "Initializing main layout..." << std::endl;
     log_separator();
@@ -189,7 +196,7 @@ int main() {
         }
 
         // Clear screen with base color
-        renderTexture.clear(Colors::BACKGROUND);
+        renderTexture.clear(ThemeManager::instance().getCurrentTheme().background());
         // Draw everything
         toolbar.draw();
         footer.draw();
@@ -206,7 +213,7 @@ int main() {
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Clear the window and draw the final image
-        window.clear(Colors::BACKGROUND);
+        window.clear(ThemeManager::instance().getCurrentTheme().background());
         if (os_config_file->shaderEnabled && loadaedShader != "") {
             window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         } else {
