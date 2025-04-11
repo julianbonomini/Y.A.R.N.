@@ -49,13 +49,6 @@ namespace FontSizes {
     constexpr int HELP = 12;
 }
 
-namespace Colors {
-    constexpr sf::Color BACKGROUND = sf::Color::White;
-    constexpr sf::Color PRIMARY = sf::Color::Black;
-    constexpr sf::Color SECONDARY = sf::Color(200, 200, 200);
-    constexpr sf::Color DEBUG = sf::Color::Red;
-}
-
 namespace LineStyles {
     constexpr float BOX_LINE_THICKNESS = 2.f;
     constexpr float LINE_THICKNESS = 2.f;

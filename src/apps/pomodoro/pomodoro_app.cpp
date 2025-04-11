@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+#include "../../ui/themes/theme_manager.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
 PomodoroApp::PomodoroApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
@@ -139,13 +140,13 @@ void PomodoroApp::drawStartStopButton() {
     auto startStopBox = getGridBox(2, 0, 1, 1);
     sf::RectangleShape rect({startStopBox.size.x, startStopBox.size.y});
     rect.setPosition(startStopBox.position);
-    rect.setFillColor(Colors::BACKGROUND);
-    rect.setOutlineColor(Colors::SECONDARY);
+    rect.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    rect.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
     sf::Text text(font, "START/PAUSE");
-    text.setFillColor(Colors::PRIMARY);
+    text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     text.setCharacterSize(FontSizes::LABEL);
 
     // Center text
@@ -161,13 +162,13 @@ void PomodoroApp::drawResetButton() {
     auto box = getGridBox(2, 1, 1, 1);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
-    rect.setFillColor(Colors::BACKGROUND);
-    rect.setOutlineColor(Colors::SECONDARY);
+    rect.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    rect.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
     sf::Text text(font, "RESET");
-    text.setFillColor(Colors::PRIMARY);
+    text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     text.setCharacterSize(FontSizes::LABEL);
 
     sf::FloatRect textBounds = text.getLocalBounds();
@@ -181,8 +182,8 @@ void PomodoroApp::drawWorkClock() {
     auto box = getGridBox(0, 0, 2, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
-    rect.setFillColor(isWorkTime ? Colors::SECONDARY : Colors::BACKGROUND);
-    rect.setOutlineColor(Colors::SECONDARY);
+    rect.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
+    rect.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
@@ -194,14 +195,14 @@ void PomodoroApp::drawWorkClock() {
 
 
     sf::Text label(font, "WORK TIMER");
-    label.setFillColor(isWorkTime ? Colors::BACKGROUND : Colors::PRIMARY);
+    label.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     label.setCharacterSize(FontSizes::LABEL);
     sf::Vector2f labelPos = UIHelpers::snapToGrid({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     label.setPosition(labelPos);
     renderer.draw(label);
 
     sf::Text counter(font, counterStream.str());
-    counter.setFillColor(isWorkTime ? Colors::BACKGROUND : Colors::PRIMARY);
+    counter.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     counter.setCharacterSize(50);
     sf::FloatRect counterBounds = counter.getLocalBounds();
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
@@ -214,8 +215,8 @@ void PomodoroApp::drawPlayClock() {
     auto box = getGridBox(3, 0, 2, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
-    rect.setFillColor(!isWorkTime ? Colors::SECONDARY : Colors::BACKGROUND);
-    rect.setOutlineColor(Colors::SECONDARY);
+    rect.setFillColor(!isWorkTime ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
+    rect.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
@@ -226,13 +227,13 @@ void PomodoroApp::drawPlayClock() {
     counterStream << std::setfill('0') << std::setw(2) << mins << ":" << std::setw(2) << secs;
 
     sf::Text text(font, "BREAK TIMER");
-    text.setFillColor(!isWorkTime ? Colors::BACKGROUND : Colors::PRIMARY);
+    text.setFillColor(!isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     text.setCharacterSize(FontSizes::LABEL);
     text.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     renderer.draw(text);
 
     sf::Text counter(font, counterStream.str());
-    counter.setFillColor(!isWorkTime ? Colors::BACKGROUND : Colors::PRIMARY);
+    counter.setFillColor(!isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     counter.setCharacterSize(50);
     sf::FloatRect counterBounds = counter.getLocalBounds();
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});

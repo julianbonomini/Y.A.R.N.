@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+#include "../../ui/themes/theme_manager.hpp"
+
 
 MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
     : AppWithConfig(appName, renderer, font, stateMachine) {
@@ -91,8 +93,8 @@ void MarketApp::drawStandaloneSymbols() {
     // Draw background box
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
-    backgroundBox.setFillColor(Colors::BACKGROUND);
-    backgroundBox.setOutlineColor(Colors::SECONDARY);
+    backgroundBox.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
@@ -119,8 +121,8 @@ void MarketApp::drawMarketTrackers() {
     // Draw background box
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
-    backgroundBox.setFillColor(Colors::BACKGROUND);
-    backgroundBox.setOutlineColor(Colors::SECONDARY);
+    backgroundBox.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
@@ -134,15 +136,15 @@ void MarketApp::drawMarketTrackers() {
 
 void MarketApp::drawMarketStatus() {
     // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = marketOpen ? Colors::BACKGROUND : Colors::SECONDARY;
-    sf::Color textColor = marketOpen ? Colors::PRIMARY : Colors::BACKGROUND;
+    sf::Color backgroundColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
+    sf::Color textColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
 
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 0, 1, 1);
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(backgroundColor);
-    backgroundBox.setOutlineColor(Colors::SECONDARY);
+    backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
@@ -166,15 +168,15 @@ void MarketApp::drawMarketStatus() {
 
 void MarketApp::drawMarketSession() {
     // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = marketOpen ? Colors::BACKGROUND : Colors::SECONDARY;
-    sf::Color textColor = marketOpen ? Colors::PRIMARY : Colors::BACKGROUND;
+    sf::Color backgroundColor = marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
+    sf::Color textColor = marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
 
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 1, 1, 1);
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
     backgroundBox.setFillColor(backgroundColor);
-    backgroundBox.setOutlineColor(Colors::SECONDARY);
+    backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
@@ -195,14 +197,14 @@ void MarketApp::drawMarketSentiment() {
     auto backgroundBoxCoordinates = getGridBox(2, 2, 1.5, 2);
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
-    backgroundBox.setFillColor(Colors::BACKGROUND);
-    backgroundBox.setOutlineColor(Colors::SECONDARY);
+    backgroundBox.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
     sf::Text text(font, "BEAR");
     text.setCharacterSize(20);
-    text.setFillColor(Colors::PRIMARY);
+    text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
 
 
     // Center the text within the background box
@@ -217,8 +219,8 @@ void MarketApp::drawStonksMeme() {
     auto backgroundBoxCoordinates = getGridBox(3.5, 2, 1.5, 2);
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
-    backgroundBox.setFillColor(Colors::BACKGROUND);
-    backgroundBox.setOutlineColor(Colors::SECONDARY);
+    backgroundBox.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
@@ -243,19 +245,19 @@ void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, con
     // Header row
     sf::Text headerSymbol(font, "SYMBOL");
     headerSymbol.setPosition({labelX, startY + Layout::PADDING});
-    headerSymbol.setFillColor(Colors::PRIMARY);
+    headerSymbol.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     headerSymbol.setCharacterSize(FontSizes::LABEL);
     renderer.draw(headerSymbol);
 
     sf::Text headerPrice(font, "PRICE");
     headerPrice.setPosition({priceX, startY + Layout::PADDING});
-    headerPrice.setFillColor(Colors::PRIMARY);
+    headerPrice.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     headerPrice.setCharacterSize(FontSizes::LABEL);
     renderer.draw(headerPrice);
 
     sf::Text headerChange(font, "CHANGE");
     headerChange.setPosition({changeX, startY + Layout::PADDING});
-    headerChange.setFillColor(Colors::PRIMARY);
+    headerChange.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     headerChange.setCharacterSize(FontSizes::LABEL);
     renderer.draw(headerChange);
 }
@@ -265,7 +267,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         // Symbol
         sf::Text labelText(font, symbol.ticker);
         labelText.setPosition({labelX, currentY});
-        labelText.setFillColor(Colors::PRIMARY);
+        labelText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         labelText.setCharacterSize(FontSizes::LABEL);
         renderer.draw(labelText);
 
@@ -274,7 +276,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         priceStream << "$" << std::fixed << std::setprecision(2) << symbol.price;
         sf::Text priceText(font, priceStream.str());
         priceText.setPosition({priceX, currentY});
-        priceText.setFillColor(Colors::PRIMARY);
+        priceText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         priceText.setCharacterSize(FontSizes::LABEL);
         renderer.draw(priceText);
 
@@ -286,7 +288,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
         sf::Text changeText(font, changeStream.str());
         changeText.setPosition({changeX, currentY});
-        changeText.setFillColor(Colors::PRIMARY);
+        changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         changeText.setCharacterSize(FontSizes::LABEL);
         renderer.draw(changeText);
 

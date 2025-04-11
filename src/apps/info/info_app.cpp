@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../../core/execute/execute_utils.hpp"
+#include "../../ui/themes/theme_manager.hpp"
 
 InfoApp::InfoApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font)
     : App(appName, renderer, font) {
@@ -44,12 +45,12 @@ void InfoApp::draw() {
     for (const auto &entry: infoData) {
         sf::Text labelText(font, entry.first);
         labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
-        labelText.setFillColor(Colors::PRIMARY);
+        labelText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         labelText.setCharacterSize(FontSizes::LABEL);
 
         sf::Text valueText(font, entry.second);
         valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
-        valueText.setFillColor(Colors::PRIMARY);
+        valueText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         valueText.setCharacterSize(FontSizes::LABEL);
 
         // Draw label and value

@@ -48,6 +48,7 @@ bool StateMachine::loadOsConfigFromDisk() {
         file >> j;
         osConfigFile.refreshRate = std::stoi(std::string(j["refresh_rate_hz"]));
         osConfigFile.defaultTab = std::stoi(std::string(j["default_tab"]));
+        osConfigFile.theme = std::string(j["theme"]);
         osConfigFile.shaderEnabled = std::stoi(std::string(j["shader_enabled"]));
         osConfigFile.shader = std::string(j["shader"]);
         osConfigFile.flickerEnabled = std::stoi(std::string(j["flicker_enabled"]));
@@ -68,6 +69,7 @@ bool StateMachine::loadDefaultOsConfig() {
     osConfigFile.shader = "none";
     osConfigFile.flickerEnabled = 0;
     osConfigFile.flickerIntensity = 10;
+    osConfigFile.theme = "light";
     return 1;
 }
 
@@ -98,6 +100,9 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
         }
         if (option.label == "flicker_intensity") {
             osConfigFile.flickerIntensity = std::stoi(option.currentValue);
+        }
+        if (option.label == "theme") {
+            osConfigFile.theme = option.currentValue;
         }
     }
 

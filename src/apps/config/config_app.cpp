@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../../ui/themes/theme_manager.hpp"
+
 ConfigApp::ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine)
     : App(appName, target, font), stateMachine(stateMachine) {
     initConfigFromDisk();
@@ -159,8 +161,8 @@ void ConfigApp::drawControlsHelpBox() {
     auto contentAreaCoordinates = getGridBox(3, 2, 2, 2);
     sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
-    contentArea.setFillColor(Colors::BACKGROUND);
-    contentArea.setOutlineColor(Colors::SECONDARY);
+    contentArea.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    contentArea.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(contentArea);
 
@@ -179,7 +181,7 @@ void ConfigApp::drawControlsHelpBox() {
     for (const auto &line: helpLines) {
         sf::Text text(font, line);
         text.setCharacterSize(FontSizes::TITLE);
-        text.setFillColor(Colors::PRIMARY);
+        text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         text.setPosition({textX, textY});
         renderer.draw(text);
         textY += Layout::TEXT_SPACING;
@@ -203,8 +205,8 @@ void ConfigApp::drawCurrOptionHelpBox() {
     // --- Content area ---
     sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
-    contentArea.setFillColor(Colors::BACKGROUND);
-    contentArea.setOutlineColor(Colors::SECONDARY);
+    contentArea.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    contentArea.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(contentArea);
 
@@ -213,13 +215,13 @@ void ConfigApp::drawCurrOptionHelpBox() {
 
     sf::Text title(font, "SETTING HELP");
     title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(Colors::PRIMARY);
+    title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     title.setPosition({textX, textY});
     renderer.draw(title);
 
     sf::Text help(font, selectedOptionHelp);
     help.setCharacterSize(FontSizes::DESCRIPTION);
-    help.setFillColor(Colors::PRIMARY);
+    help.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     help.setPosition({textX, title.getGlobalBounds().position.y + title.getGlobalBounds().size.y + Layout::PADDING});
     renderer.draw(help);
 
@@ -239,7 +241,7 @@ void ConfigApp::draw() {
         float valueYPosition = TOP_LEFT_ANCHOR.y + verticalOffset;
         BaseConfigOptions &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
-        labelText.setFillColor(Colors::PRIMARY);
+        labelText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         labelText.setPosition({labelPositionX, valueYPosition});
         renderer.draw(labelText);
 
@@ -248,8 +250,8 @@ void ConfigApp::draw() {
             float circleOffset = Layout::PADDING / 2;
             // Draw the outline circle (outer part)
             sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
-            // checkboxOutline.setFillColor(Colors::TRANSPARENT); // No fill for the outline
-            checkboxOutline.setOutlineColor(Colors::PRIMARY); // Outline color
+            checkboxOutline.setOutlineColor(ThemeManager::instance().getCurrentTheme().primary()); // Outline color
+            checkboxOutline.setFillColor(ThemeManager::instance().getCurrentTheme().background()); // Outline color
             checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
             checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
             renderer.draw(checkboxOutline);
@@ -257,7 +259,7 @@ void ConfigApp::draw() {
             // Draw the filled circle (inner part)
             if (currentOption.currentValue == "1") {
                 sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
-                checkboxFill.setFillColor(Colors::PRIMARY); // Filled if value is "1"
+                checkboxFill.setFillColor(ThemeManager::instance().getCurrentTheme().primary()); // Filled if value is "1"
                 checkboxFill.setPosition({valuePositionX + 1.f, valueYPosition + circleOffset + 1.f}); // Adjust position for the gap
                 renderer.draw(checkboxFill);
             }
@@ -265,7 +267,7 @@ void ConfigApp::draw() {
             std::stringstream valueStream;
             valueStream << currentOption.currentValue;
             sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
-            valueText.setFillColor(Colors::PRIMARY);
+            valueText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
             valueText.setPosition({valuePositionX, valueYPosition});
             renderer.draw(valueText);
         }
@@ -275,7 +277,7 @@ void ConfigApp::draw() {
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
-            highlightRect.setFillColor(Colors::SECONDARY);
+            highlightRect.setFillColor(ThemeManager::instance().getCurrentTheme().highlight());
             renderer.draw(highlightRect);
             renderer.draw(labelText);
         }
@@ -287,7 +289,7 @@ void ConfigApp::draw() {
     // Draw if in edit mode:
     if (editModeEnabled) {
         sf::Text editModeEnabled(font, "EDIT_MODE", FontSizes::HELP);
-        editModeEnabled.setFillColor(Colors::PRIMARY);
+        editModeEnabled.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         renderer.draw(editModeEnabled);
     }
@@ -296,7 +298,7 @@ void ConfigApp::draw() {
     if (unsavedChangesFlag) {
         const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
-        unsavedChanges.setFillColor(Colors::PRIMARY);
+        unsavedChanges.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         renderer.draw(unsavedChanges);
     }
@@ -318,6 +320,17 @@ void ConfigApp::initConfigFromDisk() {
     defaultTabOption.changed = false;
     defaultTabOption.description = "This will be the displayed TAB when the system restarts.";
     configOptions.push_back(defaultTabOption);
+
+    // Theme
+    BaseConfigOptions theme;
+    theme.label = "theme";
+    theme.type = BaseConfigOptionType::CYCLE;;
+    theme.options = {"light", "dark"};
+    theme.currentValue = stateMachine.getOsConfig().theme;
+    theme.selected = false;
+    theme.changed = false;
+    theme.description = "The UI theme for the entire OS. This only affects colors. Try to find the best combination between themes and shaders! You need to save to see changes.";
+    configOptions.push_back(theme);
 
     // Shader ON/OFF
     BaseConfigOptions shaderEnabled;

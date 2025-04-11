@@ -3,7 +3,7 @@
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "../../globals/theme.hpp"
+#include "../../globals/ui_globals.hpp"
 
 class StateMachine;
 

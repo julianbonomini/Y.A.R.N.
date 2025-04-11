@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include <SFML/Graphics.hpp>
-#include "../../globals/theme.hpp"
+#include "../../globals/ui_globals.hpp"
+#include "../../ui/themes/theme_manager.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
 
@@ -37,20 +38,20 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
         tabOutline.setPoint(4, {startingXPosition + Layout::TAB_WIDTH, Layout::TOOLBAR_OFFSET + curve}); // right curve end
         tabOutline.setPoint(5, {startingXPosition + Layout::TAB_WIDTH, Layout::TOOLBAR_OFFSET + Layout::TAB_HEIGHT + textOffsetY}); // bottom right
         tabOutline.setOutlineThickness(LineStyles::LINE_THICKNESS);
-        tabOutline.setOutlineColor(Colors::SECONDARY);
-        // tabOutline.setFillColor(Colors::GRAY);
+        tabOutline.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
+        tabOutline.setFillColor(ThemeManager::instance().getCurrentTheme().background());
 
 
         if (i == activeTab) {
             renderer.draw(tabOutline);
             sf::RectangleShape coverAreaLine(sf::Vector2f(Layout::TAB_WIDTH, LineStyles::LINE_THICKNESS));
             coverAreaLine.setPosition({startingXPosition, Layout::TOOLBAR_OFFSET + Layout::TAB_HEIGHT + Layout::PADDING - 2.f});
-            coverAreaLine.setFillColor(Colors::BACKGROUND);
+            coverAreaLine.setFillColor(ThemeManager::instance().getCurrentTheme().background());
             renderer.draw(coverAreaLine);
         }
 
         sf::Text label(font, apps[i].get()->appName, FontSizes::TAB);
-        label.setFillColor(i == activeTab ? Colors::PRIMARY : Colors::SECONDARY);
+        label.setFillColor(i == activeTab ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().secondary());
         sf::Vector2f labelPosition = UIHelpers::snapToGrid({startingXPosition + Layout::PADDING, Layout::TOOLBAR_OFFSET + textOffsetY});
         label.setPosition(labelPosition);
         renderer.draw(label);
@@ -64,8 +65,8 @@ void MainWindow::drawAppArea() {
 
     sf::RectangleShape contentArea(sf::Vector2f(Layout::MAIN_APP_WIDTH, Layout::MAIN_APP_HEIGHT));
     contentArea.setPosition({contentX, contentY});
-    contentArea.setFillColor(Colors::BACKGROUND);
-    contentArea.setOutlineColor(Colors::SECONDARY);
+    contentArea.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    contentArea.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     contentArea.setOutlineThickness(LineStyles::BOX_LINE_THICKNESS);
 
     renderer.draw(contentArea);

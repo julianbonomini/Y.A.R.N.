@@ -1,6 +1,8 @@
 #include "app.hpp"
 #include <SFML/Graphics.hpp>
 
+#include "../../ui/themes/theme_manager.hpp"
+
 
 sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1, float rowSpan = 1) {
     const sf::Vector2f anchor = TOP_LEFT_ANCHOR;
@@ -19,14 +21,14 @@ sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1,
 void App::drawModalRectangle(std::string modalTitle) {
     sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
-    modalRectangle.setFillColor(Colors::BACKGROUND);
-    modalRectangle.setOutlineColor(Colors::SECONDARY);
+    modalRectangle.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    modalRectangle.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(modalRectangle);
 
     sf::Text title(font, appName + " " + modalTitle);
     title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(Colors::PRIMARY);
+    title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     renderer.draw(title);
 };

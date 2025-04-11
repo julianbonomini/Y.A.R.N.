@@ -12,6 +12,7 @@ enum class AppConfigTypes {
 struct OsConfigFile {
     int refreshRate;
     int defaultTab;
+    std::string theme;
     int shaderEnabled;
     std::string shader;
     bool flickerEnabled;
