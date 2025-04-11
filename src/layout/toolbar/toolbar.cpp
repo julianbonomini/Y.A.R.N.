@@ -14,7 +14,7 @@ void Toolbar::draw() {
     float textX = Layout::PADDING;
     float textY = Layout::PADDING;
 
-    sf::Text osName(font, "NOOP");
+    sf::Text osName(font, "Y.A.R.N.");
     osName.setCharacterSize(FontSizes::TOOLBAR);
     osName.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::Vector2f osNamePos = UIHelpers::snapToGrid({textX, textY});

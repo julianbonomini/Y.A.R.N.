@@ -8,14 +8,13 @@
 
 InfoApp::InfoApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font)
     : App(appName, renderer, font) {
-    infoData.push_back({"OS:", "Noop"});
-    infoData.push_back({"VERSION:", "0.0.1"});
+    infoData.push_back({"OS:", "Y.A.R.N."});
+    infoData.push_back({"VERSION:", "1.0.0-alpha"});
     infoData.push_back({"CPU:", ExecuteUtils::getCpuModel()});
     infoData.push_back({"CPU_USG:", "%"});
     infoData.push_back({"GPU:", ExecuteUtils::getGpuModel()});
     infoData.push_back({"RAM:", ExecuteUtils::getRam()});
     infoData.push_back({"USED STORAGE:", ExecuteUtils::getStorageUsage("/")});
-    infoData.push_back({"APPS:", "NOOP"});
     infoData.push_back({"UPTIME:", ExecuteUtils::getUptime()});
     infoData.push_back({"NETWORK:", ExecuteUtils::getNetworkStatus()});
 }

@@ -4,7 +4,7 @@ LDFLAGS = -L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 SRC_DIR = src
 BUILD_DIR = build
-TARGET = $(BUILD_DIR)/Noop
+TARGET = $(BUILD_DIR)/YARN
 
 SRCS = $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS = $(SRCS:.cpp=.o)

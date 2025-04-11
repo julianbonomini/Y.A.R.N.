@@ -16,6 +16,37 @@
 #include "common/logger.hpp"
 
 
+void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTexture &renderTexture, sf::Sprite &shaderSprite, sf::Shader &crtShader, bool &shownSplash) {
+    renderTexture.clear(sf::Color(50, 50, 50));
+
+    sf::Text splash(font, "Y.A.R.N.");
+    splash.setFillColor(sf::Color::White);
+    splash.setCharacterSize(100.f);
+    // Center the text
+    sf::FloatRect textRect = splash.getLocalBounds();
+    splash.setOrigin({textRect.size.x / 2.f, textRect.size.y / 2.f});
+    splash.setPosition({DisplayConfig::SCREEN_WIDTH / 2.f, DisplayConfig::SCREEN_HEIGHT / 2.f - textRect.size.y});
+    renderTexture.draw(splash, &crtShader);
+
+
+    sf::Text subTitle(font, "( Yet Another Ridiculous Name )");
+    subTitle.setFillColor(sf::Color::White);
+    subTitle.setCharacterSize(25.f);
+    sf::FloatRect subTitleRec = subTitle.getLocalBounds();
+    subTitle.setOrigin({subTitleRec.size.x / 2.f, subTitleRec.size.y / 2.f});
+    subTitle.setPosition({DisplayConfig::SCREEN_WIDTH / 2.f, DisplayConfig::SCREEN_HEIGHT / 2.f + textRect.size.y});
+    renderTexture.draw(subTitle, &crtShader);
+
+    renderTexture.display();
+
+    window.draw(shaderSprite, &crtShader);
+
+    window.display();
+    shownSplash = true;
+
+    sf::sleep(sf::seconds(5));
+}
+
 int main() {
     Logger::info("Booting...");
     Logger::done_separator();
@@ -27,7 +58,7 @@ int main() {
     OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
     Logger::done_separator();
 
-    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
+    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Y.A.R.N",
                                    sf::Style::Default, sf::State::Windowed);
 
     window.setFramerateLimit(initial_os_config_file.refreshRate);
@@ -87,6 +118,7 @@ int main() {
     Logger::info("Apps booted successfully...");
     Logger::done_separator();
 
+    bool shownSplash = false;
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -159,7 +191,9 @@ int main() {
             }
         }
 
-
+        if (!shownSplash) {
+            drawSplashScreen(window, font, renderTexture, shaderSprite, crtShader, shownSplash);
+        }
         // Check if global settings have changed:
         if (os_config_file->shader != loadaedShader && loadaedShader != "") {
             Logger::info("Changing shader to", os_config_file->shader, "...");
