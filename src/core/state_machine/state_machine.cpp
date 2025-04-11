@@ -40,7 +40,7 @@ bool StateMachine::loadOsConfigFromDisk() {
     std::ifstream file("config/os_config.json");
     if (!file.is_open()) {
         std::cout << "file not open" << std::endl;
-        return -1;
+        return loadDefaultOsConfig();
     }
 
     json j;
@@ -53,9 +53,21 @@ bool StateMachine::loadOsConfigFromDisk() {
         osConfigFile.flickerEnabled = std::stoi(std::string(j["flicker_enabled"]));
         osConfigFile.flickerIntensity = std::stoi(std::string(j["flicker_intensity"]));
     } catch (...) {
-        return -1;
+        std::cout << "FAILED TO LOAD OS CONFIG..." << std::endl;
+        return loadDefaultOsConfig();
     }
 
+    return 1;
+}
+
+bool StateMachine::loadDefaultOsConfig() {
+    std::cout << "Loading Default OS config..." << std::endl;
+    osConfigFile.refreshRate = 60;
+    osConfigFile.defaultTab = 0;
+    osConfigFile.shaderEnabled = 0;
+    osConfigFile.shader = "none";
+    osConfigFile.flickerEnabled = 0;
+    osConfigFile.flickerIntensity = 10;
     return 1;
 }
 

@@ -3,6 +3,6 @@
     "flicker_enabled": "1",
     "flicker_intensity": "10",
     "refresh_rate_hz": "60",
-    "shader": "softer",
+    "shader": "low_res",
     "shader_enabled": "1"
 }

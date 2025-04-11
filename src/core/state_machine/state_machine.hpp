@@ -54,6 +54,8 @@ private:
     // function to save/load os configuration
     bool loadOsConfigFromDisk();
 
+    bool loadDefaultOsConfig();
+
     bool loadPomodoroAppConfigFromDisk();
 
     bool savePomodoroConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);

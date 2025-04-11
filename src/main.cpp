@@ -14,7 +14,7 @@
 
 
 void log_separator() {
-    std::cout << "************************************" << std::endl << std::endl << std::endl;
+    std::cout << "***************DONE*****************" << std::endl << std::endl << std::endl;
 }
 
 void log_attention_grabber() {
@@ -27,10 +27,10 @@ int main() {
 
     // Create the StateMachine instance to manage app state.
     std::cout << "Initializing state machine from disk..." << std::endl;
-    log_separator();
     StateMachine stateMachine(0);
     OsConfigFile *os_config_file = &stateMachine.getOsConfig(); // by ref, don't copy
     OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
+    log_separator();
 
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
                                    sf::Style::Default, sf::State::Windowed);
@@ -60,13 +60,17 @@ int main() {
     }
 
     sf::Shader crtShader;
+    std::string loadaedShader = "";
     std::ostringstream shaderFile;
+    std::cout << "Loading shader from disk..." << std::endl;
     shaderFile << "src/ui/shaders/" << initial_os_config_file.shader << ".frag";
     if (!crtShader.loadFromFile(shaderFile.str(), sf::Shader::Type::Fragment)) {
-        std::cout << "Failed to load shader!" << std::endl;
-        return 1;
+        log_attention_grabber();
+        std::cout << "Failed to load shader. Moving without one" << std::endl;
+    } else {
+        loadaedShader = initial_os_config_file.shader; // Copies the value
+        log_separator();
     }
-    std::string loadaedShader = initial_os_config_file.shader; // Copies the value
 
     std::cout << "Initializing main layout..." << std::endl;
     log_separator();
@@ -75,7 +79,6 @@ int main() {
     Footer footer(renderTexture, font);
 
     std::cout << "Initializing apps..." << std::endl;
-    log_separator();
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
     apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
@@ -168,7 +171,7 @@ int main() {
 
 
         // Check if global settings have changed:
-        if (os_config_file->shader != loadaedShader) {
+        if (os_config_file->shader != loadaedShader && loadaedShader != "") {
             std::cout << "Changing shader to " << os_config_file->shader << "..." << std::endl;
             std::ostringstream newShader;
             newShader << "src/ui/shaders/" << os_config_file->shader << ".frag";
@@ -204,7 +207,7 @@ int main() {
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        if (os_config_file->shaderEnabled) {
+        if (os_config_file->shaderEnabled && loadaedShader != "") {
             window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         } else {
             window.draw(shaderSprite);
