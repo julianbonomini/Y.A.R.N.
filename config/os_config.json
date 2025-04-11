@@ -1,9 +1,9 @@
 {
     "default_tab": "3",
-    "flicker_enabled": "1",
+    "flicker_enabled": "0",
     "flicker_intensity": "20",
     "refresh_rate_hz": "60",
-    "shader": "high_res_lines",
+    "shader": "crt_monitor",
     "shader_enabled": "1",
-    "theme": "eink"
+    "theme": "dark"
 }
