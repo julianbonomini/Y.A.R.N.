@@ -35,7 +35,7 @@ void main() {
 
     // Flicker effect logic
     if (flickerFactor > 0.0) {
-        cta = vec4(0.5);  // Make the screen go black when flicker is triggered
+        cta = vec4(0.0, 0.0, 0.0, 0.75);  // Flicker behavoiour
     }
 
     // Ensure the coordinates are within bounds

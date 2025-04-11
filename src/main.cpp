@@ -31,7 +31,7 @@ int main() {
     StateMachine stateMachine(0);
 
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
-                                   sf::Style::Close, sf::State::Windowed);
+                                   sf::Style::Default, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
@@ -77,6 +77,7 @@ int main() {
 
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
+
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -157,12 +158,11 @@ int main() {
             }
         }
 
-        // Control the update frequency (once every 0.1 seconds)
-        // if (loopClock.getElapsedTime().asSeconds() >= 0.001f) {
-        // loopClock.restart();  // Reset the clock to track the next 0.1s period
+
+        // Clear screen with base color
         renderTexture.clear(Colors::WHITE);
 
-        // Draw everything to the render texture (pass renderTexture instead of window)
+        // Draw everything
         toolbar.draw();
         footer.draw();
         main_window.draw(apps, stateMachine.getActiveTab());
@@ -170,18 +170,18 @@ int main() {
         // Apply any post-processing to the render texture (CRT effect)
         renderTexture.display(); // Finalize render texture
 
-        // Control flicker with a random chance (1 in 100)
-        float flickerFactor = 0.0f; // Default is no flicker
-        if (rand() % 1000 == 0) {
-            // 1 in 100 chance to trigger flicker
+
+        float flickerFactor = 0.0f;
+        int flickerChance = stateMachine.getOsConfig().refreshRate * 10; // One every 10 seconds chance
+        if (rand() % flickerChance == 0) {
+            // Every 10 seconds
             flickerFactor = 1.0f;
         }
-        // Send parameters to shader
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Set adjustable parameters
-        crtShader.setUniform("CRT_CURVE_AMNTx", 0.05f); // Adjust curvature on x-axis
-        crtShader.setUniform("CRT_CURVE_AMNTy", 0.05f); // Adjust curvature on y-axis
+        crtShader.setUniform("CRT_CURVE_AMNTx", 0.0f); // Adjust curvature on x-axis
+        crtShader.setUniform("CRT_CURVE_AMNTy", 0.0f); // Adjust curvature on y-axis
         crtShader.setUniform("scanLineMultiplier", 1250.0f); // Set the scanline multiplier (original SCAN_LINE_MULT)
         crtShader.setUniform("colorMultiplier", sf::Glsl::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
         // Color multiplier (use to adjust tint)
@@ -191,8 +191,6 @@ int main() {
         window.clear(Colors::WHITE);
         window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         window.display();
-
-        // }
     }
 
     return 0;
