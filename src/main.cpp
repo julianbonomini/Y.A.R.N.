@@ -55,7 +55,7 @@ int main() {
     }
     // Create a shader for CRT effect
     sf::Shader crtShader;
-    if (!crtShader.loadFromFile("src/ui/shaders/my_crt_shader.frag", sf::Shader::Type::Fragment)) {
+    if (!crtShader.loadFromFile("src/ui/shaders/01.frag", sf::Shader::Type::Fragment)) {
         std::cout << "Failed to load shader!" << std::endl;
         return 1;
     }
@@ -161,35 +161,19 @@ int main() {
 
         // Clear screen with base color
         renderTexture.clear(Colors::WHITE);
-
         // Draw everything
         toolbar.draw();
         footer.draw();
         main_window.draw(apps, stateMachine.getActiveTab());
-
-        // Apply any post-processing to the render texture (CRT effect)
-        renderTexture.display(); // Finalize render texture
+        renderTexture.display();
 
 
-        float flickerFactor = 0.0f;
+        // Set flicker
+        // TODO: add OS global config for on/off
+        // TODO: add OS global config for intencity
         int flickerChance = stateMachine.getOsConfig().refreshRate * 10; // One every 10 seconds chance
-        if (rand() % flickerChance == 0) {
-            // Every 10 seconds
-            flickerFactor = 1.0f;
-        }
+        float flickerFactor = (rand() % flickerChance == 0) ? 1.0f : 0.0f;
         crtShader.setUniform("flickerFactor", flickerFactor);
-
-        // Set adjustable parameters
-        // Ditortion
-        crtShader.setUniform("distortion", 0.2f); // How much the images gets distored
-        crtShader.setUniform("distortionRate", 0.1f); // How much away form the center it happens
-
-        // Lines
-        crtShader.setUniform("scanLineMultiplier", 1250.0f); // Set the scanline multiplier (original SCAN_LINE_MULT)
-
-        // Color filter
-        crtShader.setUniform("colorMultiplier", sf::Glsl::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
