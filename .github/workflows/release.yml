@@ -4,9 +4,8 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'alpha-*'
-    branches:
-      - main
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta'
+      - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
 
 jobs:
   build-and-release:
@@ -85,6 +84,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: release/*.tar.gz
-          tag_name: ${{ github.run_id }} # Consider using a more meaningful tag
+          tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
