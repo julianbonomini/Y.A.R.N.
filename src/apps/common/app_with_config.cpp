@@ -8,14 +8,14 @@ sf::FloatRect AppWithConfig::drawSettings() const {
     modalRectangle.setFillColor(Colors::WHITE);
     modalRectangle.setOutlineColor(Colors::GRAY);
     modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(modalRectangle);
+    renderer.draw(modalRectangle);
     sf::FloatRect bounds = modalRectangle.getGlobalBounds();
 
     sf::Text title(font, appName + " SETTINGS");
     title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(Colors::BLACK);
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
-    window.draw(title);
+    renderer.draw(title);
 
     return bounds;
 }
@@ -31,7 +31,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
         labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
-        window.draw(labelText);
+        renderer.draw(labelText);
 
         // Draw the value for this config option
         std::stringstream valueStream;
@@ -46,9 +46,9 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f}); // small padding
             highlightRect.setFillColor(Colors::GRAY);
-            window.draw(highlightRect);
+            renderer.draw(highlightRect);
         }
-        window.draw(valueText);
+        renderer.draw(valueText);
 
         // Draw if it's active
         if (currentOption.selected) {
@@ -64,7 +64,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
         unsavedChanges.setFillColor(Colors::BLACK);
         unsavedChanges.setPosition({labelPositionX, bounds.position.y + bounds.size.y - unsavedChanges.getGlobalBounds().size.y - Layout::PADDING});
-        window.draw(unsavedChanges);
+        renderer.draw(unsavedChanges);
     }
 }
 

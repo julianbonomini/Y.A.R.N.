@@ -7,8 +7,8 @@
 
 #include "../../ui/utils/ui_helpers.hpp"
 
-PomodoroApp::PomodoroApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-    : AppWithConfig(window, font, stateMachine, appName) {
+PomodoroApp::PomodoroApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
+    : AppWithConfig(appName, renderer, font, stateMachine) {
     initConfigFromDisk();
 }
 
@@ -142,7 +142,7 @@ void PomodoroApp::drawStartStopButton() {
     rect.setFillColor(Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(rect);
+    renderer.draw(rect);
 
     sf::Text text(font, "START/PAUSE");
     text.setFillColor(Colors::BLACK);
@@ -154,7 +154,7 @@ void PomodoroApp::drawStartStopButton() {
     text.setOrigin(textPos);
     text.setPosition(UIHelpers::snapToGrid(startStopBox.position + startStopBox.size / 2.0f));
 
-    window.draw(text);
+    renderer.draw(text);
 }
 
 void PomodoroApp::drawResetButton() {
@@ -164,7 +164,7 @@ void PomodoroApp::drawResetButton() {
     rect.setFillColor(Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(rect);
+    renderer.draw(rect);
 
     sf::Text text(font, "RESET");
     text.setFillColor(Colors::BLACK);
@@ -174,7 +174,7 @@ void PomodoroApp::drawResetButton() {
     sf::Vector2f textPos = UIHelpers::snapToGrid({textBounds.position.x + textBounds.size.x / 2, textBounds.position.y + textBounds.size.y / 2});
     text.setOrigin(textPos);
     text.setPosition(UIHelpers::snapToGrid(box.position + box.size / 2.f));
-    window.draw(text);
+    renderer.draw(text);
 }
 
 void PomodoroApp::drawWorkClock() {
@@ -184,7 +184,7 @@ void PomodoroApp::drawWorkClock() {
     rect.setFillColor(isWorkTime ? Colors::GRAY : Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(rect);
+    renderer.draw(rect);
 
     std::stringstream counterStream;
     sf::Time timeLeft = isSessionRunning && isWorkTime ? remainingTime : workTimeInSeconds;
@@ -198,7 +198,7 @@ void PomodoroApp::drawWorkClock() {
     label.setCharacterSize(FontSizes::LABEL);
     sf::Vector2f labelPos = UIHelpers::snapToGrid({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     label.setPosition(labelPos);
-    window.draw(label);
+    renderer.draw(label);
 
     sf::Text counter(font, counterStream.str());
     counter.setFillColor(isWorkTime ? Colors::WHITE : Colors::BLACK);
@@ -207,7 +207,7 @@ void PomodoroApp::drawWorkClock() {
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
     counter.setOrigin(counterPos);
     counter.setPosition(UIHelpers::snapToGrid(box.position + box.size / 2.0f));
-    window.draw(counter);
+    renderer.draw(counter);
 }
 
 void PomodoroApp::drawPlayClock() {
@@ -217,7 +217,7 @@ void PomodoroApp::drawPlayClock() {
     rect.setFillColor(!isWorkTime ? Colors::GRAY : Colors::WHITE);
     rect.setOutlineColor(Colors::GRAY);
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(rect);
+    renderer.draw(rect);
 
     std::stringstream counterStream;
     sf::Time timeLeft = isSessionRunning && !isWorkTime ? remainingTime : playTimeInSeconds;
@@ -229,7 +229,7 @@ void PomodoroApp::drawPlayClock() {
     text.setFillColor(!isWorkTime ? Colors::WHITE : Colors::BLACK);
     text.setCharacterSize(FontSizes::LABEL);
     text.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
-    window.draw(text);
+    renderer.draw(text);
 
     sf::Text counter(font, counterStream.str());
     counter.setFillColor(!isWorkTime ? Colors::WHITE : Colors::BLACK);
@@ -238,7 +238,7 @@ void PomodoroApp::drawPlayClock() {
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
     counter.setOrigin(counterPos);
     counter.setPosition(UIHelpers::snapToGrid(box.position + box.size / 2.0f));
-    window.draw(counter);
+    renderer.draw(counter);
 }
 
 void PomodoroApp::initConfigFromDisk() {

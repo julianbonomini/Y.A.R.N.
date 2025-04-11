@@ -8,12 +8,12 @@
 
 class MainWindow {
 public:
-    MainWindow(sf::RenderWindow &window, const sf::Font &font);
+    MainWindow(sf::RenderTarget &renderer, const sf::Font &font);
 
     void draw(const std::vector<std::unique_ptr<App> > &apps, int activeTab);
 
 private:
-    sf::RenderWindow &window;
+    sf::RenderTarget &renderer;
     const sf::Font &font;
 
     void drawTabs(const std::vector<std::unique_ptr<App> > &apps, int activeTab);

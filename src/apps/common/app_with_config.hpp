@@ -8,8 +8,8 @@
 
 class AppWithConfig : public App {
 public:
-    AppWithConfig(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName)
-        : App(appName, window, font), stateMachine(stateMachine) {
+    AppWithConfig(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine)
+        : App(appName, target, font), stateMachine(stateMachine) {
     }
 
     // Override default App implementation to always set first option as active

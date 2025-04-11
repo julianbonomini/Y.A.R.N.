@@ -6,8 +6,8 @@
 #include <string>
 
 
-MarketApp::MarketApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine,const std::string &appName)
-    : AppWithConfig(window, font, stateMachine, appName), font(font), window(window) {
+MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
+    : AppWithConfig(appName, renderer, font, stateMachine) {
     loadMockData();
     initConfigFromDisk();
 }
@@ -94,7 +94,7 @@ void MarketApp::drawStandaloneSymbols() {
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(backgroundBox);
+    renderer.draw(backgroundBox);
 
     // Header row
     drawSymbolsHeaderRow(startY, labelX, priceX, changeX);
@@ -122,7 +122,7 @@ void MarketApp::drawMarketTrackers() {
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(backgroundBox);
+    renderer.draw(backgroundBox);
 
     drawSymbolsHeaderRow(startY, labelX, priceX, changeX);
 
@@ -144,7 +144,7 @@ void MarketApp::drawMarketStatus() {
     backgroundBox.setFillColor(backgroundColor);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(backgroundBox);
+    renderer.draw(backgroundBox);
 
     // Draw market status text (OPEN or CLOSED)
     sf::Text marketStatusText(font);
@@ -161,7 +161,7 @@ void MarketApp::drawMarketStatus() {
     sf::FloatRect textBounds = marketStatusText.getLocalBounds();
     marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
     marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    window.draw(marketStatusText);
+    renderer.draw(marketStatusText);
 }
 
 void MarketApp::drawMarketSession() {
@@ -176,7 +176,7 @@ void MarketApp::drawMarketSession() {
     backgroundBox.setFillColor(backgroundColor);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(backgroundBox);
+    renderer.draw(backgroundBox);
 
     // Draw market status text (OPEN or CLOSED)
     sf::Text marketStatusText(font, "14:23 left");
@@ -187,7 +187,7 @@ void MarketApp::drawMarketSession() {
     sf::FloatRect textBounds = marketStatusText.getLocalBounds();
     marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
     marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    window.draw(marketStatusText);
+    renderer.draw(marketStatusText);
 }
 
 void MarketApp::drawMarketSentiment() {
@@ -198,7 +198,7 @@ void MarketApp::drawMarketSentiment() {
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(backgroundBox);
+    renderer.draw(backgroundBox);
 
     sf::Text text(font, "BEAR");
     text.setCharacterSize(20);
@@ -209,7 +209,7 @@ void MarketApp::drawMarketSentiment() {
     sf::FloatRect textBounds = text.getLocalBounds();
     text.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
     text.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    window.draw(text);
+    renderer.draw(text);
 }
 
 void MarketApp::drawStonksMeme() {
@@ -220,7 +220,7 @@ void MarketApp::drawStonksMeme() {
     backgroundBox.setFillColor(Colors::WHITE);
     backgroundBox.setOutlineColor(Colors::GRAY);
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(backgroundBox);
+    renderer.draw(backgroundBox);
 
     // Load image
     sf::Texture memeTexture;
@@ -235,7 +235,7 @@ void MarketApp::drawStonksMeme() {
         // Position the image
         memeSprite.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
 
-        window.draw(memeSprite);
+        renderer.draw(memeSprite);
     }
 }
 
@@ -245,19 +245,19 @@ void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, con
     headerSymbol.setPosition({labelX, startY + Layout::PADDING});
     headerSymbol.setFillColor(Colors::BLACK);
     headerSymbol.setCharacterSize(FontSizes::LABEL);
-    window.draw(headerSymbol);
+    renderer.draw(headerSymbol);
 
     sf::Text headerPrice(font, "PRICE");
     headerPrice.setPosition({priceX, startY + Layout::PADDING});
     headerPrice.setFillColor(Colors::BLACK);
     headerPrice.setCharacterSize(FontSizes::LABEL);
-    window.draw(headerPrice);
+    renderer.draw(headerPrice);
 
     sf::Text headerChange(font, "CHANGE");
     headerChange.setPosition({changeX, startY + Layout::PADDING});
     headerChange.setFillColor(Colors::BLACK);
     headerChange.setCharacterSize(FontSizes::LABEL);
-    window.draw(headerChange);
+    renderer.draw(headerChange);
 }
 
 void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const float rowHeight, const float labelX, const float priceX, const float changeX, float currentY) {
@@ -267,7 +267,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         labelText.setPosition({labelX, currentY});
         labelText.setFillColor(Colors::BLACK);
         labelText.setCharacterSize(FontSizes::LABEL);
-        window.draw(labelText);
+        renderer.draw(labelText);
 
         // Price
         std::ostringstream priceStream;
@@ -276,7 +276,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         priceText.setPosition({priceX, currentY});
         priceText.setFillColor(Colors::BLACK);
         priceText.setCharacterSize(FontSizes::LABEL);
-        window.draw(priceText);
+        renderer.draw(priceText);
 
         // Change %
         std::ostringstream changeStream;
@@ -288,7 +288,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         changeText.setPosition({changeX, currentY});
         changeText.setFillColor(Colors::BLACK);
         changeText.setCharacterSize(FontSizes::LABEL);
-        window.draw(changeText);
+        renderer.draw(changeText);
 
         currentY += rowHeight;
     }

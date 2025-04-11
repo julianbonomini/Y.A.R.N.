@@ -16,6 +16,7 @@
 void log_separator() {
     std::cout << "************************************" << std::endl << std::endl << std::endl;
 }
+
 void log_attention_grabber() {
     std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 }
@@ -29,7 +30,8 @@ int main() {
     log_separator();
     StateMachine stateMachine(0);
 
-    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop", sf::Style::Close, sf::State::Windowed);
+    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
+                                   sf::Style::Default, sf::State::Windowed);
     window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
@@ -40,20 +42,38 @@ int main() {
     }
     sf::Text text(font);
 
+    // Create a render texture with the same size as the window
+    sf::RenderTexture renderTexture({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT});
+
+    // Set up the sprite for rendering the texture
+    sf::Sprite shaderSprite(renderTexture.getTexture());
+
+    if (!sf::Shader::isAvailable()) {
+        log_attention_grabber();
+        std::cout << "No shaders available" << std::endl;
+        return 1;
+    }
+    // Create a shader for CRT effect
+    sf::Shader crtShader;
+    if (!crtShader.loadFromFile("src/ui/shaders/02.frag", sf::Shader::Type::Fragment)) {
+        std::cout << "Failed to load shader!" << std::endl;
+        return 1;
+    }
+
     std::cout << "Initializing main layout..." << std::endl;
     log_separator();
-    Toolbar toolbar(window, font);
-    MainWindow main_window(window, font);
-    Footer footer(window, font);
+    Toolbar toolbar(renderTexture, font);
+    MainWindow main_window(renderTexture, font);
+    Footer footer(renderTexture, font);
 
     std::cout << "Initializing apps..." << std::endl;
     log_separator();
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
-    apps.push_back(std::make_unique<MarketApp>(window, font, stateMachine, "MKT"));
-    apps.push_back(std::make_unique<PomodoroApp>(window, font, stateMachine, "PMD"));
-    apps.push_back(std::make_unique<ConfigApp>(window, font, stateMachine, "CNF"));
-    apps.push_back(std::make_unique<InfoApp>(window, font, "INF"));
+    apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
 
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
@@ -87,7 +107,6 @@ int main() {
                         break;
                     }
                     break;
-
                 }
 
                 // If settings modal is open, pass strokes to app expect Escape
@@ -125,7 +144,7 @@ int main() {
                     // Open settings
                     if (keyPressed->scancode == sf::Keyboard::Scan::C) {
                         // Check if app accepts config
-                        if(dynamic_cast<AppWithConfig*>(activeApp)) {
+                        if (dynamic_cast<AppWithConfig *>(activeApp)) {
                             activeApp->setHasOpenModal(true);
                             activeApp->setSettingsOpen(true);
                             break;
@@ -135,17 +154,30 @@ int main() {
 
                     // std::cout << "Passthru" << std::endl;
                     apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
-
                 }
             }
         }
-        window.clear(Colors::WHITE);
 
+
+        // Clear screen with base color
+        renderTexture.clear(Colors::WHITE);
         // Draw everything
         toolbar.draw();
         footer.draw();
         main_window.draw(apps, stateMachine.getActiveTab());
+        renderTexture.display();
 
+
+        // Set flicker
+        // TODO: add OS global config for on/off
+        // TODO: add OS global config for intencity
+        int flickerChance = stateMachine.getOsConfig().refreshRate * 10; // One every 10 seconds chance
+        float flickerFactor = (rand() % flickerChance == 0) ? 1.0f : 0.0f;
+        crtShader.setUniform("flickerFactor", flickerFactor);
+
+        // Clear the window and draw the final image
+        window.clear(Colors::WHITE);
+        window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         window.display();
     }
 

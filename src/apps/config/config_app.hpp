@@ -9,7 +9,7 @@
 
 class ConfigApp : public App {
 public:
-    ConfigApp(sf::RenderWindow &window, const sf::Font &font, StateMachine &stateMachine, const std::string &appName);
+    ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine);
 
     void draw() override;
 

@@ -5,12 +5,12 @@
 
 class Footer {
 public:
-    Footer(sf::RenderWindow &window, const sf::Font &font);
+    Footer(sf::RenderTarget &renderer, const sf::Font &font);
 
     void draw();
 
 private:
-    sf::RenderWindow &window; // Reference to the SFML render window
+    sf::RenderTarget &renderer; // Reference to the SFML render window
     const sf::Font &font; // Reference to the font
 };
 

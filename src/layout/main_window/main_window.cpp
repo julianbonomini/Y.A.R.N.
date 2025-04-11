@@ -4,8 +4,8 @@
 #include "../../ui/utils/ui_helpers.hpp"
 
 
-MainWindow::MainWindow(sf::RenderWindow &window, const sf::Font &font)
-    : window(window), font(font) {
+MainWindow::MainWindow(sf::RenderTarget &renderer, const sf::Font &font)
+    : renderer(renderer), font(font) {
     // Constructor logic can go here (optional)
 }
 
@@ -42,18 +42,18 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
 
 
         if (i == activeTab) {
-            window.draw(tabOutline);
+            renderer.draw(tabOutline);
             sf::RectangleShape coverAreaLine(sf::Vector2f(Layout::TAB_WIDTH, LineStyles::LINE_THICKNESS));
             coverAreaLine.setPosition({startingXPosition, Layout::TOOLBAR_OFFSET + Layout::TAB_HEIGHT + Layout::PADDING - 2.f});
             coverAreaLine.setFillColor(Colors::WHITE);
-            window.draw(coverAreaLine);
+            renderer.draw(coverAreaLine);
         }
 
         sf::Text label(font, apps[i].get()->appName, FontSizes::TAB);
         label.setFillColor(i == activeTab ? Colors::BLACK : Colors::GRAY);
         sf::Vector2f labelPosition = UIHelpers::snapToGrid({startingXPosition + Layout::PADDING, Layout::TOOLBAR_OFFSET + textOffsetY});
         label.setPosition(labelPosition);
-        window.draw(label);
+        renderer.draw(label);
     }
 }
 
@@ -68,7 +68,7 @@ void MainWindow::drawAppArea() {
     contentArea.setOutlineColor(Colors::GRAY);
     contentArea.setOutlineThickness(LineStyles::BOX_LINE_THICKNESS);
 
-    window.draw(contentArea);
+    renderer.draw(contentArea);
 }
 
 void MainWindow::drawActiveApp(App *activeApp) {

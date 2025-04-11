@@ -22,11 +22,11 @@ void App::drawModalRectangle(std::string modalTitle) {
     modalRectangle.setFillColor(Colors::WHITE);
     modalRectangle.setOutlineColor(Colors::GRAY);
     modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
-    window.draw(modalRectangle);
+    renderer.draw(modalRectangle);
 
     sf::Text title(font, appName + " " + modalTitle);
     title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(Colors::BLACK);
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
-    window.draw(title);
+    renderer.draw(title);
 };

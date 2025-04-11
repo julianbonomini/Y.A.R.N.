@@ -5,8 +5,8 @@
 
 #include "../../core/execute/execute_utils.hpp"
 
-InfoApp::InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::string &appName)
-    : App(appName, window, font) {
+InfoApp::InfoApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font)
+    : App(appName, renderer, font) {
     infoData.push_back({"OS:", "Noop"});
     infoData.push_back({"VERSION:", "0.0.1"});
     infoData.push_back({"CPU:", ExecuteUtils::getCpuModel()});
@@ -53,8 +53,8 @@ void InfoApp::draw() {
         valueText.setCharacterSize(FontSizes::LABEL);
 
         // Draw label and value
-        window.draw(labelText);
-        window.draw(valueText);
+        renderer.draw(labelText);
+        renderer.draw(valueText);
 
         // Increase the vertical offset for the next pair
         verticalOffset += Layout::TEXT_SPACING; // Adjust spacing between each pair
