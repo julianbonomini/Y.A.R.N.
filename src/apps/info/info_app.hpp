@@ -18,6 +18,8 @@ public:
     void handleSettings() override;
 
 private:
+    std::string cpuUsage = "";
+
     std::vector<std::pair<std::string, std::string> > infoData;
 };
 
