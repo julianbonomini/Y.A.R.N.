@@ -31,31 +31,77 @@ void ConfigApp::moveUp() {
 }
 
 void ConfigApp::changeOptionRight() {
+    unsavedChangesFlag = true;
     for (auto &option: configOptions) {
-        if (option.selected && !option.options.empty()) {
-            auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
-            if (it != option.options.end()) {
-                size_t index = std::distance(option.options.begin(), it);
-                index = (index + 1) % option.options.size(); // wrap around
-                option.currentValue = option.options[index];
-                option.changed = true;
+        if (option.selected) {
+            switch (option.type) {
+                case BaseConfigOptionType::CYCLE: {
+                    if (!option.options.empty()) {
+                        auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
+                        if (it != option.options.end()) {
+                            size_t index = std::distance(option.options.begin(), it);
+                            index = (index + 1) % option.options.size(); // wrap around
+                            option.currentValue = option.options[index];
+                            option.changed = true;
+                        }
+                    }
+                    break;
+                }
+                case BaseConfigOptionType::FREE_NUMBER: {
+                    int currValueInt = std::stoi(option.currentValue);
+                    if (currValueInt >= 99) {
+                        break;
+                    }
+                    option.currentValue = std::to_string(currValueInt + 1);
+                    option.changed = true;
+                    break;
+                }
+                case BaseConfigOptionType::TOGGLE: {
+                    option.currentValue = std::stoi(option.currentValue) == 0 ? "1" : "0";
+                    option.changed = true;
+                    break;
+                }
+                default:
+                    break;
             }
-            break;
         }
     }
 }
 
 void ConfigApp::changeOptionLeft() {
+    unsavedChangesFlag = true;
     for (auto &option: configOptions) {
-        if (option.selected && !option.options.empty()) {
-            auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
-            if (it != option.options.end()) {
-                size_t index = std::distance(option.options.begin(), it);
-                index = (index == 0) ? option.options.size() - 1 : index - 1; // wrap around
-                option.currentValue = option.options[index];
-                option.changed = true;
+        if (option.selected) {
+            switch (option.type) {
+                case BaseConfigOptionType::CYCLE: {
+                    if (!option.options.empty()) {
+                        auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
+                        if (it != option.options.end()) {
+                            size_t index = std::distance(option.options.begin(), it);
+                            index = (index == 0) ? option.options.size() - 1 : index - 1; // wrap around
+                            option.currentValue = option.options[index];
+                            option.changed = true;
+                        }
+                    }
+                    break;
+                }
+                case BaseConfigOptionType::FREE_NUMBER: {
+                    int currValueInt = std::stoi(option.currentValue);
+                    if (currValueInt <= 1) {
+                        break;
+                    }
+                    option.currentValue = std::to_string(currValueInt - 1);
+                    option.changed = true;
+                    break;
+                }
+                case BaseConfigOptionType::TOGGLE: {
+                    option.currentValue = std::stoi(option.currentValue) == 0 ? "1" : "0";
+                    option.changed = true;
+                    break;
+                }
+                default:
+                    break;
             }
-            break;
         }
     }
 }
@@ -63,21 +109,28 @@ void ConfigApp::changeOptionLeft() {
 void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::E) {
         editModeEnabled = true;
-        unsavedChangesFlag = true;
         configOptions[0].selected = true;
-    } else if (keyPressed.scancode == sf::Keyboard::Scan::Down && editModeEnabled) {
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Down && editModeEnabled) {
         moveDown();
-    } else if (keyPressed.scancode == sf::Keyboard::Scan::Right && editModeEnabled) {
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Right && editModeEnabled) {
+        unsavedChangesFlag = true;
         changeOptionRight();
-    } else if (keyPressed.scancode == sf::Keyboard::Scan::Left && editModeEnabled) {
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Left && editModeEnabled) {
+        unsavedChangesFlag = true;
         changeOptionLeft();
-    } else if (keyPressed.scancode == sf::Keyboard::Scan::Up && editModeEnabled) {
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Up && editModeEnabled) {
         moveUp();
-    } else if (keyPressed.scancode == sf::Keyboard::Scan::Escape && editModeEnabled) {
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Escape && editModeEnabled) {
         editModeEnabled = false;
         unsavedChangesFlag = false;
         initConfigFromDisk();
-    } else if (keyPressed.scancode == sf::Keyboard::Scan::Enter && editModeEnabled) {
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Enter && editModeEnabled) {
         stateMachine.saveOsConfigToDisk(configOptions);
         editModeEnabled = false;
         unsavedChangesFlag = false;
@@ -148,12 +201,6 @@ void ConfigApp::draw() {
         // Draw the value for this config option
         if (currentOption.type == BaseConfigOptionType::TOGGLE) {
             float circleOffset = Layout::PADDING / 2;
-            // Draw the filled circle (inner part)
-            sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
-            checkboxFill.setFillColor(currentOption.currentValue == "1" ? Colors::BLACK : Colors::WHITE); // Filled if value is "1"
-            checkboxFill.setPosition({valuePositionX + 2.f, valueYPosition + circleOffset + 2.f}); // Adjust position for the gap
-            renderer.draw(checkboxFill);
-
             // Draw the outline circle (outer part)
             sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
             // checkboxOutline.setFillColor(Colors::TRANSPARENT); // No fill for the outline
@@ -161,6 +208,14 @@ void ConfigApp::draw() {
             checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
             checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
             renderer.draw(checkboxOutline);
+
+            // Draw the filled circle (inner part)
+            if (currentOption.currentValue == "1") {
+                sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
+                checkboxFill.setFillColor(Colors::BLACK); // Filled if value is "1"
+                checkboxFill.setPosition({valuePositionX + 1.f, valueYPosition + circleOffset + 1.f}); // Adjust position for the gap
+                renderer.draw(checkboxFill);
+            }
         } else {
             std::stringstream valueStream;
             valueStream << currentOption.currentValue;
