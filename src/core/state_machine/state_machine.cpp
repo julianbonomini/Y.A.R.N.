@@ -79,7 +79,7 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
             osConfigFile.shaderEnabled = std::stoi(option.currentValue);
         }
         if (option.label == "shader") {
-            osConfigFile.shader = std::stoi(option.currentValue);
+            osConfigFile.shader = option.currentValue;
         }
         if (option.label == "flicker_enabled") {
             osConfigFile.flickerEnabled = std::stoi(option.currentValue);
