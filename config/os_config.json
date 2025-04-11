@@ -3,6 +3,6 @@
     "flicker_enabled": "1",
     "flicker_intensity": "10",
     "refresh_rate_hz": "60",
-    "shader": "crt_monitor",
+    "shader": "low_res_lines",
     "shader_enabled": "1"
 }

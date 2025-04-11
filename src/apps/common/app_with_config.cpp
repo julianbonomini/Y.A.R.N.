@@ -24,48 +24,106 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
     float labelPositionX = bounds.position.x + Layout::PADDING * 2;
     float valuePositionX = bounds.position.x + Layout::PADDING * 2 + +Layout::LABEL_VALUE_SPACE;
     float verticalOffset = Layout::PADDING;
+
     // Loop through each config option dynamically
     for (size_t i = 0; i < configOptions.size(); ++i) {
         // Draw the label
+        float valueYPosition = TOP_LEFT_ANCHOR.y + verticalOffset;
         BaseConfigOptions &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
         labelText.setFillColor(Colors::BLACK);
-        labelText.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
+        labelText.setPosition({labelPositionX, valueYPosition});
         renderer.draw(labelText);
 
         // Draw the value for this config option
-        std::stringstream valueStream;
-        valueStream << currentOption.currentValue;
-        sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
-        valueText.setFillColor(Colors::BLACK);
-        valueText.setPosition({valuePositionX, TOP_LEFT_ANCHOR.y + verticalOffset});
-        // If selected, draw background rectangle behind value
+        if (currentOption.type == BaseConfigOptionType::TOGGLE) {
+            float circleOffset = Layout::PADDING / 2;
+            // Draw the outline circle (outer part)
+            sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
+            // checkboxOutline.setFillColor(Colors::TRANSPARENT); // No fill for the outline
+            checkboxOutline.setOutlineColor(Colors::BLACK); // Outline color
+            checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
+            checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
+            renderer.draw(checkboxOutline);
+
+            // Draw the filled circle (inner part)
+            if (currentOption.currentValue == "1") {
+                sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
+                checkboxFill.setFillColor(Colors::BLACK); // Filled if value is "1"
+                checkboxFill.setPosition({valuePositionX + 1.f, valueYPosition + circleOffset + 1.f}); // Adjust position for the gap
+                renderer.draw(checkboxFill);
+            }
+        } else {
+            std::stringstream valueStream;
+            valueStream << currentOption.currentValue;
+            sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
+            valueText.setFillColor(Colors::BLACK);
+            valueText.setPosition({valuePositionX, valueYPosition});
+            renderer.draw(valueText);
+        }
+
         if (currentOption.selected) {
-            sf::FloatRect bounds = valueText.getGlobalBounds();
+            sf::FloatRect bounds = labelText.getGlobalBounds();
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
-            highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f}); // small padding
+            highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
             highlightRect.setFillColor(Colors::GRAY);
             renderer.draw(highlightRect);
+            renderer.draw(labelText);
         }
-        renderer.draw(valueText);
-
-        // Draw if it's active
-        if (currentOption.selected) {
-            labelText.setOutlineColor(Colors::GRAY);
-        }
-
         // Increment the vertical offset to position the next label/value pair
         verticalOffset += Layout::TEXT_SPACING;
     }
 
+    drawCurrOptionHelpBox();
+
     // Draw if in changes:
     if (unsavedChangesFlag) {
+        const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
         unsavedChanges.setFillColor(Colors::BLACK);
-        unsavedChanges.setPosition({labelPositionX, bounds.position.y + bounds.size.y - unsavedChanges.getGlobalBounds().size.y - Layout::PADDING});
+        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         renderer.draw(unsavedChanges);
     }
+}
+
+void AppWithConfig::drawCurrOptionHelpBox() {
+    auto contentAreaCoordinates = getGridBox(3, 0, 2, 2);
+    std::string selectedOptionHelp = "";
+    for (size_t i = 0; i < configOptions.size(); ++i) {
+        if (configOptions[i].selected) {
+            selectedOptionHelp = wrapText(configOptions[i].description, contentAreaCoordinates.size.x - Layout::PADDING * 2, FontSizes::DESCRIPTION);
+            break;
+        }
+        selectedOptionHelp = "";
+    }
+
+    if (selectedOptionHelp == "") {
+        return;
+    }
+    // --- Content area ---
+    sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
+    contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
+    contentArea.setFillColor(Colors::WHITE);
+    contentArea.setOutlineColor(Colors::GRAY);
+    contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
+    renderer.draw(contentArea);
+
+    float textX = contentAreaCoordinates.position.x + Layout::PADDING;
+    float textY = contentAreaCoordinates.position.y + Layout::PADDING;
+
+    sf::Text title(font, "SETTING HELP");
+    title.setCharacterSize(FontSizes::TITLE);
+    title.setFillColor(Colors::BLACK);
+    title.setPosition({textX, textY});
+    renderer.draw(title);
+
+    sf::Text help(font, selectedOptionHelp);
+    help.setCharacterSize(FontSizes::DESCRIPTION);
+    help.setFillColor(Colors::BLACK);
+    help.setPosition({textX, title.getGlobalBounds().position.y + title.getGlobalBounds().size.y + Layout::PADDING});
+    renderer.draw(help);
+
 }
 
 void AppWithConfig::moveDown() {
@@ -117,9 +175,9 @@ void AppWithConfig::changeOptionRight() {
                     break;
                 }
                 case BaseConfigOptionType::TOGGLE: {
-                    // You can define your own logic here.
-                    // For example, maybe prompt user input or increment a numeric field.
-                    std::cout << "Checkbox not implemented" << std::endl;
+                    option.currentValue = std::stoi(option.currentValue) == 0 ? "1" : "0";
+                    option.changed = true;
+                    break;
                 }
                 default:
                     break;
@@ -155,9 +213,9 @@ void AppWithConfig::changeOptionLeft() {
                     break;
                 }
                 case BaseConfigOptionType::TOGGLE: {
-                    // You can define your own logic here.
-                    // For example, maybe prompt user input or increment a numeric field.
-                    std::cout << "Checkbox not implemented" << std::endl;
+                    option.currentValue = std::stoi(option.currentValue) == 0 ? "1" : "0";
+                    option.changed = true;
+                    break;
                 }
                 default:
                     break;

@@ -252,6 +252,7 @@ void PomodoroApp::initConfigFromDisk() {
     defaultWorkTimeInSeconds.currentValue = std::to_string(workTimeInMinutes);
     defaultWorkTimeInSeconds.selected = false;
     defaultWorkTimeInSeconds.changed = false;
+    defaultWorkTimeInSeconds.description = "The amount of time you will be working. In minutes";
     configOptions.push_back(defaultWorkTimeInSeconds);
     workTimeInSeconds = sf::seconds(workTimeInMinutes * 60);
     remainingTime = workTimeInSeconds;
@@ -265,6 +266,7 @@ void PomodoroApp::initConfigFromDisk() {
     defaultPlayTimeInSeconds.currentValue = std::to_string(playTimeInMinutes);
     defaultPlayTimeInSeconds.selected = false;
     defaultPlayTimeInSeconds.changed = false;
+    defaultPlayTimeInSeconds.description = "The amount of time you will be on break. In minutes";
     configOptions.push_back(defaultPlayTimeInSeconds);
     playTimeInSeconds = sf::seconds(playTimeInMinutes * 60);
 }

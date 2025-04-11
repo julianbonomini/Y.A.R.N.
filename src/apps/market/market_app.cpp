@@ -326,5 +326,16 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.currentValue = std::to_string(intervalInMinutes);
     refreshIntervalInMinutes.selected = false;
     refreshIntervalInMinutes.changed = false;
+    refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
+
+    BaseConfigOptions asd;
+    asd.label = "TEST";
+    asd.type = BaseConfigOptionType::TOGGLE;;
+    asd.options = {};
+    asd.currentValue = "1";
+    asd.selected = false;
+    asd.changed = false;
+    asd.description = "Checkbox test";
+    configOptions.push_back(asd);
 }

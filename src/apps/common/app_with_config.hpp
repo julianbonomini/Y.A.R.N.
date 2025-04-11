@@ -35,6 +35,8 @@ protected:
 
     void drawAppConfigOptions(sf::FloatRect bounds);
 
+    void drawCurrOptionHelpBox();
+
     void moveDown();
 
     void moveUp();
