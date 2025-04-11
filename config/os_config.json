@@ -1,7 +1,7 @@
 {
-    "default_tab": "0",
+    "default_tab": "2",
     "flicker_enabled": "1",
-    "flicker_intensity": "5",
+    "flicker_intensity": "3",
     "refresh_rate_hz": "60",
     "shader": "crt_bloom",
     "shader_enabled": "1",

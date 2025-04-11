@@ -9,6 +9,7 @@
 #include "apps/info/info_app.hpp"
 #include "apps/market/market_app.hpp"
 #include "apps/pomodoro/pomodoro_app.hpp"
+#include "apps/weather/weather_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
 #include "ui/themes/theme_manager.hpp"
@@ -80,6 +81,7 @@ int main() {
     // These are ordered.
     apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
     apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine));
     apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
     apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine, apps.size() + 1));
     Logger::info("Apps booted successfully...");
