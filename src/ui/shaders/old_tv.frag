@@ -20,7 +20,7 @@ vec2 curveUV(vec2 uv) {
 float scanLine(vec2 uv) {
     float contrast = 0.05;
     float transparency = 0.99; // 1.0 is full transparent, 0 is no passthru
-    float amountOfLines = 1000;
+    float amountOfLines = 500;
     float darkLine = transparency + contrast * sin(uv.y * amountOfLines * 1.0);
 
     return darkLine;

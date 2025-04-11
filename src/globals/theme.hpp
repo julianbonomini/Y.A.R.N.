@@ -39,8 +39,8 @@ namespace AppGridLayout {
 }
 
 namespace FontSizes {
-    constexpr int TOOLBAR = 12;
-    constexpr int FOOTER = 12;
+    constexpr int TOOLBAR = 15;
+    constexpr int FOOTER = 15;
     constexpr int TITLE = 15;
     constexpr int TAB = 15;
     constexpr int DESCRIPTION = 15;
