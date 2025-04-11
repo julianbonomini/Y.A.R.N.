@@ -1,9 +1,9 @@
 #pragma once
-#include <iostream>
 #include <sstream>
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "../../globals/ui_globals.hpp"
+#include "../../common/logger.hpp"
 
 class StateMachine;
 
@@ -40,12 +40,11 @@ public:
         helpOpen = value;
     }
 
-    template<typename... Args>
-    void app_log(Args&&... args) {
-        std::ostringstream oss;
-        oss << appName << "_LOG: ";
-        ((oss << args << " "), ...);
-        std::cout << oss.str() << std::endl;
+    template<typename... LocalArgs>
+    void app_log(LocalArgs&&... args) {
+        std::ostringstream oss_prefix;
+        oss_prefix << appName << "LOG: ";
+        Logger::info(oss_prefix.str(), std::forward<LocalArgs>(args)...);
     }
 
     // Virtual function that all apps must implement

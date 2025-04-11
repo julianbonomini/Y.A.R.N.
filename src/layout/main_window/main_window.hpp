@@ -20,6 +20,8 @@ private:
 
     void drawAppArea();
 
+    void healTab(const std::vector<std::unique_ptr<App>> &apps, StateMachine &stateMachine);
+
     void drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, StateMachine &stateMachine);
 
     void drawFooter();

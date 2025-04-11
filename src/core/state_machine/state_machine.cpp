@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "../../common/logger.hpp"
+
 using json = nlohmann::json;
 
 StateMachine::StateMachine(int default_tab)
@@ -10,7 +12,7 @@ StateMachine::StateMachine(int default_tab)
     // Load the config file on startup
     loadOsConfigFromDisk();
     setActiveTab(getOsConfig().defaultTab);
-    std::cout << "Loading APPs config..." << std::endl;
+    Logger::info("STATE_MACHINE", "Loading APPs config...");
     loadPomodoroAppConfigFromDisk();
     loadMarketAppConfigFromDisk();
 }
@@ -36,7 +38,8 @@ MarketConfigFile &StateMachine::getMarketConfig() {
 }
 
 bool StateMachine::healOsConfig() {
-    std::cout << "Starting OS config heal..." << std::endl;
+    Logger::info("STATE_MACHINE", "Starting OS config heal...");
+
     std::ofstream file("config/os_config.json");
     if (!file.is_open()) {
         return false;
@@ -51,7 +54,8 @@ bool StateMachine::healOsConfig() {
     j["flicker_enabled"] = "0";
     j["flicker_intensity"] = "10";
     file << j.dump(4); // Pretty-print with indentation
-    std::cout << "OS config has been overridden with defaults..." << std::endl;
+    Logger::info("STATE_MACHINE", "OS config has been overridden with defaults..");
+
 
     osConfigFile.refreshRate = 60;
     osConfigFile.defaultTab = 0;
@@ -60,16 +64,16 @@ bool StateMachine::healOsConfig() {
     osConfigFile.flickerEnabled = 0;
     osConfigFile.flickerIntensity = 10;
     osConfigFile.theme = "light";
-    std::cout << "OS config obj was also updated..." << std::endl;
+    Logger::info("STATE_MACHINE", "OS config obj was also updated...");
     return 1;
 }
 
 
 bool StateMachine::loadOsConfigFromDisk() {
-    std::cout << "Loading OS config..." << std::endl;
+    Logger::info("STATE_MACHINE", "Loading OS config...");
     std::ifstream file("config/os_config.json");
     if (!file.is_open()) {
-        std::cout << "file not open" << std::endl;
+        Logger::error("STATE_MACHINE", "Could not open file for os config");
         return loadDefaultOsConfig();
     }
 
@@ -84,7 +88,7 @@ bool StateMachine::loadOsConfigFromDisk() {
         osConfigFile.flickerEnabled = std::stoi(std::string(j["flicker_enabled"]));
         osConfigFile.flickerIntensity = std::stoi(std::string(j["flicker_intensity"]));
     } catch (...) {
-        std::cout << "FAILED TO LOAD OS CONFIG..." << std::endl;
+        Logger::error("STATE_MACHINE", "FAILED TO LOAD OS CONFIG..");
         return loadDefaultOsConfig();
     }
 
@@ -92,7 +96,8 @@ bool StateMachine::loadOsConfigFromDisk() {
 }
 
 bool StateMachine::loadDefaultOsConfig() {
-    std::cout << "Loading Default OS config..." << std::endl;
+    Logger::info("STATE_MACHINE", "Loading Default OS config...");
+
     osConfigFile.refreshRate = 60;
     osConfigFile.defaultTab = 0;
     osConfigFile.shaderEnabled = 0;
@@ -157,10 +162,12 @@ bool StateMachine::saveAppConfigToDisk(const AppConfigTypes appConfigType, const
 }
 
 bool StateMachine::loadPomodoroAppConfigFromDisk() {
-    std::cout << "Loading Pomodoro App config..." << std::endl;
+    Logger::info("STATE_MACHINE", "Loading Pomodoro App config...");
     std::ifstream file("config/pomodoro_config.json");
     if (!file.is_open()) {
-        std::cout << "file not open" << std::endl;
+        Logger::error("STATE_MACHINE", "Could not load Pomodoro App config...");
+
+
         return -1;
     }
 
@@ -199,10 +206,10 @@ bool StateMachine::savePomodoroConfigToDisk(const std::vector<BaseConfigOptions>
 }
 
 bool StateMachine::loadMarketAppConfigFromDisk() {
-    std::cout << "Loading Market App config..." << std::endl;
+    Logger::info("STATE_MACHINE", "Loading Market App config...");
     std::ifstream file("config/market_config.json");
     if (!file.is_open()) {
-        std::cout << "file not open" << std::endl;
+        Logger::error("STATE_MACHINE", "Could not load Market App config...");
         return -1;
     }
 

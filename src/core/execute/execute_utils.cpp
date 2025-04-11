@@ -19,7 +19,6 @@
 #include <mach/mach.h>
 #endif
 
-
 std::string ExecuteUtils::execCommand(const std::string &cmd) {
     std::array<char, 128> buffer; {
     };

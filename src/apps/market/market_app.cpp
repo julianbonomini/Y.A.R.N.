@@ -59,7 +59,7 @@ void MarketApp::handleSettings() {
 
 
 void MarketApp::update(float /*deltaTime*/) {
-    std::cout << "Update" << std::endl;
+    Logger::info("Update");
 }
 
 void MarketApp::draw() {

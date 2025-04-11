@@ -72,24 +72,13 @@ void MainWindow::drawAppArea() {
     renderer.draw(contentArea);
 }
 
+
 void MainWindow::drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, StateMachine &stateMachine) {
     size_t index = stateMachine.getActiveTab();
 
     if (index >= apps.size()) {
-        std::cerr << "!!! Invalid tab index: " << index << " (apps.size = " << apps.size() << ") !!!" << std::endl;
-        std::cerr << "!!! Healing OS config, setting default active tab to 0 !!!" << std::endl;
-        stateMachine.healOsConfig();
-        std::cout << "OS config file has been healed..." << std::endl;
-        stateMachine.setActiveTab(0);
-        std::cout << "Overriding active tab with default tab..." << std::endl;
-        std::cout << "Updateing config app to display latest config..." << std::endl;
-
-        for (size_t i = 0; i < apps.size(); ++i) {
-            if (apps[i]->appName == "CNF") {
-                apps[i]->initConfigFromDisk();
-            }
-        }
-
+        Logger::error("Invalid tab index:", index, "app.size", apps.size());
+        healTab(apps, stateMachine);
         return;
     }
 
@@ -97,11 +86,20 @@ void MainWindow::drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, S
     if (activeApp) {
         activeApp->draw();
     } else {
-        std::cerr << "!!! Warning: Tried to draw a null app at index " << index << " !!!" << std::endl;
-        std::cerr << "!!! Healing OS config, setting default active tab to 0 !!!" << std::endl;
-        stateMachine.healOsConfig();
-        std::cout << "OS config file has been healed..." << std::endl;
-        stateMachine.setActiveTab(stateMachine.getOsConfig().defaultTab);
-        std::cout << "Overriding active tab with default tab..." << std::endl;
+        Logger::error("Tried to draw a null app at index", index);
+        healTab(apps, stateMachine);
+    }
+}
+
+void MainWindow::healTab(const std::vector<std::unique_ptr<App>> &apps, StateMachine &stateMachine) {
+    Logger::warning("Healing OS config, setting default active tab to 0");
+    stateMachine.healOsConfig();
+    stateMachine.setActiveTab(0);
+
+    Logger::info("Updating config app to display latest config...");
+    for (size_t i = 0; i < apps.size(); ++i) {
+        if (apps[i]->appName == "CNF") {
+            apps[i]->initConfigFromDisk();
+        }
     }
 }
