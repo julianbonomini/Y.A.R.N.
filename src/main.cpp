@@ -55,7 +55,7 @@ int main() {
     }
     // Create a shader for CRT effect
     sf::Shader crtShader;
-    if (!crtShader.loadFromFile("src/ui/shaders/01.frag", sf::Shader::Type::Fragment)) {
+    if (!crtShader.loadFromFile("src/ui/shaders/02.frag", sf::Shader::Type::Fragment)) {
         std::cout << "Failed to load shader!" << std::endl;
         return 1;
     }
