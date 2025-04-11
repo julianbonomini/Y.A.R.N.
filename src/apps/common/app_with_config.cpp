@@ -116,7 +116,7 @@ void AppWithConfig::changeOptionRight() {
                     option.changed = true;
                     break;
                 }
-                case BaseConfigOptionType::CHECKBOX: {
+                case BaseConfigOptionType::TOGGLE: {
                     // You can define your own logic here.
                     // For example, maybe prompt user input or increment a numeric field.
                     std::cout << "Checkbox not implemented" << std::endl;
@@ -154,7 +154,7 @@ void AppWithConfig::changeOptionLeft() {
                     option.changed = true;
                     break;
                 }
-                case BaseConfigOptionType::CHECKBOX: {
+                case BaseConfigOptionType::TOGGLE: {
                     // You can define your own logic here.
                     // For example, maybe prompt user input or increment a numeric field.
                     std::cout << "Checkbox not implemented" << std::endl;
