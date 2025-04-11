@@ -12,6 +12,10 @@ enum class AppConfigTypes {
 struct OsConfigFile {
     int refreshRate;
     int defaultTab;
+    int shaderToggle;
+    std::string shader;
+    bool flickerToggle;
+    int flickerIntensity;
 };
 
 struct PomodoroConfigFile {
@@ -36,8 +40,6 @@ public:
     PomodoroConfigFile &getPomodoroConfig();
 
     MarketConfigFile &getMarketConfig();
-
-    const OsConfigFile &getOsConfig() const;
 
     bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
 

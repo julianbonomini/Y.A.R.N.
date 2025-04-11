@@ -29,10 +29,11 @@ int main() {
     std::cout << "Initializing state machine from disk..." << std::endl;
     log_separator();
     StateMachine stateMachine(0);
+    OsConfigFile os_config_file  = stateMachine.getOsConfig();
 
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
                                    sf::Style::Default, sf::State::Windowed);
-    window.setFramerateLimit(stateMachine.getOsConfig().refreshRate);
+    window.setFramerateLimit(os_config_file.refreshRate);
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
         log_attention_grabber();
@@ -53,9 +54,11 @@ int main() {
         std::cout << "No shaders available" << std::endl;
         return 1;
     }
-    // Create a shader for CRT effect
+
     sf::Shader crtShader;
-    if (!crtShader.loadFromFile("src/ui/shaders/02.frag", sf::Shader::Type::Fragment)) {
+    std::ostringstream shaderFile;
+    shaderFile << "src/ui/shaders/" << os_config_file.shader << ".frag";
+    if (!crtShader.loadFromFile(shaderFile.str(), sf::Shader::Type::Fragment)) {
         std::cout << "Failed to load shader!" << std::endl;
         return 1;
     }
@@ -169,15 +172,20 @@ int main() {
 
 
         // Set flicker
-        // TODO: add OS global config for on/off
-        // TODO: add OS global config for intencity
-        int flickerChance = stateMachine.getOsConfig().refreshRate * 10; // One every 10 seconds chance
-        float flickerFactor = (rand() % flickerChance == 0) ? 1.0f : 0.0f;
+        float flickerFactor = 0.f;
+        int flickerChance = stateMachine.getOsConfig().refreshRate * os_config_file.flickerIntensity;
+        if (os_config_file.flickerToggle && rand() % flickerChance == 0) {
+            flickerFactor = 1.0f;
+        }
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
+        if (os_config_file.shaderToggle) {
+            window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
+        } else {
+            window.draw(shaderSprite);
+        }
         window.display();
     }
 
