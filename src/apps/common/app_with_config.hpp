@@ -50,8 +50,6 @@ protected:
     void closeWithUnsavedChanges();
 
     void saveAndClose(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &toBeSaved);
-
-    virtual void initConfigFromDisk() = 0;
 };
 
 

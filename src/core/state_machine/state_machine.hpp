@@ -42,6 +42,8 @@ public:
 
     MarketConfigFile &getMarketConfig();
 
+    bool healOsConfig();
+
     bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
 
     bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions>& configOptions);
@@ -52,7 +54,6 @@ private:
     PomodoroConfigFile pomodoroConfigFile;
     MarketConfigFile marketConfigFile;
 
-    // function to save/load os configuration
     bool loadOsConfigFromDisk();
 
     bool loadDefaultOsConfig();

@@ -35,6 +35,36 @@ MarketConfigFile &StateMachine::getMarketConfig() {
     return marketConfigFile;
 }
 
+bool StateMachine::healOsConfig() {
+    std::cout << "Starting OS config heal..." << std::endl;
+    std::ofstream file("config/os_config.json");
+    if (!file.is_open()) {
+        return false;
+    }
+    json j;
+
+    j["refresh_rate_hz"] = "60";
+    j["default_tab"] = "0";
+    j["theme"] = "light";
+    j["shader_enabled"] = "0";
+    j["shader"] = "none";
+    j["flicker_enabled"] = "0";
+    j["flicker_intensity"] = "10";
+    file << j.dump(4); // Pretty-print with indentation
+    std::cout << "OS config has been overridden with defaults..." << std::endl;
+
+    osConfigFile.refreshRate = 60;
+    osConfigFile.defaultTab = 0;
+    osConfigFile.shaderEnabled = 0;
+    osConfigFile.shader = "none";
+    osConfigFile.flickerEnabled = 0;
+    osConfigFile.flickerIntensity = 10;
+    osConfigFile.theme = "light";
+    std::cout << "OS config obj was also updated..." << std::endl;
+    return 1;
+}
+
+
 bool StateMachine::loadOsConfigFromDisk() {
     std::cout << "Loading OS config..." << std::endl;
     std::ifstream file("config/os_config.json");

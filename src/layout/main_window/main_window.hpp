@@ -10,7 +10,7 @@ class MainWindow {
 public:
     MainWindow(sf::RenderTarget &renderer, const sf::Font &font);
 
-    void draw(const std::vector<std::unique_ptr<App> > &apps, int activeTab);
+    void draw(std::vector<std::unique_ptr<App>> &apps, StateMachine &stateMachine);
 
 private:
     sf::RenderTarget &renderer;
@@ -20,7 +20,7 @@ private:
 
     void drawAppArea();
 
-    void drawActiveApp(App *app);
+    void drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, StateMachine &stateMachine);
 
     void drawFooter();
 };

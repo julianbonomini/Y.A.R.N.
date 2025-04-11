@@ -19,6 +19,8 @@ public:
 
     void handleSettings() override;
 
+    void initConfigFromDisk() override;
+
 private:
     sf::Time workTimeInSeconds = sf::Time::Zero;
     sf::Time playTimeInSeconds = sf::Time::Zero;
@@ -38,8 +40,6 @@ private:
     void drawWorkClock();
 
     void drawPlayClock();
-
-    void initConfigFromDisk() override;
 
     void drawControls();
 

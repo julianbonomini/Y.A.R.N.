@@ -63,6 +63,8 @@ public:
     // Public variables
     std::string appName; // The name of the tab associated with this app
 
+    virtual void initConfigFromDisk() = 0;
+
 protected:
     sf::RenderTarget &renderer;
     const sf::Font &font;

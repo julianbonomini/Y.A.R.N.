@@ -91,9 +91,8 @@ int main() {
     // These are ordered.
     apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
     apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine));
-    apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
     apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
-
+    apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine, apps.size() + 1));
     std::cout << "Apps booted successfully..." << std::endl;
     log_separator();
 
@@ -102,8 +101,6 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-
-
             // Global keys (tab switching)
             if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 auto activeApp = apps[stateMachine.getActiveTab()].get();
@@ -206,7 +203,7 @@ int main() {
         // Draw everything
         toolbar.draw();
         footer.draw();
-        main_window.draw(apps, stateMachine.getActiveTab());
+        main_window.draw(apps, stateMachine);
         renderTexture.display();
 
 

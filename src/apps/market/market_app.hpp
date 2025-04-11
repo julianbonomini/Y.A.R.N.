@@ -28,6 +28,9 @@ public:
 
     void update(float deltaTime);
 
+    void initConfigFromDisk() override;
+
+
 private:
     std::vector<StockData> stocks;
     std::vector<StockData> marketTrackers;
@@ -50,8 +53,6 @@ private:
     void drawLabelsAndValues(const std::vector<StockData> &symbols, float rowHeight, float labelX, float priceX, float changeX, float currentY);
 
     void loadMockData(); // For now, simulate some data
-
-    void initConfigFromDisk() override;
 };
 
 

@@ -9,7 +9,7 @@
 
 class ConfigApp : public App {
 public:
-    ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine);
+    ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, int totalAmountOfApps);
 
     void draw() override;
 
@@ -19,9 +19,12 @@ public:
 
     void handleSettings() override;
 
+    void initConfigFromDisk() override;
+
 private:
     StateMachine &stateMachine;
     std::vector<BaseConfigOptions> configOptions;
+    int totalAmountOfApps;
     bool editModeEnabled = false;
     bool unsavedChangesFlag = false;
 
@@ -36,8 +39,6 @@ private:
     void changeOptionRight();
 
     void changeOptionLeft();
-
-    void initConfigFromDisk();
 
     void saveConfigToDisk();
 };

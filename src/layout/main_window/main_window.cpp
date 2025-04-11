@@ -10,15 +10,15 @@ MainWindow::MainWindow(sf::RenderTarget &renderer, const sf::Font &font)
     // Constructor logic can go here (optional)
 }
 
-void MainWindow::draw(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
+void MainWindow::draw(std::vector<std::unique_ptr<App> > &apps, StateMachine &stateMachine) {
     // --- Draw App Area (Constrain drawing to app area) ---
     drawAppArea();
 
     // --- Tabs ---
     // Needs to be after App Area because it has to cover it
-    drawTabs(apps, activeTab);
+    drawTabs(apps, stateMachine.getActiveTab());
 
-    drawActiveApp(apps[activeTab].get());
+    drawActiveApp(apps, stateMachine);
 }
 
 void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int activeTab) {
@@ -72,7 +72,36 @@ void MainWindow::drawAppArea() {
     renderer.draw(contentArea);
 }
 
-void MainWindow::drawActiveApp(App *activeApp) {
-    // Draw the app into that view
-    activeApp->draw();
+void MainWindow::drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, StateMachine &stateMachine) {
+    size_t index = stateMachine.getActiveTab();
+
+    if (index >= apps.size()) {
+        std::cerr << "!!! Invalid tab index: " << index << " (apps.size = " << apps.size() << ") !!!" << std::endl;
+        std::cerr << "!!! Healing OS config, setting default active tab to 0 !!!" << std::endl;
+        stateMachine.healOsConfig();
+        std::cout << "OS config file has been healed..." << std::endl;
+        stateMachine.setActiveTab(0);
+        std::cout << "Overriding active tab with default tab..." << std::endl;
+        std::cout << "Updateing config app to display latest config..." << std::endl;
+
+        for (size_t i = 0; i < apps.size(); ++i) {
+            if (apps[i]->appName == "CNF") {
+                apps[i]->initConfigFromDisk();
+            }
+        }
+
+        return;
+    }
+
+    App* activeApp = apps[index].get();
+    if (activeApp) {
+        activeApp->draw();
+    } else {
+        std::cerr << "!!! Warning: Tried to draw a null app at index " << index << " !!!" << std::endl;
+        std::cerr << "!!! Healing OS config, setting default active tab to 0 !!!" << std::endl;
+        stateMachine.healOsConfig();
+        std::cout << "OS config file has been healed..." << std::endl;
+        stateMachine.setActiveTab(stateMachine.getOsConfig().defaultTab);
+        std::cout << "Overriding active tab with default tab..." << std::endl;
+    }
 }

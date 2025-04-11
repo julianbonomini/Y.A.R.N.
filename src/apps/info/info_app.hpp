@@ -17,6 +17,8 @@ public:
 
     void handleSettings() override;
 
+    void initConfigFromDisk() override;
+
 private:
     std::string cpuUsage = "";
 

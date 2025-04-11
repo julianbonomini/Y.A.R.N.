@@ -68,3 +68,7 @@ void InfoApp::draw() {
         handleHelp();
     }
 }
+
+void InfoApp::initConfigFromDisk() {
+    app_log("initConfigFromDisk NOOP");
+};
