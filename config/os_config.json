@@ -5,5 +5,5 @@
     "refresh_rate_hz": "60",
     "shader": "low_res_lines",
     "shader_enabled": "1",
-    "theme": "dark"
+    "theme": "light"
 }
