@@ -42,7 +42,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             float circleOffset = Layout::PADDING / 2;
             // Draw the outline circle (outer part)
             sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
-            // checkboxOutline.setFillColor(TRANSPARENT); // No fill for the outline
+            checkboxOutline.setFillColor(ThemeManager::instance().getCurrentTheme().background());
             checkboxOutline.setOutlineColor(ThemeManager::instance().getCurrentTheme().primary()); // Outline color
             checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
             checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline

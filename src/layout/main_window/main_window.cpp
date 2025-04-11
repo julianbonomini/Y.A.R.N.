@@ -39,6 +39,7 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
         tabOutline.setPoint(5, {startingXPosition + Layout::TAB_WIDTH, Layout::TOOLBAR_OFFSET + Layout::TAB_HEIGHT + textOffsetY}); // bottom right
         tabOutline.setOutlineThickness(LineStyles::LINE_THICKNESS);
         tabOutline.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
+        tabOutline.setFillColor(ThemeManager::instance().getCurrentTheme().background());
 
 
         if (i == activeTab) {

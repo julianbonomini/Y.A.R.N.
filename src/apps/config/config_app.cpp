@@ -251,6 +251,7 @@ void ConfigApp::draw() {
             // Draw the outline circle (outer part)
             sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
             checkboxOutline.setOutlineColor(ThemeManager::instance().getCurrentTheme().primary()); // Outline color
+            checkboxOutline.setFillColor(ThemeManager::instance().getCurrentTheme().background()); // Outline color
             checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
             checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
             renderer.draw(checkboxOutline);
