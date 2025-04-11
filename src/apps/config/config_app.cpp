@@ -271,7 +271,7 @@ void ConfigApp::initConfigFromDisk() {
     BaseConfigOptions refreshRateOption;
     refreshRateOption.label = "refresh_rate_hz";
     refreshRateOption.type = BaseConfigOptionType::CYCLE;;
-    refreshRateOption.options = {"1", "30", "60"};
+    refreshRateOption.options = {"30", "40", "50", "60"};
     refreshRateOption.currentValue = std::to_string(stateMachine.getOsConfig().refreshRate);
     refreshRateOption.selected = false;
     refreshRateOption.changed = false;

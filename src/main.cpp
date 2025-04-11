@@ -29,11 +29,15 @@ int main() {
     std::cout << "Initializing state machine from disk..." << std::endl;
     log_separator();
     StateMachine stateMachine(0);
-    OsConfigFile os_config_file  = stateMachine.getOsConfig();
+    OsConfigFile *os_config_file = &stateMachine.getOsConfig(); // by ref, don't copy
+    OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
 
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Noop",
                                    sf::Style::Default, sf::State::Windowed);
-    window.setFramerateLimit(os_config_file.refreshRate);
+
+    window.setFramerateLimit(initial_os_config_file.refreshRate);
+    int loadedRefreshRate = initial_os_config_file.refreshRate; // Copies the value
+
     sf::Font font;
     if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
         log_attention_grabber();
@@ -57,11 +61,12 @@ int main() {
 
     sf::Shader crtShader;
     std::ostringstream shaderFile;
-    shaderFile << "src/ui/shaders/" << os_config_file.shader << ".frag";
+    shaderFile << "src/ui/shaders/" << initial_os_config_file.shader << ".frag";
     if (!crtShader.loadFromFile(shaderFile.str(), sf::Shader::Type::Fragment)) {
         std::cout << "Failed to load shader!" << std::endl;
         return 1;
     }
+    std::string loadaedShader = initial_os_config_file.shader; // Copies the value
 
     std::cout << "Initializing main layout..." << std::endl;
     log_separator();
@@ -162,6 +167,24 @@ int main() {
         }
 
 
+        // Check if global settings have changed:
+        if (os_config_file->shader != loadaedShader) {
+            std::cout << "Changing shader to " << os_config_file->shader << "..." << std::endl;
+            std::ostringstream newShader;
+            newShader << "src/ui/shaders/" << os_config_file->shader << ".frag";
+            if (!crtShader.loadFromFile(newShader.str(), sf::Shader::Type::Fragment)) {
+                log_attention_grabber();
+                std::cout << "Failed to load new shader!" << std::endl;
+            }
+            loadaedShader = os_config_file->shader;
+        }
+        if (os_config_file->refreshRate != loadedRefreshRate) {
+            std::cout << "Changing refresh rate to  " << os_config_file->refreshRate << "..." << std::endl;
+            window.setFramerateLimit(os_config_file->refreshRate);
+            loadedRefreshRate = os_config_file->refreshRate;
+
+        }
+
         // Clear screen with base color
         renderTexture.clear(Colors::WHITE);
         // Draw everything
@@ -173,15 +196,15 @@ int main() {
 
         // Set flicker
         float flickerFactor = 0.f;
-        int flickerChance = stateMachine.getOsConfig().refreshRate * os_config_file.flickerIntensity;
-        if (os_config_file.flickerEnabled && rand() % flickerChance == 0) {
+        int flickerChance = stateMachine.getOsConfig().refreshRate * os_config_file->flickerIntensity;
+        if (os_config_file->flickerEnabled && rand() % flickerChance == 0) {
             flickerFactor = 1.0f;
         }
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        if (os_config_file.shaderEnabled) {
+        if (os_config_file->shaderEnabled) {
             window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         } else {
             window.draw(shaderSprite);
