@@ -1,48 +1,47 @@
 #version 120
 
-uniform sampler2D u_texture;
-uniform float CRT_CURVE_AMNTx;  // Curve amount on x
-uniform float CRT_CURVE_AMNTy;  // Curve amount on y
+uniform sampler2D u_texture; // SFML built in
 uniform float scanLineMultiplier;  // SCAN_LINE_MULT value, adjusted for SFML
 uniform vec4 colorMultiplier;  // Equivalent to 'v_color' in SFML (can be used for color tinting)
 uniform float flickerFactor;  // Control flicker (0: no flicker, 1: full flicker)
+uniform float distortion;
+uniform float distortionRate;
+
+vec2 curveUV(vec2 uv) {
+    vec2 centered = uv * 2.0 - 1.0;
+    float r2 = dot(centered, centered);
+    float edgeFactor = smoothstep(0.2, 1.0, r2); // Adjust these values to control the falloff
+
+    // Apply distortion based on distance from center
+//    float distortionAmount = distortion * (1.0 - sqrt(r2)); // Experiment with this formula!
+    float distortionAmount = distortion * (1.0 - pow(r2, distortionRate)); // More of the screen affected
+
+    centered *= 1.0 - distortionAmount * edgeFactor;
+
+    return centered * 0.5 + 0.5;
+}
 
 void main() {
-    vec2 tc = gl_TexCoord[0].xy;
+    vec2 uv = gl_TexCoord[0].xy;
 
-    // Distance from the center (for curvature effect)
-    float dx = abs(0.5 - tc.x);
-    float dy = abs(0.5 - tc.y);
+    vec2 distortedUV = curveUV(uv);
 
-    // Square the distances to smooth the edges of the curvature
-    dx *= dx;
-    dy *= dy;
+    // Sample the texture
+    vec4 cta = texture2D(u_texture, distortedUV);
 
-    // Apply curvature effect on x and y axes
-    tc.x -= 0.5;
-    tc.x *= 1.0 + (dy * CRT_CURVE_AMNTx);
-    tc.x += 0.5;
+    // Scanline effect (optional tweak to Y coordinate)
+    cta.rgb += sin(uv.y * scanLineMultiplier) * 0.02;
 
-    tc.y -= 0.5;
-    tc.y *= 1.0 + (dx * CRT_CURVE_AMNTy);
-    tc.y += 0.5;
-
-    // Sample the texture with the new coordinates
-    vec4 cta = texture2D(u_texture, tc);
-
-    // Add scanline effect (sin wave for darkening effect)
-    cta.rgb += sin(tc.y * scanLineMultiplier) * 0.02;
-
-    // Flicker effect logic
+    // Flicker logic
     if (flickerFactor > 0.0) {
-        cta = vec4(0.0, 0.0, 0.0, 0.75);  // Flicker behavoiour
+        cta = vec4(0.0, 0.0, 0.0, 0.75);  // Adjust flicker opacity as needed
     }
 
-    // Ensure the coordinates are within bounds
-    if (tc.y > 1.0 || tc.x < 0.0 || tc.x > 1.0 || tc.y < 0.0) {
-        cta = vec4(0.0);  // Black out pixels outside the valid texture space
+    // Discard pixels outside bounds
+    if (distortedUV.x < 0.0 || distortedUV.x > 1.0 || distortedUV.y < 0.0 || distortedUV.y > 1.0) {
+        cta = vec4(0.0);  // Black outside screen
     }
 
-    // Apply the color multiplier (could be used to adjust brightness or tint)
+    // Final color adjustment
     gl_FragColor = cta * colorMultiplier;
 }

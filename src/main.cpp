@@ -180,11 +180,15 @@ int main() {
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Set adjustable parameters
-        crtShader.setUniform("CRT_CURVE_AMNTx", 0.0f); // Adjust curvature on x-axis
-        crtShader.setUniform("CRT_CURVE_AMNTy", 0.0f); // Adjust curvature on y-axis
+        // Ditortion
+        crtShader.setUniform("distortion", 0.2f); // How much the images gets distored
+        crtShader.setUniform("distortionRate", 0.1f); // How much away form the center it happens
+
+        // Lines
         crtShader.setUniform("scanLineMultiplier", 1250.0f); // Set the scanline multiplier (original SCAN_LINE_MULT)
+
+        // Color filter
         crtShader.setUniform("colorMultiplier", sf::Glsl::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-        // Color multiplier (use to adjust tint)
 
 
         // Clear the window and draw the final image
