@@ -19,14 +19,14 @@ sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1,
 void App::drawModalRectangle(std::string modalTitle) {
     sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
-    modalRectangle.setFillColor(Colors::WHITE);
-    modalRectangle.setOutlineColor(Colors::GRAY);
+    modalRectangle.setFillColor(Colors::BACKGROUND);
+    modalRectangle.setOutlineColor(Colors::SECONDARY);
     modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(modalRectangle);
 
     sf::Text title(font, appName + " " + modalTitle);
     title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(Colors::BLACK);
+    title.setFillColor(Colors::PRIMARY);
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     renderer.draw(title);
 };

@@ -15,7 +15,7 @@ void Toolbar::draw() {
 
     sf::Text osName(font, "NOOP");
     osName.setCharacterSize(FontSizes::TOOLBAR);
-    osName.setFillColor(Colors::BLACK);
+    osName.setFillColor(Colors::PRIMARY);
     sf::Vector2f osNamePos = UIHelpers::snapToGrid({textX, textY});
     osName.setPosition(osNamePos);
     renderer.draw(osName);
@@ -27,7 +27,7 @@ void Toolbar::draw() {
 
     sf::Text dateAndTime(font, timeStr);
     dateAndTime.setCharacterSize(FontSizes::TOOLBAR);
-    dateAndTime.setFillColor(Colors::BLACK);
+    dateAndTime.setFillColor(Colors::PRIMARY);
 
     float rightX = DisplayConfig::SCREEN_WIDTH - dateAndTime.getLocalBounds().size.x - Layout::PADDING;
     sf::Vector2f dateTimePos = UIHelpers::snapToGrid({rightX, textY});
@@ -36,7 +36,7 @@ void Toolbar::draw() {
 
     // Line separator below toolbar
     sf::RectangleShape line(sf::Vector2f(DisplayConfig::SCREEN_WIDTH, LineStyles::LINE_THICKNESS));
-    line.setFillColor(Colors::GRAY);
+    line.setFillColor(Colors::SECONDARY);
     line.setPosition({0.f, Layout::TOOLBAR_HEIGHT});
     renderer.draw(line);
 }

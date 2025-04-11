@@ -50,9 +50,9 @@ namespace FontSizes {
 }
 
 namespace Colors {
-    constexpr sf::Color WHITE = sf::Color::White;
-    constexpr sf::Color GRAY = sf::Color(200, 200, 200);
-    constexpr sf::Color BLACK = sf::Color::Black;
+    constexpr sf::Color BACKGROUND = sf::Color::White;
+    constexpr sf::Color PRIMARY = sf::Color::Black;
+    constexpr sf::Color SECONDARY = sf::Color(200, 200, 200);
     constexpr sf::Color DEBUG = sf::Color::Red;
 }
 

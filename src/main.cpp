@@ -189,7 +189,7 @@ int main() {
         }
 
         // Clear screen with base color
-        renderTexture.clear(Colors::WHITE);
+        renderTexture.clear(Colors::BACKGROUND);
         // Draw everything
         toolbar.draw();
         footer.draw();
@@ -206,7 +206,7 @@ int main() {
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Clear the window and draw the final image
-        window.clear(Colors::WHITE);
+        window.clear(Colors::BACKGROUND);
         if (os_config_file->shaderEnabled && loadaedShader != "") {
             window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         } else {

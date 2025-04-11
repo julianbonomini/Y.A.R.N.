@@ -159,8 +159,8 @@ void ConfigApp::drawControlsHelpBox() {
     auto contentAreaCoordinates = getGridBox(3, 2, 2, 2);
     sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
-    contentArea.setFillColor(Colors::WHITE);
-    contentArea.setOutlineColor(Colors::GRAY);
+    contentArea.setFillColor(Colors::BACKGROUND);
+    contentArea.setOutlineColor(Colors::SECONDARY);
     contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(contentArea);
 
@@ -179,7 +179,7 @@ void ConfigApp::drawControlsHelpBox() {
     for (const auto &line: helpLines) {
         sf::Text text(font, line);
         text.setCharacterSize(FontSizes::TITLE);
-        text.setFillColor(Colors::BLACK);
+        text.setFillColor(Colors::PRIMARY);
         text.setPosition({textX, textY});
         renderer.draw(text);
         textY += Layout::TEXT_SPACING;
@@ -203,8 +203,8 @@ void ConfigApp::drawCurrOptionHelpBox() {
     // --- Content area ---
     sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
-    contentArea.setFillColor(Colors::WHITE);
-    contentArea.setOutlineColor(Colors::GRAY);
+    contentArea.setFillColor(Colors::BACKGROUND);
+    contentArea.setOutlineColor(Colors::SECONDARY);
     contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(contentArea);
 
@@ -213,13 +213,13 @@ void ConfigApp::drawCurrOptionHelpBox() {
 
     sf::Text title(font, "SETTING HELP");
     title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(Colors::BLACK);
+    title.setFillColor(Colors::PRIMARY);
     title.setPosition({textX, textY});
     renderer.draw(title);
 
     sf::Text help(font, selectedOptionHelp);
     help.setCharacterSize(FontSizes::DESCRIPTION);
-    help.setFillColor(Colors::BLACK);
+    help.setFillColor(Colors::PRIMARY);
     help.setPosition({textX, title.getGlobalBounds().position.y + title.getGlobalBounds().size.y + Layout::PADDING});
     renderer.draw(help);
 
@@ -239,7 +239,7 @@ void ConfigApp::draw() {
         float valueYPosition = TOP_LEFT_ANCHOR.y + verticalOffset;
         BaseConfigOptions &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
-        labelText.setFillColor(Colors::BLACK);
+        labelText.setFillColor(Colors::PRIMARY);
         labelText.setPosition({labelPositionX, valueYPosition});
         renderer.draw(labelText);
 
@@ -249,7 +249,7 @@ void ConfigApp::draw() {
             // Draw the outline circle (outer part)
             sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
             // checkboxOutline.setFillColor(Colors::TRANSPARENT); // No fill for the outline
-            checkboxOutline.setOutlineColor(Colors::BLACK); // Outline color
+            checkboxOutline.setOutlineColor(Colors::PRIMARY); // Outline color
             checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
             checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
             renderer.draw(checkboxOutline);
@@ -257,7 +257,7 @@ void ConfigApp::draw() {
             // Draw the filled circle (inner part)
             if (currentOption.currentValue == "1") {
                 sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
-                checkboxFill.setFillColor(Colors::BLACK); // Filled if value is "1"
+                checkboxFill.setFillColor(Colors::PRIMARY); // Filled if value is "1"
                 checkboxFill.setPosition({valuePositionX + 1.f, valueYPosition + circleOffset + 1.f}); // Adjust position for the gap
                 renderer.draw(checkboxFill);
             }
@@ -265,7 +265,7 @@ void ConfigApp::draw() {
             std::stringstream valueStream;
             valueStream << currentOption.currentValue;
             sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
-            valueText.setFillColor(Colors::BLACK);
+            valueText.setFillColor(Colors::PRIMARY);
             valueText.setPosition({valuePositionX, valueYPosition});
             renderer.draw(valueText);
         }
@@ -275,7 +275,7 @@ void ConfigApp::draw() {
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
-            highlightRect.setFillColor(Colors::GRAY);
+            highlightRect.setFillColor(Colors::SECONDARY);
             renderer.draw(highlightRect);
             renderer.draw(labelText);
         }
@@ -287,7 +287,7 @@ void ConfigApp::draw() {
     // Draw if in edit mode:
     if (editModeEnabled) {
         sf::Text editModeEnabled(font, "EDIT_MODE", FontSizes::HELP);
-        editModeEnabled.setFillColor(Colors::BLACK);
+        editModeEnabled.setFillColor(Colors::PRIMARY);
         editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         renderer.draw(editModeEnabled);
     }
@@ -296,7 +296,7 @@ void ConfigApp::draw() {
     if (unsavedChangesFlag) {
         const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
-        unsavedChanges.setFillColor(Colors::BLACK);
+        unsavedChanges.setFillColor(Colors::PRIMARY);
         unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         renderer.draw(unsavedChanges);
     }
