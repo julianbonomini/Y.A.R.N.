@@ -1,19 +1,21 @@
 #include "app_with_config.hpp"
 #include <sstream>
 
+#include "../../ui/themes/theme_manager.hpp"
+
 
 sf::FloatRect AppWithConfig::drawSettings() const {
     sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
     modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
-    modalRectangle.setFillColor(Colors::BACKGROUND);
-    modalRectangle.setOutlineColor(Colors::SECONDARY);
+    modalRectangle.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    modalRectangle.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(modalRectangle);
     sf::FloatRect bounds = modalRectangle.getGlobalBounds();
 
     sf::Text title(font, appName + " SETTINGS");
     title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(Colors::PRIMARY);
+    title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     renderer.draw(title);
 
@@ -31,7 +33,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
         float valueYPosition = TOP_LEFT_ANCHOR.y + verticalOffset;
         BaseConfigOptions &currentOption = configOptions[i];
         sf::Text labelText(font, currentOption.label, FontSizes::LABEL);
-        labelText.setFillColor(Colors::PRIMARY);
+        labelText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         labelText.setPosition({labelPositionX, valueYPosition});
         renderer.draw(labelText);
 
@@ -40,8 +42,8 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             float circleOffset = Layout::PADDING / 2;
             // Draw the outline circle (outer part)
             sf::CircleShape checkboxOutline(5.f); // Larger radius for the outline
-            // checkboxOutline.setFillColor(Colors::TRANSPARENT); // No fill for the outline
-            checkboxOutline.setOutlineColor(Colors::PRIMARY); // Outline color
+            // checkboxOutline.setFillColor(TRANSPARENT); // No fill for the outline
+            checkboxOutline.setOutlineColor(ThemeManager::instance().getCurrentTheme().primary()); // Outline color
             checkboxOutline.setOutlineThickness(LineStyles::LINE_THICKNESS); // Outline thickness
             checkboxOutline.setPosition({valuePositionX, valueYPosition + circleOffset}); // Position the outline
             renderer.draw(checkboxOutline);
@@ -49,7 +51,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             // Draw the filled circle (inner part)
             if (currentOption.currentValue == "1") {
                 sf::CircleShape checkboxFill(4.f); // Smaller radius for the fill (creates a gap between fill and outline)
-                checkboxFill.setFillColor(Colors::PRIMARY); // Filled if value is "1"
+                checkboxFill.setFillColor(ThemeManager::instance().getCurrentTheme().primary()); // Filled if value is "1"
                 checkboxFill.setPosition({valuePositionX + 1.f, valueYPosition + circleOffset + 1.f}); // Adjust position for the gap
                 renderer.draw(checkboxFill);
             }
@@ -57,7 +59,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             std::stringstream valueStream;
             valueStream << currentOption.currentValue;
             sf::Text valueText(font, valueStream.str(), FontSizes::VALUE);
-            valueText.setFillColor(Colors::PRIMARY);
+            valueText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
             valueText.setPosition({valuePositionX, valueYPosition});
             renderer.draw(valueText);
         }
@@ -67,7 +69,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
-            highlightRect.setFillColor(Colors::SECONDARY);
+            highlightRect.setFillColor(ThemeManager::instance().getCurrentTheme().secondary());
             renderer.draw(highlightRect);
             renderer.draw(labelText);
         }
@@ -81,7 +83,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
     if (unsavedChangesFlag) {
         const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
         sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
-        unsavedChanges.setFillColor(Colors::PRIMARY);
+        unsavedChanges.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
         renderer.draw(unsavedChanges);
     }
@@ -104,8 +106,8 @@ void AppWithConfig::drawCurrOptionHelpBox() {
     // --- Content area ---
     sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
-    contentArea.setFillColor(Colors::BACKGROUND);
-    contentArea.setOutlineColor(Colors::SECONDARY);
+    contentArea.setFillColor(ThemeManager::instance().getCurrentTheme().background());
+    contentArea.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(contentArea);
 
@@ -114,13 +116,13 @@ void AppWithConfig::drawCurrOptionHelpBox() {
 
     sf::Text title(font, "SETTING HELP");
     title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(Colors::PRIMARY);
+    title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     title.setPosition({textX, textY});
     renderer.draw(title);
 
     sf::Text help(font, selectedOptionHelp);
     help.setCharacterSize(FontSizes::DESCRIPTION);
-    help.setFillColor(Colors::PRIMARY);
+    help.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     help.setPosition({textX, title.getGlobalBounds().position.y + title.getGlobalBounds().size.y + Layout::PADDING});
     renderer.draw(help);
 

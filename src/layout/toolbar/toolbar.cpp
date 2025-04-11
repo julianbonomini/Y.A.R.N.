@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include "../../globals/ui_globals.hpp"
+#include "../../ui/themes/theme_manager.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
 Toolbar::Toolbar(sf::RenderTarget &renderer, const sf::Font &font)
@@ -15,7 +16,7 @@ void Toolbar::draw() {
 
     sf::Text osName(font, "NOOP");
     osName.setCharacterSize(FontSizes::TOOLBAR);
-    osName.setFillColor(Colors::PRIMARY);
+    osName.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::Vector2f osNamePos = UIHelpers::snapToGrid({textX, textY});
     osName.setPosition(osNamePos);
     renderer.draw(osName);
@@ -27,7 +28,7 @@ void Toolbar::draw() {
 
     sf::Text dateAndTime(font, timeStr);
     dateAndTime.setCharacterSize(FontSizes::TOOLBAR);
-    dateAndTime.setFillColor(Colors::PRIMARY);
+    dateAndTime.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
 
     float rightX = DisplayConfig::SCREEN_WIDTH - dateAndTime.getLocalBounds().size.x - Layout::PADDING;
     sf::Vector2f dateTimePos = UIHelpers::snapToGrid({rightX, textY});
@@ -36,7 +37,7 @@ void Toolbar::draw() {
 
     // Line separator below toolbar
     sf::RectangleShape line(sf::Vector2f(DisplayConfig::SCREEN_WIDTH, LineStyles::LINE_THICKNESS));
-    line.setFillColor(Colors::SECONDARY);
+    line.setFillColor(ThemeManager::instance().getCurrentTheme().secondary());
     line.setPosition({0.f, Layout::TOOLBAR_HEIGHT});
     renderer.draw(line);
 }
