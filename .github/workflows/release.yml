@@ -55,13 +55,14 @@ jobs:
       - name: Build (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          mkdir -p build
-          g++ -std=c++17 -Wall -I/opt/homebrew/include -o build/Noop src/*.cpp -L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system
+          make clean && make
 
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          make clean && make 
+          mkdir -p build
+          g++ -std=c++17 -Wall -I/usr/include/SFML -o build/Noop src/*.cpp -L/usr/lib/x86_64-linux-gnu -lsfml-graphics -lsfml-window -lsfml-system
+      
 
       # Package
       - name: Package binary (macOS)
