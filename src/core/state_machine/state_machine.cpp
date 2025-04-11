@@ -46,18 +46,12 @@ bool StateMachine::loadOsConfigFromDisk() {
     json j;
     try {
         file >> j;
-        std::string refreshRateString = j["refresh_rate_hz"];
-        std::string defaultTabString = j["default_tab"];
-        std::string shaderToggleString = j["shader_toggle"];
-        std::string shaderString = j["shader"];
-        std::string flickerToggleString = j["flicker_toggle"];
-        std::string flickerIntenityString = j["flicker_intensity"];
-        osConfigFile.refreshRate = std::stoi(refreshRateString);
-        osConfigFile.defaultTab = std::stoi(defaultTabString);
-        osConfigFile.shaderToggle = std::stoi(shaderToggleString);
-        osConfigFile.shader = shaderString;
-        osConfigFile.flickerToggle = std::stoi(flickerToggleString);
-        osConfigFile.flickerIntensity = std::stoi(flickerToggleString);
+        osConfigFile.refreshRate = std::stoi(std::string(j["refresh_rate_hz"]));
+        osConfigFile.defaultTab = std::stoi(std::string(j["default_tab"]));
+        osConfigFile.shaderEnabled = std::stoi(std::string(j["shader_enabled"]));
+        osConfigFile.shader = std::string(j["shader"]);
+        osConfigFile.flickerEnabled = std::stoi(std::string(j["flicker_enabled"]));
+        osConfigFile.flickerIntensity = std::stoi(std::string(j["flicker_intensity"]));
     } catch (...) {
         return -1;
     }
@@ -80,17 +74,17 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
         if (option.label == "default_tab") {
             osConfigFile.defaultTab = std::stoi(option.currentValue);
         }
-        if (option.label == "shader_toggle") {
-            osConfigFile.defaultTab = std::stoi(option.currentValue);
+        if (option.label == "shader_enabled") {
+            osConfigFile.shaderEnabled = std::stoi(option.currentValue);
         }
         if (option.label == "shader") {
-            osConfigFile.defaultTab = std::stoi(option.currentValue);
+            osConfigFile.shader = std::stoi(option.currentValue);
         }
-        if (option.label == "flicker_toggle") {
-            osConfigFile.defaultTab = std::stoi(option.currentValue);
+        if (option.label == "flicker_enabled") {
+            osConfigFile.flickerEnabled = std::stoi(option.currentValue);
         }
         if (option.label == "flicker_intensity") {
-            osConfigFile.defaultTab = std::stoi(option.currentValue);
+            osConfigFile.flickerIntensity = std::stoi(option.currentValue);
         }
     }
 

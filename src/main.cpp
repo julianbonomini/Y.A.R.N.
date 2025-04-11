@@ -174,14 +174,14 @@ int main() {
         // Set flicker
         float flickerFactor = 0.f;
         int flickerChance = stateMachine.getOsConfig().refreshRate * os_config_file.flickerIntensity;
-        if (os_config_file.flickerToggle && rand() % flickerChance == 0) {
+        if (os_config_file.flickerEnabled && rand() % flickerChance == 0) {
             flickerFactor = 1.0f;
         }
         crtShader.setUniform("flickerFactor", flickerFactor);
 
         // Clear the window and draw the final image
         window.clear(Colors::WHITE);
-        if (os_config_file.shaderToggle) {
+        if (os_config_file.shaderEnabled) {
             window.draw(shaderSprite, &crtShader); // Render the textured sprite with CRT effect
         } else {
             window.draw(shaderSprite);

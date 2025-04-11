@@ -1,8 +1,8 @@
 {
     "default_tab": "0",
     "refresh_rate_hz": "60",
-    "shader_toggle": "1",
+    "shader_enabled": "1",
     "shader": "01",
-    "flicker_toggle": "1",
+    "flicker_enabled": "1",
     "flicker_intensity": "10"
 }
