@@ -12,6 +12,10 @@ public:
 
     static std::string getCpuModel();
 
+    static std::string getCpuUsage();
+
+    static std::string getGpuModel();
+
     static std::string getRam();
 
     static std::string getStorageUsage(const std::string &path);

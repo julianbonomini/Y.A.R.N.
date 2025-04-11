@@ -10,6 +10,8 @@ InfoApp::InfoApp(sf::RenderWindow &window, const sf::Font &font, const std::stri
     infoData.push_back({"OS:", "Noop"});
     infoData.push_back({"VERSION:", "0.0.1"});
     infoData.push_back({"CPU:", ExecuteUtils::getCpuModel()});
+    infoData.push_back({"CPU_USG:", "%"});
+    infoData.push_back({"GPU:", ExecuteUtils::getGpuModel()});
     infoData.push_back({"RAM:", ExecuteUtils::getRam()});
     infoData.push_back({"USED STORAGE:", ExecuteUtils::getStorageUsage("/")});
     infoData.push_back({"APPS:", "NOOP"});
@@ -32,8 +34,8 @@ void InfoApp::handleSettings() {
     }
 }
 
-
 void InfoApp::draw() {
+    infoData[3] = {"CPU_USG:", ExecuteUtils::getCpuUsage()};
     float labelPositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING;
     float valuePositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING + Layout::LABEL_VALUE_SPACE;
     float verticalOffset = Layout::PADDING;

@@ -15,6 +15,8 @@
     #include <netdb.h>
 #elif defined(__APPLE__)
 #include <sys/sysctl.h>
+#include <sys/types.h>
+#include <mach/mach.h>
 #endif
 
 
@@ -63,6 +65,74 @@ std::string ExecuteUtils::getCpuModel() {
     return "Unsupported OS";
 #endif
 }
+
+std::string ExecuteUtils::getCpuUsage() {
+#ifdef __linux__
+    std::ifstream file("/proc/stat");
+    std::string line;
+    std::getline(file, line); // Read the first line which is "cpu ..."
+
+    std::istringstream ss(line);
+    std::string cpu;
+    long user, nice, system, idle, iowait, irq, softirq, steal;
+
+    ss >> cpu >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+
+    long total = user + nice + system + idle + iowait + irq + softirq + steal;
+    long used = user + nice + system + irq + softirq + steal;
+
+    double usage = (double)used / (double)total * 100;
+    return std::to_string(usage) + "%";
+#elif defined(__APPLE__)
+    host_cpu_load_info_data_t load;
+    mach_msg_type_number_t count = HOST_CPU_LOAD_INFO_COUNT;
+    kern_return_t kr = host_statistics64(mach_host_self(), HOST_CPU_LOAD_INFO, (host_info_t)&load, &count);
+
+    if (kr != KERN_SUCCESS) {
+        return "Error getting CPU usage";
+    }
+
+    // Calculate the total CPU usage
+    long total = load.cpu_ticks[CPU_STATE_USER] + load.cpu_ticks[CPU_STATE_SYSTEM] + load.cpu_ticks[CPU_STATE_IDLE];
+    long used = load.cpu_ticks[CPU_STATE_USER] + load.cpu_ticks[CPU_STATE_SYSTEM];
+
+    double usage = (double)used / (double)total * 100;
+    return std::to_string(usage) + "%";
+#else
+    return "Unsupported OS";
+#endif
+}
+
+std::string ExecuteUtils::getGpuModel() {
+#ifdef __linux__
+    std::ifstream gpuInfo("/proc/driver/nvidia/gpus/0000:01:00.0/information");
+    std::string line;
+    while (std::getline(gpuInfo, line)) {
+        if (line.find("Model") != std::string::npos) {
+            auto colon = line.find(":");
+            return line.substr(colon + 2);
+        }
+    }
+    return "Unknown GPU";
+#elif defined(__APPLE__)
+    // macOS does not provide a direct method like /proc, but we can try using system_profiler
+    FILE* pipe = popen("system_profiler SPDisplaysDataType | grep 'Chipset Model'", "r");
+    if (!pipe) return "Unknown GPU";
+
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), pipe)) {
+        std::string line(buffer);
+        auto colon = line.find(":");
+        if (colon != std::string::npos) {
+            return line.substr(colon + 2);
+        }
+    }
+    return "Unknown GPU";
+#else
+    return "Unsupported OS";
+#endif
+}
+
 
 std::string ExecuteUtils::getRam() {
 #ifdef __linux__
