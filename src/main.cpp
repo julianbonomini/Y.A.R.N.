@@ -75,7 +75,8 @@ int main() {
 
 
     std::cout << "Initializing theme..." << std::endl;
-    ThemeManager::instance().setTheme("dark");
+    std::string loadedTheme = initial_os_config_file.theme; // Copies the value
+    ThemeManager::instance().setTheme(loadedTheme);
     log_separator();
 
 
@@ -193,6 +194,11 @@ int main() {
             window.setFramerateLimit(os_config_file->refreshRate);
             loadedRefreshRate = os_config_file->refreshRate;
 
+        }
+        if (os_config_file->theme != loadedTheme) {
+            std::cout << "Changing theme " << os_config_file->theme << "..." << std::endl;
+            ThemeManager::instance().setTheme(os_config_file->theme);
+            loadedTheme = os_config_file->theme;
         }
 
         // Clear screen with base color

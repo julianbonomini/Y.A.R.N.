@@ -321,6 +321,17 @@ void ConfigApp::initConfigFromDisk() {
     defaultTabOption.description = "This will be the displayed TAB when the system restarts.";
     configOptions.push_back(defaultTabOption);
 
+    // Theme
+    BaseConfigOptions theme;
+    theme.label = "theme";
+    theme.type = BaseConfigOptionType::CYCLE;;
+    theme.options = {"light", "dark"};
+    theme.currentValue = stateMachine.getOsConfig().theme;
+    theme.selected = false;
+    theme.changed = false;
+    theme.description = "The UI theme for the entire OS. This only affects colors. Try to find the best combination between themes and shaders! You need to save to see changes.";
+    configOptions.push_back(theme);
+
     // Shader ON/OFF
     BaseConfigOptions shaderEnabled;
     shaderEnabled.label = "shader_enabled";

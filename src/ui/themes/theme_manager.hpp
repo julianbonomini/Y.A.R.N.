@@ -21,7 +21,7 @@ public:
     sf::Color primary() const override { return sf::Color::Black; }
     sf::Color secondary() const override { return sf::Color(200, 200, 200); }
     sf::Color accent() const override { return sf::Color::Red; }
-    sf::Color highlight() const override { return sf::Color::White; }
+    sf::Color highlight() const override { return sf::Color(200, 200, 200); }
 };
 
 class DarkTheme : public Theme {
