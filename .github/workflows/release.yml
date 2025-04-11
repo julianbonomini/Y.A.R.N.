@@ -1,0 +1,69 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'alpha-*'
+      - 'action-debug-*'
+
+jobs:
+  build-and-release:
+    name: Build and Release
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up dependencies (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew update
+          brew install sfml
+          brew install nlohmann_json
+
+      - name: Set up dependencies (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsfml-dev libnlohmann-json-dev
+
+      - name: Build (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          mkdir -p build
+          g++ -std=c++17 -Wall -I/opt/homebrew/include -o build/Noop src/*.cpp -L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system
+
+      - name: Build (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          mkdir -p build
+          g++ -std=c++17 -Wall -I/usr/include/SFML -o build/Noop src/*.cpp -L/usr/lib/x86_64-linux-gnu -lsfml-graphics -lsfml-window -lsfml-system
+
+
+      - name: Package binary (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          mkdir -p release/macos
+          cp build/Noop release/macos/Noop
+          tar czvf release/macos.tar.gz -C release/macos .
+
+      - name: Package binary (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          mkdir -p release/linux
+          cp build/Noop release/linux/Noop
+          tar czvf release/linux.tar.gz -C release/linux .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*.tar.gz
+          tag_name: ${{ github.run_id }} # Consider using a more meaningful tag
+          draft: false
+          prerelease: false
