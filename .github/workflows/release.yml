@@ -41,7 +41,7 @@ jobs:
             exit 1
           fi
           brew install sfml
-          brew install nlohmann_json
+          brew install nlohmann-json
 
       - name: Set up dependencies (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
