@@ -328,7 +328,7 @@ void ConfigApp::initConfigFromDisk() {
     BaseConfigOptions theme;
     theme.label = "theme";
     theme.type = BaseConfigOptionType::CYCLE;;
-    theme.options = {"light", "dark"};
+    theme.options = {"dark", "bios", "eink"};
     theme.currentValue = stateMachine.getOsConfig().theme;
     theme.selected = false;
     theme.changed = false;
@@ -366,7 +366,7 @@ void ConfigApp::initConfigFromDisk() {
     shader.currentValue = stateMachine.getOsConfig().shader;
     shader.selected = false;
     shader.changed = false;
-    shader.description = "A shader is a sort of filter applied to the entire screen. This setting will only have effect when shader_enabled is true. You will see the changes reflected upon saving.";
+    shader.description = "A shader is a sort of filter applied to the entire screen. Try to combine shaders with themes, some combinations looks great while some others really suck. This setting will only have effect when shader_enabled is true. You will see the changes reflected upon saving.";
     configOptions.push_back(shader);
 
     // Flicker enabled

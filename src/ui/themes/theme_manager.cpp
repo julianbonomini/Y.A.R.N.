@@ -7,9 +7,10 @@ ThemeManager& ThemeManager::instance() {
 }
 
 ThemeManager::ThemeManager() {
-    themes_["light"] = std::make_unique<LightTheme>();
     themes_["dark"] = std::make_unique<DarkTheme>();
-    currentTheme_ = themes_["light"].get(); // Initialize with a valid Theme
+    themes_["bios"] = std::make_unique<BiosTheme>();
+    themes_["eink"] = std::make_unique<eInkTheme>();
+    currentTheme_ = themes_["eink"].get(); // Initialize with a valid Theme
 }
 
 void ThemeManager::setTheme(const std::string& themeName) {

@@ -48,7 +48,7 @@ bool StateMachine::healOsConfig() {
 
     j["refresh_rate_hz"] = "60";
     j["default_tab"] = "0";
-    j["theme"] = "light";
+    j["theme"] = "eink";
     j["shader_enabled"] = "0";
     j["shader"] = "none";
     j["flicker_enabled"] = "0";
@@ -63,7 +63,7 @@ bool StateMachine::healOsConfig() {
     osConfigFile.shader = "none";
     osConfigFile.flickerEnabled = 0;
     osConfigFile.flickerIntensity = 10;
-    osConfigFile.theme = "light";
+    osConfigFile.theme = "eink";
     Logger::info("STATE_MACHINE", "OS config obj was also updated...");
     return 1;
 }
@@ -104,7 +104,7 @@ bool StateMachine::loadDefaultOsConfig() {
     osConfigFile.shader = "none";
     osConfigFile.flickerEnabled = 0;
     osConfigFile.flickerIntensity = 10;
-    osConfigFile.theme = "light";
+    osConfigFile.theme = "eink";
     return 1;
 }
 

@@ -42,5 +42,5 @@ void main() {
 
     // Tinting
     // vec4(RED, GREEN, BLUE, ALPHA)
-    gl_FragColor = cta * vec4(0.6, 0.7, 0.6, 0.9);
+    gl_FragColor = cta * vec4(0.8, 0.9, 0.8, 1.0);
 }

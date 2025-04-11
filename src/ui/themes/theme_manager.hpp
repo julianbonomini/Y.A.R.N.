@@ -15,15 +15,6 @@ public:
     virtual sf::Color highlight() const = 0;
 };
 
-class LightTheme : public Theme {
-public:
-    sf::Color background() const override { return sf::Color::White; }
-    sf::Color primary() const override { return sf::Color::Black; }
-    sf::Color secondary() const override { return sf::Color(200, 200, 200); }
-    sf::Color accent() const override { return sf::Color::Red; }
-    sf::Color highlight() const override { return sf::Color(200, 200, 200); }
-};
-
 class DarkTheme : public Theme {
 public:
     sf::Color background() const override { return sf::Color(60, 61, 55); }
@@ -31,6 +22,24 @@ public:
     sf::Color secondary() const override { return sf::Color(236, 223, 204); }
     sf::Color accent() const override { return sf::Color::Yellow; }
     sf::Color highlight() const override { return sf::Color(105, 117, 101); }
+};
+
+class BiosTheme : public Theme {
+public:
+    sf::Color background() const override { return sf::Color(1, 46, 220); }
+    sf::Color primary() const override { return sf::Color::White; }
+    sf::Color secondary() const override { return sf::Color(236, 223, 204); }
+    sf::Color accent() const override { return sf::Color::Yellow; }
+    sf::Color highlight() const override { return sf::Color(210, 18, 39); }
+};
+
+class eInkTheme : public Theme {
+public:
+    sf::Color background() const override { return sf::Color::White; }
+    sf::Color primary() const override { return sf::Color::Black; }
+    sf::Color secondary() const override { return sf::Color(200, 200, 200); }
+    sf::Color accent() const override { return sf::Color(200, 200, 200); }
+    sf::Color highlight() const override { return sf::Color(200, 200, 200); }
 };
 
 class ThemeManager {
