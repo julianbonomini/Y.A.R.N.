@@ -107,33 +107,37 @@ void ConfigApp::changeOptionLeft() {
 }
 
 void ConfigApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
-    if (keyPressed.scancode == sf::Keyboard::Scan::E) {
+    if (keyPressed.scancode == sf::Keyboard::Scan::E && !editModeEnabled) {
         editModeEnabled = true;
         configOptions[0].selected = true;
     }
-    if (keyPressed.scancode == sf::Keyboard::Scan::Down && editModeEnabled) {
-        moveDown();
-    }
-    if (keyPressed.scancode == sf::Keyboard::Scan::Right && editModeEnabled) {
-        unsavedChangesFlag = true;
-        changeOptionRight();
-    }
-    if (keyPressed.scancode == sf::Keyboard::Scan::Left && editModeEnabled) {
-        unsavedChangesFlag = true;
-        changeOptionLeft();
-    }
-    if (keyPressed.scancode == sf::Keyboard::Scan::Up && editModeEnabled) {
-        moveUp();
-    }
-    if (keyPressed.scancode == sf::Keyboard::Scan::Escape && editModeEnabled) {
-        editModeEnabled = false;
-        unsavedChangesFlag = false;
-        initConfigFromDisk();
-    }
-    if (keyPressed.scancode == sf::Keyboard::Scan::Enter && editModeEnabled) {
-        stateMachine.saveOsConfigToDisk(configOptions);
-        editModeEnabled = false;
-        unsavedChangesFlag = false;
+
+    if (editModeEnabled) {
+        if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
+            moveDown();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Right) {
+            unsavedChangesFlag = true;
+            changeOptionRight();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Left) {
+            unsavedChangesFlag = true;
+            changeOptionLeft();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Up) {
+            moveUp();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Escape) {
+            editModeEnabled = false;
+            unsavedChangesFlag = false;
+            initConfigFromDisk();
+        }
+        if (keyPressed.scancode == sf::Keyboard::Scan::Enter) {
+            stateMachine.saveOsConfigToDisk(configOptions);
+            editModeEnabled = false;
+            unsavedChangesFlag = false;
+            initConfigFromDisk();
+        }
     }
 }
 
