@@ -21,20 +21,20 @@ void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTextur
 
     sf::Text splash(font, "Y.A.R.N.");
     splash.setFillColor(sf::Color::White);
-    splash.setCharacterSize(100.f);
+    splash.setCharacterSize(100);
     // Center the text
     sf::FloatRect textRect = splash.getLocalBounds();
-    splash.setOrigin({textRect.size.x / 2.f, textRect.size.y / 2.f});
-    splash.setPosition({DisplayConfig::SCREEN_WIDTH / 2.f, DisplayConfig::SCREEN_HEIGHT / 2.f - textRect.size.y});
+    splash.setOrigin({textRect.size.x / 2, textRect.size.y / 2});
+    splash.setPosition({DisplayConfig::SCREEN_WIDTH / 2, DisplayConfig::SCREEN_HEIGHT / 2 - textRect.size.y});
     renderTexture.draw(splash, &crtShader);
 
 
     sf::Text subTitle(font, "( Yet Another Ridiculous Name )");
     subTitle.setFillColor(sf::Color::White);
-    subTitle.setCharacterSize(25.f);
+    subTitle.setCharacterSize(25);
     sf::FloatRect subTitleRec = subTitle.getLocalBounds();
-    subTitle.setOrigin({subTitleRec.size.x / 2.f, subTitleRec.size.y / 2.f});
-    subTitle.setPosition({DisplayConfig::SCREEN_WIDTH / 2.f, DisplayConfig::SCREEN_HEIGHT / 2.f + textRect.size.y});
+    subTitle.setOrigin({subTitleRec.size.x / 2, subTitleRec.size.y / 2});
+    subTitle.setPosition({DisplayConfig::SCREEN_WIDTH / 2, DisplayConfig::SCREEN_HEIGHT / 2 + textRect.size.y});
     renderTexture.draw(subTitle, &crtShader);
 
     renderTexture.display();
@@ -86,7 +86,7 @@ int main() {
     sf::Shader crtShader;
     std::string loadaedShader = "";
     std::ostringstream shaderFile;
-    shaderFile << "src/ui/shaders/" << initial_os_config_file.shader << ".frag";
+    shaderFile << "assets/shaders/" << initial_os_config_file.shader << ".frag";
     if (!crtShader.loadFromFile(shaderFile.str(), sf::Shader::Type::Fragment)) {
         Logger::warning("Failed to load shader. Moving without one");
     } else {
@@ -198,7 +198,7 @@ int main() {
         if (os_config_file->shader != loadaedShader && loadaedShader != "") {
             Logger::info("Changing shader to", os_config_file->shader, "...");
             std::ostringstream newShader;
-            newShader << "src/ui/shaders/" << os_config_file->shader << ".frag";
+            newShader << "assets/shaders/" << os_config_file->shader << ".frag";
             if (!crtShader.loadFromFile(newShader.str(), sf::Shader::Type::Fragment)) {
                 Logger::error("Failed to load new shader!");
             } else {

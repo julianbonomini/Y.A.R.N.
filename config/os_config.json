@@ -3,7 +3,7 @@
     "flicker_enabled": "1",
     "flicker_intensity": "3",
     "refresh_rate_hz": "60",
-    "shader": "crt_bloom",
+    "shader": "crt_monitor",
     "shader_enabled": "1",
     "theme": "dark"
 }

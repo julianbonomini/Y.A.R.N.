@@ -348,7 +348,7 @@ void ConfigApp::initConfigFromDisk() {
 
     // Shader
     std::vector<std::string> shaderFiles;
-    std::string shaderDirectory = "src/ui/shaders";
+    std::string shaderDirectory = "assets/shaders";
     try {
         for (const auto& entry : std::filesystem::directory_iterator(shaderDirectory)) {
             if (std::filesystem::is_regular_file(entry)) {
