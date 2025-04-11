@@ -9,7 +9,7 @@ vec2 curveUV(vec2 uv) {
     float edgeFactor = smoothstep(0.2, 1.0, r2); // Adjust these values to control the falloff
 
     // Apply distortion based on distance from center
-    float distortion = 0.2;
+    float distortion = 0.3;
     float distortionRate = 0.1;
     float distortionAmount = distortion * (1.0 - pow(r2, distortionRate)); // More of the screen affected
 
@@ -18,9 +18,9 @@ vec2 curveUV(vec2 uv) {
 }
 
 float scanLine(vec2 uv) {
-    float contrast = 0.01;
+    float contrast = 0.05;
     float transparency = 0.99; // 1.0 is full transparent, 0 is no passthru
-    float amountOfLines = 500;
+    float amountOfLines = 1000;
     float darkLine = transparency + contrast * sin(uv.y * amountOfLines * 1.0);
 
     return darkLine;
@@ -37,9 +37,10 @@ void main() {
 
     // Flicker logic
     if (flickerFactor > 0.0) {
-        cta = vec4(0.0, 0.0, 0.0, 0.75); // flicker is full black with 75% opacity
+        cta = vec4(0.0, 0.0, 0.0, 0.5); // flicker is full black with 75% opacity
     }
 
     // Tinting
-    gl_FragColor = cta * vec4(1.0, 1.0, 1.0, 1.0);
+    // vec4(RED, GREEN, BLUE, ALPHA)
+    gl_FragColor = cta * vec4(0.6, 0.7, 0.6, 0.9);
 }

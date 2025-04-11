@@ -43,7 +43,7 @@ namespace FontSizes {
     constexpr int FOOTER = 12;
     constexpr int TITLE = 15;
     constexpr int TAB = 15;
-    constexpr int DESCRIPTION = 12;
+    constexpr int DESCRIPTION = 15;
     constexpr int LABEL = 15;
     constexpr int VALUE = 15;
     constexpr int HELP = 12;

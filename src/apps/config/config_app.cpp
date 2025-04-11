@@ -154,9 +154,9 @@ void ConfigApp::handleSettings() {
     }
 }
 
-void ConfigApp::drawHelpBox() {
+void ConfigApp::drawControlsHelpBox() {
     // --- Content area ---
-    auto contentAreaCoordinates = getGridBox(3, 0, 2, 4);
+    auto contentAreaCoordinates = getGridBox(3, 2, 2, 2);
     sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
     contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
     contentArea.setFillColor(Colors::WHITE);
@@ -186,12 +186,52 @@ void ConfigApp::drawHelpBox() {
     }
 }
 
+void ConfigApp::drawCurrOptionHelpBox() {
+    auto contentAreaCoordinates = getGridBox(3, 0, 2, 2);
+    std::string selectedOptionHelp = "";
+    for (size_t i = 0; i < configOptions.size(); ++i) {
+        if (configOptions[i].selected) {
+            selectedOptionHelp = wrapText(configOptions[i].description, contentAreaCoordinates.size.x - Layout::PADDING * 2, FontSizes::DESCRIPTION);
+            break;
+        }
+        selectedOptionHelp = "";
+    }
+
+    if (selectedOptionHelp == "") {
+        return;
+    }
+    // --- Content area ---
+    sf::RectangleShape contentArea({contentAreaCoordinates.size.x, contentAreaCoordinates.size.y});
+    contentArea.setPosition({contentAreaCoordinates.position.x, contentAreaCoordinates.position.y});
+    contentArea.setFillColor(Colors::WHITE);
+    contentArea.setOutlineColor(Colors::GRAY);
+    contentArea.setOutlineThickness(LineStyles::LINE_THICKNESS);
+    renderer.draw(contentArea);
+
+    float textX = contentAreaCoordinates.position.x + Layout::PADDING;
+    float textY = contentAreaCoordinates.position.y + Layout::PADDING;
+
+    sf::Text title(font, "SETTING HELP");
+    title.setCharacterSize(FontSizes::TITLE);
+    title.setFillColor(Colors::BLACK);
+    title.setPosition({textX, textY});
+    renderer.draw(title);
+
+    sf::Text help(font, selectedOptionHelp);
+    help.setCharacterSize(FontSizes::DESCRIPTION);
+    help.setFillColor(Colors::BLACK);
+    help.setPosition({textX, title.getGlobalBounds().position.y + title.getGlobalBounds().size.y + Layout::PADDING});
+    renderer.draw(help);
+
+}
+
 void ConfigApp::draw() {
     float labelPositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING;
     float valuePositionX = TOP_LEFT_ANCHOR.x + Layout::PADDING + +Layout::LABEL_VALUE_SPACE;
     float verticalOffset = Layout::PADDING;
 
-    drawHelpBox();
+    drawControlsHelpBox();
+    drawCurrOptionHelpBox();
 
     // Loop through each config option dynamically
     for (size_t i = 0; i < configOptions.size(); ++i) {
@@ -267,24 +307,16 @@ void ConfigApp::draw() {
 
 void ConfigApp::initConfigFromDisk() {
     configOptions = std::vector<BaseConfigOptions>();
-    // Refresh Rate
-    BaseConfigOptions refreshRateOption;
-    refreshRateOption.label = "refresh_rate_hz";
-    refreshRateOption.type = BaseConfigOptionType::CYCLE;;
-    refreshRateOption.options = {"30", "40", "50", "60"};
-    refreshRateOption.currentValue = std::to_string(stateMachine.getOsConfig().refreshRate);
-    refreshRateOption.selected = false;
-    refreshRateOption.changed = false;
-    configOptions.push_back(refreshRateOption);
-
     // Default Tab
     BaseConfigOptions defaultTabOption;
     defaultTabOption.label = "default_tab";
-    defaultTabOption.type = BaseConfigOptionType::CYCLE;;
+    defaultTabOption.type = BaseConfigOptionType::CYCLE;
+    // TODO, pick from actual apps
     defaultTabOption.options = {"0", "1", "2", "3"};
     defaultTabOption.currentValue = std::to_string(stateMachine.getOsConfig().defaultTab);
     defaultTabOption.selected = false;
     defaultTabOption.changed = false;
+    defaultTabOption.description = "This will be the displayed TAB when the system restarts.";
     configOptions.push_back(defaultTabOption);
 
     // Shader ON/OFF
@@ -295,6 +327,7 @@ void ConfigApp::initConfigFromDisk() {
     shaderEnabled.currentValue = std::to_string(stateMachine.getOsConfig().shaderEnabled);
     shaderEnabled.selected = false;
     shaderEnabled.changed = false;
+    shaderEnabled.description = "A shader is a sort of filter applied to the entire screen. If you decide to enable, you can then pick which shader you would like to apply between a list of selected shaders. You will see the changes reflected upon saving.";
     configOptions.push_back(shaderEnabled);
 
     // Shader
@@ -317,6 +350,7 @@ void ConfigApp::initConfigFromDisk() {
     shader.currentValue = stateMachine.getOsConfig().shader;
     shader.selected = false;
     shader.changed = false;
+    shader.description = "A shader is a sort of filter applied to the entire screen. This setting will only have effect when shader_enabled is true. You will see the changes reflected upon saving.";
     configOptions.push_back(shader);
 
     // Flicker enabled
@@ -327,6 +361,8 @@ void ConfigApp::initConfigFromDisk() {
     flickerEnabled.currentValue = std::to_string(stateMachine.getOsConfig().flickerEnabled);
     flickerEnabled.selected = false;
     flickerEnabled.changed = false;
+    flickerEnabled.description = "Flicker is what old monitors and TV made. If enabled, a frame will get drop given a random period of time. To give it a bit more retro look.";
+
     configOptions.push_back(flickerEnabled);
 
     // Shader
@@ -337,7 +373,19 @@ void ConfigApp::initConfigFromDisk() {
     flickerIntensity.currentValue = std::to_string(stateMachine.getOsConfig().flickerIntensity);
     flickerIntensity.selected = false;
     flickerIntensity.changed = false;
+    flickerIntensity.description = "Flicker is what old monitors and TV made. The bigger this setting is, the more the screen will flicker, but the duratio of the flicker itself is always 1 frame, so the duration of the flicker is defined by refresh_rate setting. This setting will only have effect when flicker_enabled is true. You will see the changes reflected upon saving.";
     configOptions.push_back(flickerIntensity);
+
+    // Refresh Rate
+    BaseConfigOptions refreshRateOption;
+    refreshRateOption.label = "refresh_rate_hz";
+    refreshRateOption.type = BaseConfigOptionType::CYCLE;;
+    refreshRateOption.options = {"30", "40", "50", "60"};
+    refreshRateOption.currentValue = std::to_string(stateMachine.getOsConfig().refreshRate);
+    refreshRateOption.selected = false;
+    refreshRateOption.changed = false;
+    refreshRateOption.description = "This will affect the responsiveness of the OS, both for rendering and event polling. This will also affect the duration of the flickers if flicker_enabled is true.";
+    configOptions.push_back(refreshRateOption);
 }
 
 void ConfigApp::saveConfigToDisk() {

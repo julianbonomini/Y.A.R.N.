@@ -30,3 +30,25 @@ void App::drawModalRectangle(std::string modalTitle) {
     title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
     renderer.draw(title);
 };
+
+std::string App::wrapText(const std::string &text, float maxWidth, unsigned int characterSize) {
+    sf::Text tempText(font);
+    tempText.setCharacterSize(characterSize);
+    std::string wrappedText;
+    std::string currentLine;
+    std::istringstream wordStream(text);
+    std::string word;
+
+    while (wordStream >> word) {
+        tempText.setString(currentLine + (currentLine.empty() ? "" : " ") + word);
+        if (tempText.getLocalBounds().size.x > maxWidth) {
+            wrappedText += currentLine + "\n";
+            currentLine = word;
+        } else {
+            currentLine += (currentLine.empty() ? "" : " ") + word;
+        }
+    }
+
+    wrappedText += currentLine;
+    return wrappedText;
+}

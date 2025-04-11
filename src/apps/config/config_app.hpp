@@ -25,7 +25,9 @@ private:
     bool editModeEnabled = false;
     bool unsavedChangesFlag = false;
 
-    void drawHelpBox();
+    void drawControlsHelpBox();
+
+    void drawCurrOptionHelpBox();
 
     void moveDown();
 

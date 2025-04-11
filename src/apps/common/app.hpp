@@ -80,5 +80,7 @@ protected:
 
     void drawModalRectangle(std::string modalTitle);
 
+    std::string wrapText(const std::string &text, float maxWidth, unsigned int characterSize);
+
     sf::FloatRect getGridBox(float colStart, float rowStart, float colSpan, float rowSpan);
 };
