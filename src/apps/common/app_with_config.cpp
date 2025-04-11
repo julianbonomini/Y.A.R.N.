@@ -69,7 +69,7 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             sf::RectangleShape highlightRect;
             highlightRect.setPosition({bounds.position.x - 5.f, bounds.position.y - 5.f});
             highlightRect.setSize({bounds.size.x + 10.f, bounds.size.y + 10.f});  // small padding
-            highlightRect.setFillColor(ThemeManager::instance().getCurrentTheme().secondary());
+            highlightRect.setFillColor(ThemeManager::instance().getCurrentTheme().highlight());
             renderer.draw(highlightRect);
             renderer.draw(labelText);
         }

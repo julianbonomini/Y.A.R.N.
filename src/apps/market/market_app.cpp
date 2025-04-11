@@ -136,8 +136,8 @@ void MarketApp::drawMarketTrackers() {
 
 void MarketApp::drawMarketStatus() {
     // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
-    sf::Color textColor = marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
+    sf::Color backgroundColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
+    sf::Color textColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
 
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 0, 1, 1);

@@ -12,6 +12,7 @@ public:
     virtual sf::Color primary() const = 0;
     virtual sf::Color secondary() const = 0;
     virtual sf::Color accent() const = 0;
+    virtual sf::Color highlight() const = 0;
 };
 
 class LightTheme : public Theme {
@@ -20,14 +21,16 @@ public:
     sf::Color primary() const override { return sf::Color::Black; }
     sf::Color secondary() const override { return sf::Color(200, 200, 200); }
     sf::Color accent() const override { return sf::Color::Red; }
+    sf::Color highlight() const override { return sf::Color::White; }
 };
 
 class DarkTheme : public Theme {
 public:
-    sf::Color background() const override { return sf::Color::Black; }
+    sf::Color background() const override { return sf::Color(60, 61, 55); }
     sf::Color primary() const override { return sf::Color::White; }
-    sf::Color secondary() const override { return sf::Color(80, 80, 80); }
+    sf::Color secondary() const override { return sf::Color(236, 223, 204); }
     sf::Color accent() const override { return sf::Color::Yellow; }
+    sf::Color highlight() const override { return sf::Color(105, 117, 101); }
 };
 
 class ThemeManager {
