@@ -31,7 +31,7 @@ protected:
     std::vector<BaseConfigOptions> configOptions;
     bool unsavedChangesFlag = false;
 
-    sf::FloatRect drawSettings() const;
+    sf::FloatRect drawSettings();
 
     void drawAppConfigOptions(sf::FloatRect bounds);
 

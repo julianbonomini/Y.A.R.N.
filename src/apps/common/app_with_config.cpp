@@ -4,28 +4,28 @@
 #include "../../ui/themes/theme_manager.hpp"
 
 
-sf::FloatRect AppWithConfig::drawSettings() const {
-    sf::RectangleShape modalRectangle({Layout::MODAL_WIDTH, Layout::MODAL_HEIGHT});
-    modalRectangle.setPosition({TOP_LEFT_MODAL_ANCHOR.x, TOP_LEFT_MODAL_ANCHOR.y});
+sf::FloatRect AppWithConfig::drawSettings() {
+    sf::FloatRect box = getGridBox(0, 0, 5, 4);
+    sf::RectangleShape modalRectangle({box.size.x, box.size.y});
+    modalRectangle.setPosition({box.position.x, box.position.y});
     modalRectangle.setFillColor(ThemeManager::instance().getCurrentTheme().background());
     modalRectangle.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     modalRectangle.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(modalRectangle);
-    sf::FloatRect bounds = modalRectangle.getGlobalBounds();
 
     sf::Text title(font, appName + " SETTINGS");
     title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-    title.setPosition({TOP_LEFT_MODAL_ANCHOR.x + Layout::PADDING, TOP_LEFT_MODAL_ANCHOR.y + Layout::PADDING});
+    title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
     renderer.draw(title);
 
-    return bounds;
+    return box;
 }
 
 void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
     float labelPositionX = bounds.position.x + Layout::PADDING * 2;
     float valuePositionX = bounds.position.x + Layout::PADDING * 2 + +Layout::LABEL_VALUE_SPACE;
-    float verticalOffset = Layout::PADDING;
+    float verticalOffset = FontSizes::TITLE + Layout::PADDING * 2;
 
     // Loop through each config option dynamically
     for (size_t i = 0; i < configOptions.size(); ++i) {

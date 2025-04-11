@@ -77,7 +77,7 @@ protected:
     const sf::Vector2f BOTTOM_LEFT_ANCHOR = sf::Vector2f(Layout::PADDING * 2, Layout::WINDOW_HEIGHT - Layout::FOOTER_HEIGHT - Layout::PADDING - Layout::PADDING * 2);
     const sf::Vector2f BOTTOM_RIGHT_ANCHOR = sf::Vector2f(Layout::WINDOW_WIDTH - Layout::PADDING * 2, Layout::WINDOW_HEIGHT - Layout::PADDING * 2);
 
-    const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f((Layout::WINDOW_WIDTH - Layout::MODAL_WIDTH) / 2, (Layout::WINDOW_HEIGHT - Layout::MODAL_HEIGHT) / 2);
+    const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f((Layout::WINDOW_WIDTH - Layout::MODAL_WIDTH) / 2, Layout::TOOLBAR_HEIGHT + LineStyles::LINE_THICKNESS);
 
     void drawModalRectangle(std::string modalTitle);
 
