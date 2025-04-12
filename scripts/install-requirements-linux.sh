@@ -20,7 +20,8 @@ sudo apt update && sudo apt install \
      libgbm-dev \
      libfreetype6-dev \
      libopenal-dev \
-     libogg-dev
+     libogg-dev \
+     libsndfile1-dev
 
 # For Y.A.R.N.
 sudo apt-get install -y \

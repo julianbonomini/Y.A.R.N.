@@ -24,7 +24,12 @@ else
   BUILD_DIR = build/linux
   CXXFLAGS += -I/usr/local/include
   LDFLAGS += -L/usr/local/lib
+  # Static libraries
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lGL
+  LDFLAGS += -static-libgcc -static-libstdc++ # Static linking for C++ standard libraries
+  # Add SFML static libraries explicitly if necessary (replace with your installation path if needed)
+  LDFLAGS += -lsfml-graphics -lsfml-window -lsfml-system
+  LDFLAGS += -L/usr/local/lib
 endif
 
 TARGET = $(BUILD_DIR)/YARN
