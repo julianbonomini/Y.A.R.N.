@@ -65,22 +65,12 @@ jobs:
       
 
       # Package
-      - name: Package .dmg (macOS)
+      - name: Package .app (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           app_name="YARN"
-          echo "Current directory before cd: $(pwd)"
-          ls -al
-          cd "${app_name}.app"
-          echo "Current directory after cd: $(pwd)"
-          ls -al
-          mkdir -p "../release/macos"
-          output_path="../release/macos/${app_name}-${{ github.ref_name }}.dmg"
-          echo "Creating .dmg at: ${output_path}"
-          hdiutil create -format UDRW -srcfolder . "${output_path}"
-          echo "Result of hdiutil command: $?"
-          ls -al "../release/macos"
-          cd ..
+          mkdir -p release/macos
+          zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
 
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -105,7 +95,7 @@ jobs:
         with:
           files: |
             release/linux/*.tar.gz
-            release/macos/*.dmg
+            release/macos/*.zip
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
