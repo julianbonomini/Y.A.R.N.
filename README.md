@@ -13,8 +13,14 @@
 - Install SFML with Homebrew:
 ```bash
 brew install sfml
-brew install nlohmann_json
+brew install nlohmann-json
 ```
+
+### Linux based
+```bash
+./install-requirements-linux.sh
+```
+Should install all needed packages to clone and install SFML 3.0.
 
 ## Build macOS
 ```bash

@@ -3,6 +3,10 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#ifdef __linux__
+#include<algorithm>
+#include<string>
+#endif
 
 #include "../../core/execute/execute_utils.hpp"
 #include "../../ui/themes/theme_manager.hpp"
@@ -41,7 +45,7 @@ void ConfigApp::changeOptionRight() {
             switch (option.type) {
                 case BaseConfigOptionType::CYCLE: {
                     if (!option.options.empty()) {
-                        auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
+                        auto it = std::find(option.options.begin(), option.options.end(), std::string(option.currentValue));
                         if (it != option.options.end()) {
                             size_t index = std::distance(option.options.begin(), it);
                             index = (index + 1) % option.options.size(); // wrap around
@@ -79,7 +83,7 @@ void ConfigApp::changeOptionLeft() {
             switch (option.type) {
                 case BaseConfigOptionType::CYCLE: {
                     if (!option.options.empty()) {
-                        auto it = std::find(option.options.begin(), option.options.end(), option.currentValue);
+                        auto it = std::find(option.options.begin(), option.options.end(), std::string(option.currentValue));
                         if (it != option.options.end()) {
                             size_t index = std::distance(option.options.begin(), it);
                             index = (index == 0) ? option.options.size() - 1 : index - 1; // wrap around

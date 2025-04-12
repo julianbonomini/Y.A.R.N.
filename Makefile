@@ -1,41 +1,61 @@
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# !!!!THIS IS A SPECIFIC MACOS MAKE FILE!!!!
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+# Compiler and Flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -I/opt/homebrew/include
-LDFLAGS = -L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system
+CXXFLAGS = -std=c++17 -Wall
+LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-# MACOS APP BUNDLE
-MACOS_APP_NAME = YARN
-MACOS_APP_DIR = $(MACOS_APP_NAME).app
-MACOS_CONTENTS_DIR = $(MACOS_APP_DIR)/Contents
-MACOS_MACOS_DIR = $(MACOS_CONTENTS_DIR)/MacOS
-MACOS_RESOURCES_DIR = $(MACOS_CONTENTS_DIR)/Resources
-
+# Directories
 SRC_DIR = src
-BUILD_DIR = build
-TARGET = $(BUILD_DIR)/$(MACOS_APP_NAME) # Target should match the executable name inside the bundle
 SRCS = $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS = $(SRCS:.cpp=.o)
+APP_NAME = YARN
+
+# Platform-specific settings
+ifeq ($(shell uname), Darwin)
+  # macOS-specific settings
+  BUILD_DIR = build/macos
+  MACOS_APP_DIR = $(APP_NAME).app
+  MACOS_CONTENTS_DIR = $(MACOS_APP_DIR)/Contents
+  MACOS_MACOS_DIR = $(MACOS_CONTENTS_DIR)/MacOS
+  MACOS_RESOURCES_DIR = $(MACOS_CONTENTS_DIR)/Resources
+  LDFLAGS += -L/opt/homebrew/lib
+  CXXFLAGS += -I/opt/homebrew/include
+else
+  # Linux-specific settings
+  BUILD_DIR = build/linux
+  CXXFLAGS += -I/usr/local/include
+  LDFLAGS += -L/usr/local/lib
+  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lGL
+endif
+
+TARGET = $(BUILD_DIR)/YARN
+
 
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
+	@echo "Compiling ..."
 	mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	@echo "Compiling DONE!"
 
-macos: $(TARGET) # 'macos' target depends on the main build target
+macos: $(TARGET)
+	@echo "Creating macOS specific directories ..."
 	mkdir -p $(MACOS_MACOS_DIR)
 	mkdir -p $(MACOS_RESOURCES_DIR)/Assets
-	cp $(BUILD_DIR)/$(MACOS_APP_NAME) $(MACOS_MACOS_DIR)/$(MACOS_APP_NAME)
-	cp -r assets $(MACOS_RESOURCES_DIR)/Assets
 	mkdir -p $(MACOS_CONTENTS_DIR)
+	@echo "Cooping executable ..."
+	cp $(BUILD_DIR)/$(APP_NAME) $(MACOS_MACOS_DIR)/$(APP_NAME)
+	@echo "Cooping assets ..."
+	cp -r assets $(MACOS_RESOURCES_DIR)/Assets
+	@echo "Cooping Info.plist ..."
 	cp Info.plist $(MACOS_CONTENTS_DIR)/Info.plist
 
-clean:
-	rm -rf $(BUILD_DIR) $(MACOS_APP_DIR) # Clean up the app bundle as well
+# Linux build (just compiling the executable)
+linux: $(TARGET)
+	@echo "Building for Linux completed."
 
-# Run
+clean:
+	rm -rf $(BUILD_DIR) $(MACOS_APP_DIR) # Clean up the app bundle if it exists
+
 run:
 	./$(TARGET)

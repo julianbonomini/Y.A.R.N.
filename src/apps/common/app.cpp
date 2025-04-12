@@ -2,7 +2,9 @@
 #include <SFML/Graphics.hpp>
 
 #include "../../ui/themes/theme_manager.hpp"
-
+#ifdef __linux__
+#include<cmath>
+#endif
 
 sf::FloatRect App::getGridBox(float colStart, float rowStart, float colSpan = 1, float rowSpan = 1) {
     const sf::Vector2f anchor = TOP_LEFT_ANCHOR;

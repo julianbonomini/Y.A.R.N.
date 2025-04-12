@@ -1,0 +1,43 @@
+name: PRB
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Dependencies
+      - name: Set up dependencies (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          chmod +x ./scripts/install-requirements-macos.sh
+          ./scripts/install-requirements-macos.sh
+
+      - name: Set up dependencies (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          chmod +x ./scripts/install-requirements-linux.sh
+          ./scripts/install-requirements-linux.sh
+
+      # Build
+      - name: Build (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          make clean && make macos
+
+      - name: Build (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          make clean && make linux

@@ -1,5 +1,8 @@
 #include "ui_helpers.hpp"
 
+#ifdef __linux__
+#include<cmath>
+#endif
 
 sf::FloatRect UIHelpers::snapToGrid(sf::FloatRect origin) {
     return sf::FloatRect(

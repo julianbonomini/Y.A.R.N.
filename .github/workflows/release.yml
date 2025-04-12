@@ -1,4 +1,4 @@
-name: Create Release
+name: Release
 
 on:
   push:
@@ -12,8 +12,7 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest]
-        os: [ macos-latest ]
+        os: [macos-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -25,29 +24,14 @@ jobs:
       - name: Set up dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          attempts=0
-          max_attempts=3
-          while [ $attempts -lt $max_attempts ]; do
-            brew update && brew upgrade
-            if [ $? -eq 0 ]; then
-              break
-            fi
-            echo "Homebrew install failed. Retrying in 5 seconds..."
-            sleep 5
-            attempts=$((attempts+1))
-          done
-          if [ $attempts -eq $max_attempts ]; then
-            echo "Homebrew install failed after multiple retries."
-            exit 1
-          fi
-          brew install sfml
-          brew install nlohmann-json
+          chmod +x ./scripts/install-requirements-macos.sh
+          ./scripts/install-requirements-macos.sh
 
       - name: Set up dependencies (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libsfml-dev libnlohmann-json-dev
+          chmod +x ./scripts/install-requirements-linux.sh
+          ./scripts/install-requirements-linux.sh
 
       # Build
       - name: Build (macOS)
@@ -58,7 +42,7 @@ jobs:
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          echo "Not implemented yet"
+          make clean && make linux
       
 
       # Package
@@ -78,7 +62,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           mkdir -p release/linux
-          cp build/YARN release/linux/YARN
+          cp build/linux/YARN release/linux/YARN
           tar czvf release/linux.tar.gz -C release/linux .
 
       - name: Create Release
