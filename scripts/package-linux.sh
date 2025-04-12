@@ -101,8 +101,12 @@ prepare_appimage_structure() {
 
   echo ""
   echo ""
+  echo "LS AppDir"
   ls -l $APP_DIR
-  echo ""
+  echo "LS AppDir/usr"
+  ls -l $APP_DIR/usr
+  echo "LS AppDir/usr/bin"
+  ls -l $APP_DIR/usr/bin
   echo ""
   cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
 
