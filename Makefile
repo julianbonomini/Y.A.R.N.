@@ -24,7 +24,7 @@ else
   BUILD_DIR = build/linux
   CXXFLAGS += -I/usr/local/include
   LDFLAGS += -L/usr/local/lib
-  LDLIBS   += -lsfml-graphics -lsfml-window -lsfml-system
+  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile
 endif
 
 TARGET = $(BUILD_DIR)/YARN
@@ -35,7 +35,7 @@ all: $(TARGET)
 $(TARGET): $(SRCS)
 	@echo "Compiling ..."
 	mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 	@echo "Compiling DONE!"
 
 macos: $(TARGET)
