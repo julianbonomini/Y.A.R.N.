@@ -69,10 +69,12 @@ jobs:
         run: |
           app_name="YARN"
           echo "Removing quarentine flag for: ${app_name}.app:"
-          xattr -cr "${app_name}.app"  # Remove quarantine flag
+          xattr -cr "${app_name}.app"
           mkdir -p release/macos
           echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
           zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
+          echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}.zip:"
+          xattr -cr "release/macos/${app_name}-${{ github.ref_name }}.zip"
 
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
