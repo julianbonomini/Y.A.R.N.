@@ -50,16 +50,10 @@ install_appimagetool() {
   if [ -e /usr/local/bin/appimagetool ]; then
     file /usr/local/bin/appimagetool
     if [ $? -eq 0 ]; then
-      echo "The file exists and was analyzed successfully."
+      echo "AppImageTool is already installed in $APP_IMG_TOOL_DIR. Skipping installation."
     else
-      echo "The file exists, but there was an issue analyzing it."
+      echo "The file $APP_IMG_TOOL_DIR exists, but there was an issue analyzing it."
     fi
-  else
-    echo "The file /usr/local/bin/appimagetool does not exist."
-  fi
-
-  if [ $? -eq 0 ]; then
-    echo "AppImageTool is already installed in $APP_IMG_TOOL_DIR. Skipping installation."
   else
     echo "AppImageTool not found. Cloning and building AppImageTool..."
 
