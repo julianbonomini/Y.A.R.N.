@@ -46,7 +46,8 @@ install_sfml() {
 install_appimagetool() {
   original_dir=$PWD
   APP_IMG_TOOL_DIR="$HOME/AppImageTool"
-  if [ -d "$APP_IMG_TOOL_DIR" ] && [ -f "$APP_IMG_TOOL_DIR/CMakeLists.txt" ]; then
+  file /usr/local/bin/appimagetool
+  if [ $? -eq 0 ]; then
     echo "AppImageTool is already installed in $APP_IMG_TOOL_DIR. Skipping installation."
   else
     echo "AppImageTool not found. Cloning and building AppImageTool..."
