@@ -6,6 +6,8 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta'
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
+    branch:
+      - 'macos-automated-release'
 
 jobs:
   build-and-release:
@@ -89,6 +91,15 @@ jobs:
       
 
       # Release
+      - name: Debug - List release directory
+        run: |
+          echo "Current working directory: $(pwd)"
+          ls -al
+          echo "Printing /release"
+          ls -al release
+          echo "Printing /release/macos"
+          ls -al release/macos
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
