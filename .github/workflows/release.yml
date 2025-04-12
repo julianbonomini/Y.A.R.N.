@@ -92,7 +92,9 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*.tar.gz
+          files: |
+            release/linux/*.tar.gz
+            release/macos/*.dmg
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
