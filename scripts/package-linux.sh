@@ -37,6 +37,9 @@ install_sfml() {
 
     # Install SFML
     sudo make install
+    ldconfig -p | grep sfml
+    echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/sfml.conf
+    sudo ldconfig
 
     # Go back to the original directory
   fi
