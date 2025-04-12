@@ -57,81 +57,103 @@ install_appimagetool() {
 
 # Function to install dependencies (useful for both local and CI environments)
 install_dependencies() {
-    echo "Installing dependencies..."
-    sudo apt-get update
-    sudo apt-get install -y \
-        build-essential \
-        cmake \
-        libxrandr-dev \
-        libxcursor-dev \
-        libxi-dev \
-        libudev-dev \
-        libflac-dev \
-        libvorbis-dev \
-        libgl1-mesa-dev \
-        libegl1-mesa-dev \
-        libdrm-dev \
-        libgbm-dev \
-        libogg-dev \
-        libfreetype6-dev \
-        libopenal-dev \
-        libsndfile1-dev \
-        nlohmann-json3-dev
+  echo "Installing dependencies..."
+  sudo apt-get update
+  sudo apt-get install -y \
+    build-essential \
+    cmake \
+    libxrandr-dev \
+    libxcursor-dev \
+    libxi-dev \
+    libudev-dev \
+    libflac-dev \
+    libvorbis-dev \
+    libgl1-mesa-dev \
+    libegl1-mesa-dev \
+    libdrm-dev \
+    libgbm-dev \
+    libogg-dev \
+    libfreetype6-dev \
+    libopenal-dev \
+    libsndfile1-dev \
+    nlohmann-json3-dev
 
-    install_sfml
-    install_appimagetool
+  install_sfml
+  install_appimagetool
 }
 
 # Function to build the application using Makefile
 build_application() {
-    echo "Building the application using Makefile..."
-    make linux
+  echo "Building the application using Makefile..."
+  make linux
 }
 
 # Function to prepare the AppImage structure
 prepare_appimage_structure() {
-    echo "Preparing AppImage structure..."
-    mkdir -p "$APP_DIR/usr/bin"
-    cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
+  echo "Preparing AppImage structure..."
+  echo "APP_DIR is set to: $APP_DIR"
+  echo "BUILD_DIR is set to: $BUILD_DIR"
+  echo "TARGET_BINARY is set to: $TARGET_BINARY"
+  echo "DESKTOP_FILE is set to: $DESKTOP_FILE"
+  mkdir -p "$APP_DIR/usr/bin"
 
-    # Copy libraries (note: you may need to copy from specific paths, especially for static linking)
-    cp -r /usr/local/lib/* "$APP_DIR/usr/lib/"
+  echo ""
+  echo ""
+  ls -l $APP_DIR
+  echo ""
+  echo ""
+  cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
 
-    # Copy the desktop entry and icon (if available)
-    if [ -f "$DESKTOP_FILE" ]; then
-        cp "$DESKTOP_FILE" "$APP_DIR/"
-    else
-        echo "Warning: Desktop entry ($DESKTOP_FILE) not found."
-    fi
-    if [ -f "$ICON_FILE" ]; then
-        cp "$ICON_FILE" "$APP_DIR/"
-    else
-        echo "Warning: Icon file ($ICON_FILE) not found."
-    fi
+  # Copy libraries (note: you may need to copy from specific paths, especially for static linking)
+  cp -r /usr/local/lib/* "$APP_DIR/usr/lib/"
 
-    chmod +x "$APP_DIR/usr/bin/$TARGET_BINARY"
+  # Copy the desktop entry and icon (if available)
+  if [ -f "$DESKTOP_FILE" ]; then
+      cp "$DESKTOP_FILE" "$APP_DIR/"
+  else
+      echo "Warning: Desktop entry ($DESKTOP_FILE) not found."
+  fi
+  if [ -f "$ICON_FILE" ]; then
+      cp "$ICON_FILE" "$APP_DIR/"
+  else
+      echo "Warning: Icon file ($ICON_FILE) not found."
+  fi
+
+  chmod +x "$APP_DIR/usr/bin/$TARGET_BINARY"
 }
 
 # Function to build the AppImage
 build_appimage() {
-    echo "Building AppImage..."
-    appimagetool "$APP_DIR"
+  echo "Building AppImage..."
+  appimagetool "$APP_DIR"
 }
 
 # Main logic
 main() {
-    install_dependencies
+  echo "----------------------------------------"
+  echo "---------INSTALL DEPENDENCIES-----------"
+  echo "----------------------------------------"
+  install_dependencies
 
-    # Build the application using the Makefile
-    build_application
+  # Build the application using the Makefile
+  echo "----------------------------------------"
+  echo "--------------BUILD APP-----------------"
+  echo "----------------------------------------"
+  build_application
 
-    # Prepare the AppImage structure
-    prepare_appimage_structure
+  echo "----------------------------------------"
+  echo "------------PREPARE IMAGE---------------"
+  echo "----------------------------------------"
+  # Prepare the AppImage structure
+  prepare_appimage_structure
 
-    # Build the AppImage
-    build_appimage
+  # Build the AppImage
+  echo "----------------------------------------"
+  echo "-------------BUILD IMAGE----------------"
+  echo "----------------------------------------"
+  build_appimage
 
-    echo "AppImage build completed successfully!"
+  echo "AppImage build completed successfully!"
 }
 
 # Trigger the main function
