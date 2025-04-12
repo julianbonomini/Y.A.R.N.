@@ -43,6 +43,18 @@ install_sfml() {
   fi
 }
 
+install_appimagetool() {
+  # Check if appimagetool is already installed
+  if command -v appimagetool &> /dev/null; then
+    echo "appimagetool is already installed. Skipping installation."
+  else
+    echo "Installing appimagetool..."
+    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    chmod +x appimagetool-x86_64.AppImage
+    sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
+  fi
+}
+
 # Function to install dependencies (useful for both local and CI environments)
 install_dependencies() {
     echo "Installing dependencies..."
@@ -66,11 +78,8 @@ install_dependencies() {
         libsndfile1-dev \
         nlohmann-json3-dev
 
-    # Install AppImageTool
-    echo "Installing appimagetool..."
-    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-    chmod +x appimagetool-x86_64.AppImage
-    sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
+    install_sfml
+    install_appimagetool
 }
 
 # Function to build the application using Makefile
@@ -112,7 +121,6 @@ build_appimage() {
 # Main logic
 main() {
     install_dependencies
-    install_sfml
 
     # Build the application using the Makefile
     build_application
