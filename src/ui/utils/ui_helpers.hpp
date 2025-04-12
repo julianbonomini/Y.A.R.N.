@@ -1,7 +1,12 @@
+
 #ifndef UI_HELPERS_H
 #define UI_HELPERS_H
 
 #include <SFML/Graphics.hpp>
+
+#ifdef __linux__
+#include<cmath>
+#endif
 
 class UIHelpers {
 
