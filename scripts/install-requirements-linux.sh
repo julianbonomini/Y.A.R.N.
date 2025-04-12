@@ -4,15 +4,28 @@ set -e  # Exit immediately if any command fails
 
 # Install dependencies
 sudo apt-get update
+
+# Dependencies for SFML
+sudo apt update && sudo apt install \
+     libxrandr-dev \
+     libxcursor-dev \
+     libxi-dev \
+     libudev-dev \
+     libflac-dev \
+     libvorbis-dev \
+     libgl1-mesa-dev \
+     libegl1-mesa-dev \
+     libdrm-dev \
+     libgbm-dev
+
+# For Y.A.R.N.
 sudo apt-get install -y \
-    cmake g++ libx11-dev libjpeg-dev libpng-dev libtiff-dev libopenal-dev \
-    libflac-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev \
-    libfreetype6-dev libvorbis-dev nlohmann-json3-dev
+    nlohmann-json3-dev
 
 # Clone and build SFML 3.0
 git clone --depth 1 --branch 3.0.x https://github.com/SFML/SFML.git
 cd SFML
 mkdir build && cd build
-cmake ..
+cmake .. -DBUILD_SHARED_LIBS=ON
 make -j$(nproc)
 sudo make install
