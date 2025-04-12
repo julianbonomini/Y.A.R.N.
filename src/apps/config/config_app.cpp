@@ -390,7 +390,7 @@ void ConfigApp::initConfigFromDisk() {
     flickerIntensity.currentValue = std::to_string(stateMachine.getOsConfig().flickerIntensity);
     flickerIntensity.selected = false;
     flickerIntensity.changed = false;
-    flickerIntensity.description = "Flicker is what old monitors and TV made. The bigger this setting is, the more the screen will flicker, but the duratio of the flicker itself is always 1 frame, so the duration of the flicker is defined by refresh_rate setting. This setting will only have effect when flicker_enabled is true. You will see the changes reflected upon saving.";
+    flickerIntensity.description = "Flicker is what old monitors and TV made. The smaller this setting is, the more the screen will flicker. Think it as a 1/X chances. The duration of the flicker itself is always 1 frame, so the duration of the flicker is defined by refresh_rate setting. This setting will only have effect when flicker_enabled is true. You will see the changes reflected upon saving.";
     configOptions.push_back(flickerIntensity);
 
     // Refresh Rate
