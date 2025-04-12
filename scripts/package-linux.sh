@@ -11,24 +11,29 @@ DESKTOP_FILE="YourApp.desktop"
 #ICON_FILE="YourApp.png"
 
 install_sfml() {
-  # Clone SFML 3.0
-  git clone --depth 1 --branch 3.0.x https://github.com/SFML/SFML.git
-  cd SFML
+  original_dir=$PWD  # Save the current directory
+  SFML_DIR="$HOME/SFML"
+
+  # Clone SFML 3.0 into the target directory
+  git clone --depth 1 --branch 3.0.x https://github.com/SFML/SFML.git "$SFML_DIR"
+
+  # Navigate to the SFML directory
+  cd "$SFML_DIR"
 
   # Create build directory and navigate into it
-  mkdir build && cd build
+  mkdir -p build && cd build
 
   # Configure CMake to build with static libraries
   cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
 
-  # Compile with all available cores (if you have a multi-core CPU)
+  # Compile with all available cores
   make -j$(nproc)
 
   # Install SFML
   sudo make install
 
-  #Go back where you started
-  cd ../..
+  # Go back to the original directory
+  cd "$original_dir"original
 }
 
 # Function to install dependencies (useful for both local and CI environments)
