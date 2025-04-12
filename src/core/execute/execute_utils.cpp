@@ -31,10 +31,8 @@ std::string ExecuteUtils::getResourcePath(const std::string& relativePath) {
         std::filesystem::path executablePath = std::filesystem::canonical(path);
         if (executablePath.string().find(".app/Contents/MacOS/") != std::string::npos) {
             // Running as a bundled .app
-            Logger::warning("tf?");
             return (executablePath.parent_path().parent_path() / "Resources" / "Assets" / relativePath).string();
         } else {
-            Logger::warning("tf? 2");
             // Running directly (e.g., via make run)
             std::filesystem::path resourcesPath = executablePath.parent_path().parent_path() / "YARN.app" / "Contents"/ "Resources" / "Assets";
              // (std::filesystem::path("assets") / relativePath).string();
