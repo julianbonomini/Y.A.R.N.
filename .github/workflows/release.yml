@@ -62,8 +62,8 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           mkdir -p release/linux
-          cp build/linux/YARN release/linux/YARN
-          tar czvf release/linux.tar.gz -C release/linux .
+          cp -r build/linux/* release/linux/
+          tar czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" -C release/linux .
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
