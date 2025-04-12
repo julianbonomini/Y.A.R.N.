@@ -3,6 +3,10 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#ifdef __linux__
+#include<algorithm>
+#include<string>
+#endif
 
 #include "../../core/execute/execute_utils.hpp"
 #include "../../ui/themes/theme_manager.hpp"
