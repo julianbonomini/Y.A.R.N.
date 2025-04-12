@@ -98,6 +98,7 @@ prepare_appimage_structure() {
   echo "TARGET_BINARY is set to: $TARGET_BINARY"
   echo "DESKTOP_FILE is set to: $DESKTOP_FILE"
   mkdir -p "$APP_DIR/usr/bin"
+  mkdir -p "$APP_DIR/usr/lib"
 
   echo ""
   echo ""
@@ -109,6 +110,7 @@ prepare_appimage_structure() {
   ls -l $APP_DIR/usr/bin
   echo ""
   cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
+  echo "target copied"
 
   # Copy libraries (note: you may need to copy from specific paths, especially for static linking)
   cp -r /usr/local/lib/* "$APP_DIR/usr/lib/"
