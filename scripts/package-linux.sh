@@ -55,8 +55,8 @@ install_appimagetool() {
     cd "$APP_IMG_TOOL_DIR"
     cmake -DCMAKE_SYSTEM_PROCESSOR=arm64 .
     make appimagetool
-    file "/usr/local/bin/appimagetool"
-#    sudo mv appimagetool /usr/local/bin/
+    sudo mv appimagetool /usr/local/bin/
+    file /usr/local/bin/appimagetool
   fi
   cd "$original_dir"
 }
@@ -98,7 +98,7 @@ install_dependencies() {
 # Function to build the application using Makefile
 build_application() {
   echo "Building the application using Makefile..."
-  make clean
+#  make clean
   make linux
 }
 
