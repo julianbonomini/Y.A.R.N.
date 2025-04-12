@@ -22,8 +22,9 @@ ifeq ($(shell uname), Darwin)
 else
   # Linux-specific settings
   BUILD_DIR = build/linux
-  LDFLAGS += -L/usr/local/lib
   CXXFLAGS += -I/usr/local/include
+  LDFLAGS += -L/usr/local/lib
+  LDLIBS   += -lsfml-graphics -lsfml-window -lsfml-system
 endif
 
 TARGET = $(BUILD_DIR)/YARN
@@ -34,7 +35,7 @@ all: $(TARGET)
 $(TARGET): $(SRCS)
 	@echo "Compiling ..."
 	mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 	@echo "Compiling DONE!"
 
 macos: $(TARGET)
