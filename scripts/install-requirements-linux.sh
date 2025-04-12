@@ -17,7 +17,9 @@ sudo apt update && sudo apt install \
      libegl1-mesa-dev \
      libdrm-dev \
      libgbm-dev \
-     libfreetype6-dev
+     libfreetype6-dev \
+     libopenal-dev \
+     libogg-dev
 
 # For Y.A.R.N.
 sudo apt-get install -y \
