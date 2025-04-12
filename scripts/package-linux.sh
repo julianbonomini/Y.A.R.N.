@@ -99,11 +99,10 @@ install_dependencies() {
     libglib2.0-dev \
     libglib2.0-dev \
     libcurl4-openssl-dev \
-    appimagetool \
     nlohmann-json3-dev
 
   install_sfml
-#  install_appimagetool
+  install_appimagetool
 }
 
 # Function to build the application using Makefile
