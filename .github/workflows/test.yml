@@ -1,0 +1,25 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - linux-appimage
+
+jobs:
+  build-and-release:
+    name: Build and Release [test]
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up dependencies (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          chmod +x ./scripts/package-linux.sh
+          ./scripts/package-linux.sh
