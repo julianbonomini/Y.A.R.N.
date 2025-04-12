@@ -52,7 +52,7 @@ install_appimagetool() {
     echo "AppImageKit not found. Cloning and building AppImageKit..."
 
     git clone https://github.com/AppImage/AppImageKit.git "$APP_IMG_KIT_DIR"
-    cd AppImageKit
+    cd "$APP_IMG_KIT_DIR"
     cmake .
     make appimagetool
     sudo mv appimagetool /usr/local/bin/
