@@ -91,6 +91,7 @@ build_application() {
 # Function to prepare the AppImage structure
 prepare_appimage_structure() {
   echo "Preparing AppImage structure..."
+  echo "PWD is set to: $PWD"
   echo "APP_DIR is set to: $APP_DIR"
   echo "BUILD_DIR is set to: $BUILD_DIR"
   echo "TARGET_BINARY is set to: $TARGET_BINARY"
