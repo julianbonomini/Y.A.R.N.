@@ -57,7 +57,11 @@ install_appimagetool() {
   else
     echo "AppImageTool not found. Cloning and building AppImageTool..."
 
-    git clone https://github.com/AppImage/appimagetool.git "$APP_IMG_TOOL_DIR"
+    if [ -d "$APP_IMG_TOOL_DIR" ] && [ -f "$APP_IMG_TOOL_DIR/CMakeLists.txt" ]; then
+      echo "Already cloned."
+    else
+      git clone https://github.com/AppImage/appimagetool.git "$APP_IMG_TOOL_DIR"
+    fi
     cd "$APP_IMG_TOOL_DIR"
     cmake -DCMAKE_SYSTEM_PROCESSOR=arm64 .
     make appimagetool
