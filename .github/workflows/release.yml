@@ -6,8 +6,6 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta'
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
-    branches:
-      - macos-automated-release-3
 
 jobs:
   build-and-release:
