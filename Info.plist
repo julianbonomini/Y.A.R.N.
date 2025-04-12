@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>YARN</string> <--- MATCH THE EXECUTABLE NAME (without .app extension)
+  <key>CFBundleIdentifier</key>
+  <string>com.buenomini.YARN</string> <--- YOUR UNIQUE IDENTIFIER
+  <key>CFBundleName</key>
+  <string>Y.A.R.N.</string> <--- DISPLAY NAME
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleSignature</key>
+  <string>????</string>
+  <key>CFBundleVersion</key>
+  <string>1.0.0-alpha</string> <--- YOUR APPLICATION VERSION
+</dict>
+</plist>

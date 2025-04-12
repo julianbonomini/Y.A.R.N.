@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+#include "../../core/execute/execute_utils.hpp"
 #include "../../ui/themes/theme_manager.hpp"
 
 
@@ -226,7 +227,8 @@ void MarketApp::drawStonksMeme() {
 
     // Load image
     sf::Texture memeTexture;
-    if (memeTexture.loadFromFile("assets/images/stonks.png")) {
+    std::string filename = ExecuteUtils::getResourcePath("assets/images/stonks.png");
+    if (memeTexture.loadFromFile(filename)) {
         sf::Sprite memeSprite(memeTexture);
 
         // Scale image to fit inside the background box

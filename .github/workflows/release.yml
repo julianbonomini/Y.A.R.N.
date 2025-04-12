@@ -48,13 +48,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libsfml-dev libnlohmann-json-dev
-      
 
       # Build
       - name: Build (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          make clean && make
+          make clean && make macos
 
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -63,12 +62,17 @@ jobs:
       
 
       # Package
-      - name: Package binary (macOS)
+      - name: Package .app (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          app_name="YARN"
+          echo "Removing quarentine flag for: ${app_name}.app:"
+          xattr -cr "${app_name}.app"
           mkdir -p release/macos
-          cp build/YARN release/macos/YARN
-          tar czvf release/macos.tar.gz -C release/macos .
+          echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
+          zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
+          echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}.zip:"
+          xattr -cr "release/macos/${app_name}-${{ github.ref_name }}.zip"
 
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -76,13 +80,13 @@ jobs:
           mkdir -p release/linux
           cp build/YARN release/linux/YARN
           tar czvf release/linux.tar.gz -C release/linux .
-      
 
-      # Release
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*.tar.gz
+          files: |
+            release/linux/*.tar.gz
+            release/macos/*.zip
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false

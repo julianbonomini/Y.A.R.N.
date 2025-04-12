@@ -14,7 +14,7 @@
 #include "core/state_machine/state_machine.hpp"
 #include "ui/themes/theme_manager.hpp"
 #include "common/logger.hpp"
-
+#include "core/execute/execute_utils.hpp"
 
 void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTexture &renderTexture, sf::Sprite &shaderSprite, sf::Shader &crtShader, bool &shownSplash) {
     renderTexture.clear(sf::Color(50, 50, 50));
@@ -65,7 +65,7 @@ int main() {
     int loadedRefreshRate = initial_os_config_file.refreshRate; // Copies the value
 
     sf::Font font;
-    if (!font.openFromFile("./assets/fonts/PxPlus_IBM_VGA8.ttf")) {
+    if (!font.openFromFile(ExecuteUtils::getResourcePath("assets/fonts/PxPlus_IBM_VGA8.ttf"))) {
         Logger::error("Error loading default font");
         return 1;
     }
@@ -86,7 +86,7 @@ int main() {
     sf::Shader crtShader;
     std::string loadaedShader = "";
     std::ostringstream shaderFile;
-    shaderFile << "assets/shaders/" << initial_os_config_file.shader << ".frag";
+    shaderFile << ExecuteUtils::getResourcePath("assets/shaders/") << initial_os_config_file.shader << ".frag";
     if (!crtShader.loadFromFile(shaderFile.str(), sf::Shader::Type::Fragment)) {
         Logger::warning("Failed to load shader. Moving without one");
     } else {
@@ -198,7 +198,7 @@ int main() {
         if (os_config_file->shader != loadaedShader && loadaedShader != "") {
             Logger::info("Changing shader to", os_config_file->shader, "...");
             std::ostringstream newShader;
-            newShader << "assets/shaders/" << os_config_file->shader << ".frag";
+            newShader << ExecuteUtils::getResourcePath("assets/shaders/") << os_config_file->shader << ".frag";
             if (!crtShader.loadFromFile(newShader.str(), sf::Shader::Type::Fragment)) {
                 Logger::error("Failed to load new shader!");
             } else {
