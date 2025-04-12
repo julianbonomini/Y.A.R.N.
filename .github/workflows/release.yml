@@ -50,7 +50,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libsfml-dev libnlohmann-json-dev
-      
 
       # Build
       - name: Build (macOS)
@@ -69,7 +68,10 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           app_name="YARN"
+          echo "Removing quarentine flag for: ${app_name}.app:"
+          xattr -cr "${app_name}.app"  # Remove quarantine flag
           mkdir -p release/macos
+          echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
           zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
 
       - name: Package binary (Linux)
@@ -78,17 +80,6 @@ jobs:
           mkdir -p release/linux
           cp build/YARN release/linux/YARN
           tar czvf release/linux.tar.gz -C release/linux .
-      
-
-      # Release
-      - name: Debug - List release directory
-        run: |
-          echo "Current working directory: $(pwd)"
-          ls -al
-          echo "Printing /release"
-          ls -al release
-          echo "Printing /release/macos"
-          ls -al release/macos
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
