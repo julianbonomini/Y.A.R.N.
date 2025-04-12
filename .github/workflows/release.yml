@@ -12,8 +12,7 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest]
-        os: [ macos-latest ]
+        os: [macos-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -47,7 +46,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y libsfml-dev libnlohmann-json-dev
+          sudo apt-get install -y libsfml-dev nlohmann-json3-dev
 
       # Build
       - name: Build (macOS)
@@ -58,7 +57,7 @@ jobs:
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          echo "Not implemented yet"
+          make clean && make linux
       
 
       # Package

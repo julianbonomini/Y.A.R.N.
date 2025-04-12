@@ -13,7 +13,14 @@
 - Install SFML with Homebrew:
 ```bash
 brew install sfml
-brew install nlohmann_json
+brew install nlohmann-json
+```
+
+### Linux based
+- Install SFML with Homebrew:
+```bash
+sudo apt-get install libsfml-dev
+sudo apt-get install nlohmann-json3-dev
 ```
 
 ## Build macOS
