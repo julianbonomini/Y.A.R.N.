@@ -42,7 +42,7 @@ void MainWindow::drawTabs(const std::vector<std::unique_ptr<App> > &apps, int ac
         tabOutline.setFillColor(ThemeManager::instance().getCurrentTheme().background());
 
 
-        if (i == activeTab) {
+        if ((size_t)i == activeTab) {
             renderer.draw(tabOutline);
             sf::RectangleShape coverAreaLine(sf::Vector2f(Layout::TAB_WIDTH, LineStyles::LINE_THICKNESS));
             coverAreaLine.setPosition({startingXPosition, Layout::TOOLBAR_OFFSET + Layout::TAB_HEIGHT + Layout::PADDING - 2.f});
