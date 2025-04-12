@@ -11,29 +11,36 @@ DESKTOP_FILE="YourApp.desktop"
 #ICON_FILE="YourApp.png"
 
 install_sfml() {
-  original_dir=$PWD  # Save the current directory
-  SFML_DIR="$HOME/SFML"
+  original_dir=$PWD
+  SFML_DIR="$HOME/SFML"  # Path to the SFML directory where it will be cloned
 
-  # Clone SFML 3.0 into the target directory
-  git clone --depth 1 --branch 3.0.x https://github.com/SFML/SFML.git "$SFML_DIR"
+  # Check if SFML is already installed
+  if [ -d "$SFML_DIR" ] && [ -f "$SFML_DIR/CMakeLists.txt" ]; then
+    echo "SFML is already installed in $SFML_DIR. Skipping installation."
+  else
+    echo "SFML not found. Cloning and building SFML..."
 
-  # Navigate to the SFML directory
-  cd "$SFML_DIR"
+    # Clone SFML 3.0 into the target directory
+    git clone --depth 1 --branch 3.0.x https://github.com/SFML/SFML.git "$SFML_DIR"
 
-  # Create build directory and navigate into it
-  mkdir -p build && cd build
+    # Navigate to the SFML directory
+    cd "$SFML_DIR"
 
-  # Configure CMake to build with static libraries
-  cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
+    # Create build directory and navigate into it
+    mkdir -p build && cd build
 
-  # Compile with all available cores
-  make -j$(nproc)
+    # Configure CMake to build with static libraries
+    cmake .. -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
 
-  # Install SFML
-  sudo make install
+    # Compile with all available cores
+    make -j$(nproc)
 
-  # Go back to the original directory
-  cd "$original_dir"original
+    # Install SFML
+    sudo make install
+
+    # Go back to the original directory
+    cd "$original_dir"
+  fi
 }
 
 # Function to install dependencies (useful for both local and CI environments)
