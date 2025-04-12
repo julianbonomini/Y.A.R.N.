@@ -41,8 +41,6 @@ install_dependencies() {
     echo "Installing dependencies..."
     sudo apt-get update
     sudo apt-get install -y \
-        appimagetool \
-        git \
         build-essential \
         cmake \
         libxrandr-dev \
@@ -60,6 +58,12 @@ install_dependencies() {
         libopenal-dev \
         libsndfile1-dev \
         nlohmann-json3-dev
+
+    # Install AppImageTool
+    echo "Installing appimagetool..."
+    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    chmod +x appimagetool-x86_64.AppImage
+    sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
 }
 
 # Function to build the application using Makefile
