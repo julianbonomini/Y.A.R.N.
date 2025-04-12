@@ -74,7 +74,7 @@ jobs:
           cd "${app_name}.app"
           echo "Current directory after cd: $(pwd)"
           ls -al
-          mkdir -p "../../release/macos"
+          mkdir -p "../release/macos"
           output_path="../release/macos/${app_name}-${{ github.ref_name }}.dmg"
           echo "Creating .dmg at: ${output_path}"
           hdiutil create -format UDRW -srcfolder . "${output_path}"
