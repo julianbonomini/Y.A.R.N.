@@ -4,10 +4,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#ifdef __linux__
-#include<cmath>
-#endif
-
 class UIHelpers {
 
   public:

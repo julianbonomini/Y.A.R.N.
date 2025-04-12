@@ -2,7 +2,10 @@
 #include <sstream>
 
 #include "../../ui/themes/theme_manager.hpp"
-
+#ifdef __linux__
+#include<algorithm>
+#include<string>
+#endif
 
 sf::FloatRect AppWithConfig::drawSettings() {
     sf::FloatRect box = getGridBox(0, 0, 5, 4);
