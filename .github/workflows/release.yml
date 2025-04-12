@@ -62,7 +62,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           mkdir -p release/linux
-          cp -r build/linux/* release/linux/
+          cp build/linux/YARN release/linux/YARN
           tar czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" -C release/linux .
 
       - name: Create Release
