@@ -85,6 +85,7 @@ install_dependencies() {
 # Function to build the application using Makefile
 build_application() {
   echo "Building the application using Makefile..."
+  make clean
   make linux
 }
 
