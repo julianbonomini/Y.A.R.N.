@@ -82,6 +82,12 @@ install_dependencies() {
     libopenal-dev \
     libsndfile1-dev \
     libfuse-dev \
+    pkg-config \
+    libgpgme-dev \
+    libgcrypt-dev \
+    libglib2.0-dev \
+    libgio-2.0-dev \
+    libcurl4-openssl-dev \
     nlohmann-json3-dev
 
   install_sfml
