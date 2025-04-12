@@ -6,8 +6,8 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta'
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
-    branch:
-      - 'macos-automated-release'
+    branches:
+      - macos-automated-release
 
 jobs:
   build-and-release:
@@ -75,7 +75,7 @@ jobs:
           echo "Current directory after cd: $(pwd)"
           ls -al
           mkdir -p "../../release/macos"
-          output_path="../../release/macos/${app_name}-${{ github.ref_name }}.dmg"
+          output_path="../release/macos/${app_name}-${{ github.ref_name }}.dmg"
           echo "Creating .dmg at: ${output_path}"
           hdiutil create -format UDRW -srcfolder . "${output_path}"
           echo "Result of hdiutil command: $?"
