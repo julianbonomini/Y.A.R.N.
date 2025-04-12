@@ -39,20 +39,25 @@ install_sfml() {
     sudo make install
 
     # Go back to the original directory
-    cd "$original_dir"
   fi
+  cd "$original_dir"
 }
 
 install_appimagetool() {
-  # Check if appimagetool is already installed
-  if command -v appimagetool &> /dev/null; then
-    echo "appimagetool is already installed. Skipping installation."
+  original_dir=$PWD
+  APP_IMG_KIT_DIR="$HOME/AppImageKit"
+  if [ -d "$APP_IMG_KIT_DIR" ] && [ -f "$APP_IMG_KIT_DIR/CMakeLists.txt" ]; then
+    echo "AppImageKit is already installed in $APP_IMG_KIT_DIR. Skipping installation."
   else
-    echo "Installing appimagetool..."
-    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-    chmod +x appimagetool-x86_64.AppImage
-    sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool
+    echo "AppImageKit not found. Cloning and building AppImageKit..."
+
+    git clone https://github.com/AppImage/AppImageKit.git "$APP_IMG_KIT_DIR"
+    cd AppImageKit
+    cmake .
+    make appimagetool
+    sudo mv appimagetool /usr/local/bin/
   fi
+  cd "$original_dir"
 }
 
 # Function to install dependencies (useful for both local and CI environments)
@@ -76,6 +81,7 @@ install_dependencies() {
     libfreetype6-dev \
     libopenal-dev \
     libsndfile1-dev \
+    libfuse-dev \
     nlohmann-json3-dev
 
   install_sfml
