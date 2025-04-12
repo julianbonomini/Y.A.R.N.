@@ -79,7 +79,7 @@ jobs:
           echo "Creating .dmg at: ${output_path}"
           hdiutil create -format UDRW -srcfolder . "${output_path}"
           echo "Result of hdiutil command: $?"
-          ls -al "../../release/macos"
+          ls -al "../release/macos"
           cd ..
 
       - name: Package binary (Linux)
