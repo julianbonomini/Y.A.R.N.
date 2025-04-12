@@ -24,7 +24,7 @@ else
   BUILD_DIR = build/linux
   CXXFLAGS += -I/usr/local/include
   LDFLAGS += -L/usr/local/lib
-  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile
+  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lGL
 endif
 
 TARGET = $(BUILD_DIR)/YARN
