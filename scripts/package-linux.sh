@@ -63,9 +63,9 @@ install_appimagetool() {
       git clone https://github.com/AppImage/appimagetool.git "$APP_IMG_TOOL_DIR"
     fi
     cd "$APP_IMG_TOOL_DIR"
-    cmake -DCMAKE_SYSTEM_PROCESSOR=arm64 .
+    cmake .
     make appimagetool
-    sudo mv appimagetool /usr/local/bin/
+#    sudo mv appimagetool /usr/local/bin/
     file /usr/local/bin/appimagetool
   fi
   cd "$original_dir"
