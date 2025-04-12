@@ -7,6 +7,7 @@ sudo apt-get update
 
 # Dependencies for SFML
 sudo apt update && sudo apt install \
+     cmake \
      libxrandr-dev \
      libxcursor-dev \
      libxi-dev \

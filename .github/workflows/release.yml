@@ -64,7 +64,7 @@ jobs:
           mkdir -p release/linux
           rsync -a build/linux/YARN release/linux/YARN
           sleep 10
-          tar --warning=no-file-changed czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" -C release/linux .
+          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" --warning=no-file-changed -C release/linux .
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
