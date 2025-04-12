@@ -54,7 +54,7 @@ jobs:
       - name: Build (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          make clean && make
+          make clean && make macos
 
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -63,12 +63,13 @@ jobs:
       
 
       # Package
-      - name: Package binary (macOS)
+      - name: Package .dmg (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          mkdir -p release/macos
-          cp build/YARN release/macos/YARN
-          tar czvf release/macos.tar.gz -C release/macos .
+          app_name="YARN"
+          cd "${app_name}.app"
+          hdiutil create -format UDRW -srcfolder . "../../release/macos/${app_name}-${{ github.ref_name }}.dmg"
+          cd ..
 
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}

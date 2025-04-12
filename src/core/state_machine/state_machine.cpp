@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "../../common/logger.hpp"
+#include "../execute/execute_utils.hpp"
 
 using json = nlohmann::json;
 
@@ -40,7 +41,7 @@ MarketConfigFile &StateMachine::getMarketConfig() {
 bool StateMachine::healOsConfig() {
     Logger::info("STATE_MACHINE", "Starting OS config heal...");
 
-    std::ofstream file("config/os_config.json");
+    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/os_config.json"));
     if (!file.is_open()) {
         return false;
     }
@@ -71,7 +72,7 @@ bool StateMachine::healOsConfig() {
 
 bool StateMachine::loadOsConfigFromDisk() {
     Logger::info("STATE_MACHINE", "Loading OS config...");
-    std::ifstream file("config/os_config.json");
+    std::ifstream file(ExecuteUtils::getResourcePath("assets/config/os_config.json"));
     if (!file.is_open()) {
         Logger::error("STATE_MACHINE", "Could not open file for os config");
         return loadDefaultOsConfig();
@@ -109,7 +110,7 @@ bool StateMachine::loadDefaultOsConfig() {
 }
 
 bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions) {
-    std::ofstream file("config/os_config.json");
+    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/os_config.json"));
     if (!file.is_open()) {
         return false;
     }
@@ -163,7 +164,7 @@ bool StateMachine::saveAppConfigToDisk(const AppConfigTypes appConfigType, const
 
 bool StateMachine::loadPomodoroAppConfigFromDisk() {
     Logger::info("STATE_MACHINE", "Loading Pomodoro App config...");
-    std::ifstream file("config/pomodoro_config.json");
+    std::ifstream file(ExecuteUtils::getResourcePath("assets/config/pomodoro_config.json"));
     if (!file.is_open()) {
         Logger::error("STATE_MACHINE", "Could not load Pomodoro App config...");
 
@@ -186,7 +187,7 @@ bool StateMachine::loadPomodoroAppConfigFromDisk() {
 }
 
 bool StateMachine::savePomodoroConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions) {
-    std::ofstream file("config/pomodoro_config.json");
+    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/pomodoro_config.json"));
     if (!file.is_open()) {
         return false;
     }
@@ -207,7 +208,7 @@ bool StateMachine::savePomodoroConfigToDisk(const std::vector<BaseConfigOptions>
 
 bool StateMachine::loadMarketAppConfigFromDisk() {
     Logger::info("STATE_MACHINE", "Loading Market App config...");
-    std::ifstream file("config/market_config.json");
+    std::ifstream file(ExecuteUtils::getResourcePath("assets/config/market_config.json"));
     if (!file.is_open()) {
         Logger::error("STATE_MACHINE", "Could not load Market App config...");
         return -1;
@@ -226,7 +227,7 @@ bool StateMachine::loadMarketAppConfigFromDisk() {
 }
 
 bool StateMachine::saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions) {
-    std::ofstream file("config/market_config.json");
+    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/market_config.json"));
     if (!file.is_open()) {
         return false;
     }

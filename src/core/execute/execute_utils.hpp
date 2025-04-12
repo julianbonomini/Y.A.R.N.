@@ -6,6 +6,8 @@
 
 class ExecuteUtils {
 public:
+    static std::string getResourcePath(const std::string& relativePath);
+
     static std::string execCommand(const std::string& cmd);
 
     static std::string getIp();

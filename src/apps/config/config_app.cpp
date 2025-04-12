@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 
+#include "../../core/execute/execute_utils.hpp"
 #include "../../ui/themes/theme_manager.hpp"
 
 ConfigApp::ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, int totalAmountOfApps)
@@ -348,7 +349,7 @@ void ConfigApp::initConfigFromDisk() {
 
     // Shader
     std::vector<std::string> shaderFiles;
-    std::string shaderDirectory = "assets/shaders";
+    std::string shaderDirectory = ExecuteUtils::getResourcePath("assets/shaders");
     try {
         for (const auto& entry : std::filesystem::directory_iterator(shaderDirectory)) {
             if (std::filesystem::is_regular_file(entry)) {
