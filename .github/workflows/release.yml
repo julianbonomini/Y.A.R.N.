@@ -19,7 +19,9 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, ubuntu-24.04-arm]
+        # Only for public repos, ubuntu-24.04-arm is not yet supported in private repos
+        # os: [macos-latest, ubuntu-latest, ubuntu-24.04-arm]
+        os: [ macos-latest, ubuntu-latest, ubuntu-24.04-arm ]
 
     runs-on: ${{ matrix.os }}
 
