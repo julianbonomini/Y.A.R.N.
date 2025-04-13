@@ -11,6 +11,9 @@ DESKTOP_FILE="YourApp.desktop"
 #ICON_FILE="YourApp.png"
 
 install_sfml() {
+  echo "----------------------------------------"
+  echo "--------------  SFML  ------------------"
+  echo "----------------------------------------"
   original_dir=$PWD
   SFML_DIR="$HOME/SFML"  # Path to the SFML directory where it will be cloned
 
@@ -74,6 +77,9 @@ install_appimagetool() {
 #    file /usr/local/bin/appimagetool
 #  fi
 #  cd "$original_dir"
+  echo "----------------------------------------"
+  echo "----------  AppImageTool  --------------"
+  echo "----------------------------------------"
   wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
 
   # Make it executable

@@ -1,7 +1,6 @@
 # Compiler and Flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall
-LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 # Directories
 SRC_DIR = src
@@ -17,6 +16,7 @@ ifeq ($(shell uname), Darwin)
   MACOS_CONTENTS_DIR = $(MACOS_APP_DIR)/Contents
   MACOS_MACOS_DIR = $(MACOS_CONTENTS_DIR)/MacOS
   MACOS_RESOURCES_DIR = $(MACOS_CONTENTS_DIR)/Resources
+  LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
   LDFLAGS += -L/opt/homebrew/lib
   CXXFLAGS += -I/opt/homebrew/include
 else
@@ -28,7 +28,7 @@ else
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lGL
   LDFLAGS += -static-libgcc -static-libstdc++ # Static linking for C++ standard libraries
   # Add SFML static libraries explicitly if necessary (replace with your installation path if needed)
-  LDFLAGS += -lsfml-graphics -lsfml-window -lsfml-system
+  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s
   LDFLAGS += -L/usr/local/lib
 endif
 
