@@ -72,7 +72,7 @@ prepare_appimage_structure() {
 # Function to build the AppImage
 build_appimage() {
   echo "Building AppImage..."
-  appimagetool "$APP_DIR"
+  ARCH=x86_64 appimagetool "$APP_DIR"
 }
 
 # Main logic
