@@ -31,7 +31,7 @@ else
   # Core dependencies for SFML static build
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
   LDFLAGS += -lX11 -lXrandr -lXcursor -lXrender -lXfixes -lXinerama -lXext
-  LDFLAGS += -ludev -lGL -lpthread -ldl
+  LDFLAGS += -ludev -lGL -lpthread -ldl -lXinerama
 
   # Static linking for standard C++ runtime
   LDFLAGS += -static-libgcc -static-libstdc++

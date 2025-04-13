@@ -91,6 +91,7 @@ aptget() {
     libglib2.0-dev \
     libglib2.0-dev \
     libcurl4-openssl-dev \
+    libxinerama-dev \
     nlohmann-json3-dev
 }
 
