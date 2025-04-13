@@ -3,9 +3,19 @@
 # Ensure the script stops if any command fails
 set -e
 
+TARGET_ARCH=$1
+
+echo "Target arch: $TARGET_ARCH"
+
 # Define some paths
-#APP_DIR="Y.A.R.N.-x86_64.AppDir"
-APP_DIR="Y.A.R.N.-aarch64.AppDir"
+if [ "$TARGET_ARCH" == "x86_64" ]; then
+  APP_DIR="Y.A.R.N.-x86_64.AppDir"
+elif [ "$TARGET_ARCH" == "aarch64" ]; then
+  APP_DIR="Y.A.R.N.-aarch64.AppDir"
+else
+  echo "Unsupported architecture: $TARGET_ARCH"
+  exit 1
+fi
 BUILD_DIR="build/linux"
 ASSETS_DIR="./assets"
 TARGET_BINARY="YARN"
@@ -75,6 +85,15 @@ prepare_appimage_structure() {
 # Function to build the AppImage
 build_appimage() {
   echo "Building AppImage..."
+  # Define some paths
+  if [ "$TARGET_ARCH" == "x86_64" ]; then
+    ARCH=x86_64 appimagetool "$APP_DIR"
+  elif [ "$TARGET_ARCH" == "aarch64" ]; then
+    ARCH=aarch64 appimagetool "$APP_DIR"
+  else
+    echo "Unsupported architecture: $TARGET_ARCH"
+    exit 1
+  fi
   ARCH=aarch64 appimagetool "$APP_DIR"
   echo "PWD is set to: $PWD"
   ls -l

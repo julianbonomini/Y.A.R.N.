@@ -3,6 +3,10 @@
 # Ensure the script stops if any command fails
 set -e
 
+TARGET_ARCH=$1
+
+echo "Target arch: $TARGET_ARCH"
+
 install_sfml() {
   echo "----------------------------------------"
   echo "--------------  SFML  ------------------"
@@ -48,8 +52,14 @@ install_appimagetool() {
   echo "----------------------------------------"
   echo "----------  AppImageTool  --------------"
   echo "----------------------------------------"
-  wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage -O appimagetool
-
+  if [ "$TARGET_ARCH" == "x86_64" ]; then
+    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+  elif [ "$TARGET_ARCH" == "aarch64" ]; then
+    wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage -O appimagetool
+  else
+    echo "Unsupported architecture: $TARGET_ARCH"
+    exit 1
+  fi
   # Make it executable
   chmod +x appimagetool
 

@@ -13,7 +13,7 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, ubuntu-24.04-arm]
 
     runs-on: ${{ matrix.os }}
 
@@ -28,11 +28,16 @@ jobs:
           chmod +x ./scripts/install-requirements-macos.sh
           ./scripts/install-requirements-macos.sh
 
-      - name: Set up dependencies (Linux)
+      - name: Set up dependencies (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           chmod +x ./scripts/ubuntu/install_dependencies.sh
-          ./scripts/ubuntu/install_dependencies.sh
+          ./scripts/ubuntu/install_dependencies.sh x86_64
+      - name: Set up dependencies (Linux aarch64/arm64)
+        if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
+        run: |
+          chmod +x ./scripts/ubuntu/install_dependencies.sh
+          ./scripts/ubuntu/install_dependencies.sh aarch64
 
       # Build
       - name: Build (macOS)
@@ -41,7 +46,7 @@ jobs:
           make clean && make macos
 
       - name: Build (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' }}
         run: |
           make clean
           make linux
@@ -60,17 +65,28 @@ jobs:
           echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}.zip:"
           xattr -cr "release/macos/${app_name}-${{ github.ref_name }}_macos.zip"
 
-      - name: Package binary (Linux)
+      - name: Package binary (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           mkdir -p release/linux
           chmod +x ./scripts/ubuntu/package.sh
-          ./scripts/ubuntu/package.sh
+          ./scripts/ubuntu/package.sh x86_64
           mv Y.A.R.N.-x86_64.AppImage release/linux/
           sleep 10
           tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-x86_64.tar.gz" \
           --warning=no-file-changed \
           -C release/linux Y.A.R.N.-x86_64.AppImage
+      - name: Package binary (Linux aarch64/arm64)
+        if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
+        run: |
+          mkdir -p release/linux
+          chmod +x ./scripts/ubuntu/package.sh
+          ./scripts/ubuntu/package.sh aarch64
+          mv Y.A.R.N.-aarch64.AppImage release/linux/
+          sleep 10
+          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-aarch64.tar.gz" \
+          --warning=no-file-changed \
+          -C release/linux Y.A.R.N.-aarch64.AppImage
 
 
       # Release with attached files
