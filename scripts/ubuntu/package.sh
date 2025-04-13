@@ -22,6 +22,7 @@ prepare_appimage_structure() {
   echo "DESKTOP_FILE is set to: $DESKTOP_FILE"
   mkdir -p "$APP_DIR/usr/bin"
   mkdir -p "$APP_DIR/usr/lib"
+  mkdir -p "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
 
   # Copy the target binary to the AppDir
   cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
@@ -42,7 +43,8 @@ prepare_appimage_structure() {
   echo "Copying assets:"
   ls -l
   ls -l "$ASSETS_DIR/"
-  cp -r "$ASSETS_DIR/" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
+  cp -r "$ASSETS_DIR/*" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
+  ls -l "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
 
   # Copy the desktop entry and icon (if available)
   if [ -f "$DESKTOP_FILE" ]; then
