@@ -62,6 +62,9 @@ install_appimagetool() {
 
 # Function to install dependencies (useful for both local and CI environments)
 aptget() {
+  echo "----------------------------------------"
+  echo "-------------  APT-GET  ----------------"
+  echo "----------------------------------------"
   echo "Installing dependencies..."
   sudo apt-get update
   sudo apt-get install -y \
