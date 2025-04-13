@@ -62,6 +62,7 @@ prepare_appimage_structure() {
       echo "Icon directory exists, copying file..."
       mkdir -p "$APP_DIR/usr/share/icons/hicolor/256x256/apps/"
       cp "$APP_DIR/usr/share/$TARGET_BINARY/assets/images/$ICON_FILE" "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
+      cp "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png" "$APP_DIR/YARN.png"
       ls -l "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
   else
       echo "Warning: Icon file ($ICON_FILE) not found."
