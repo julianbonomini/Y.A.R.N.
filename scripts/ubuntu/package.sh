@@ -4,7 +4,7 @@
 set -e
 
 # Define some paths
-APP_DIR="Y.A.R.N.-x86_64.AppDir/"
+APP_DIR="Y.A.R.N.-x86_64.AppDir"
 BUILD_DIR="build/linux"
 ASSETS_DIR="./assets"
 TARGET_BINARY="YARN"
