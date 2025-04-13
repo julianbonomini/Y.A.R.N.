@@ -28,7 +28,7 @@ else
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lGL
   LDFLAGS += -static-libgcc -static-libstdc++ # Static linking for C++ standard libraries
   # Add SFML static libraries explicitly if necessary (replace with your installation path if needed)
-  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s libudev-dev -lGL -ludev -ldl -lpthread
+  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lGL -ludev -ldl -lpthread
   LDFLAGS += -L/usr/local/lib
 endif
 

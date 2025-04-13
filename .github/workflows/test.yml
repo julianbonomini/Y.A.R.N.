@@ -21,5 +21,17 @@ jobs:
       - name: Set up dependencies (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/package-linux.sh
-          ./scripts/package-linux.sh
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+
+      - name: Compile (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          make clean
+          make linux
+
+      - name: Package (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          chmod +x ./scripts/linux/package.sh
+          ./scripts/package.sh
