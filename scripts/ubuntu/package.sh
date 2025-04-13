@@ -75,6 +75,8 @@ prepare_appimage_structure() {
 build_appimage() {
   echo "Building AppImage..."
   ARCH=x86_64 appimagetool "$APP_DIR"
+  echo "PWD is set to: $PWD"
+  ls -l
 }
 
 # Main logic
