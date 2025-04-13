@@ -6,6 +6,7 @@ set -e
 # Define some paths
 APP_DIR="AppDir"
 BUILD_DIR="build/linux"
+ASSETS_DIR="assets"
 TARGET_BINARY="YARN"
 DESKTOP_FILE="YourApp.desktop"
 #ICON_FILE="YourApp.png"
@@ -21,20 +22,17 @@ prepare_appimage_structure() {
   mkdir -p "$APP_DIR/usr/bin"
   mkdir -p "$APP_DIR/usr/lib"
 
-  echo ""
-  echo ""
-  echo "LS AppDir"
-  ls -l $APP_DIR
-  echo "LS AppDir/usr"
-  ls -l $APP_DIR/usr
-  echo "LS AppDir/usr/bin"
-  ls -l $APP_DIR/usr/bin
-  echo ""
-  cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
-  echo "target copied"
+  # This should not be needed if everything is statically linked
+#  cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
 
+  # Do I need this?
   # Copy libraries (note: you may need to copy from specific paths, especially for static linking)
-  cp -r /usr/local/lib/* "$APP_DIR/usr/lib/"
+#  cp -r /usr/local/lib/* "$APP_DIR/usr/lib/"
+
+
+  # Bundle assets:
+  echo "Copying assets:"
+  cp -r "$ASSETS_DIR/*" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
 
   # Copy the desktop entry and icon (if available)
   if [ -f "$DESKTOP_FILE" ]; then
@@ -59,6 +57,18 @@ build_appimage() {
 
 # Main logic
 main() {
+  echo""
+  echo""
+  echo "----------------------------------------"
+  echo "----------------------------------------"
+  echo "checking ldd for my binary"
+  ldd "$BUILD_DIR/$TARGET_BINARY"
+  echo "----------------------------------------"
+  echo "----------------------------------------"
+  echo""
+  echo""
+
+
   echo "----------------------------------------"
   echo "------------PREPARE IMAGE---------------"
   echo "----------------------------------------"
