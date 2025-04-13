@@ -8,6 +8,12 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
       - 'v[0-9]+.[0-9]+.[0-9]+-debug'
 
+env:
+  BUILD_NAME: "YARN"
+  TARGET_NAME: "Y.A.R.N."
+  MACOS_RELEASE_DIR: "release/macos"
+  LINUX_RELEASE_DIR: "release/linux"
+
 jobs:
   build-and-release:
     name: Build and Release
@@ -25,19 +31,18 @@ jobs:
       - name: Set up dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-macos.sh
-          ./scripts/install-requirements-macos.sh
-
+          chmod +x ./scripts/macos/install-dependencies.sh
+          ./scripts/macos/install-dependencies.sh
       - name: Set up dependencies (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/ubuntu/install_dependencies.sh
-          ./scripts/ubuntu/install_dependencies.sh x86_64
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh x86_64
       - name: Set up dependencies (Linux aarch64/arm64)
         if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
         run: |
-          chmod +x ./scripts/ubuntu/install_dependencies.sh
-          ./scripts/ubuntu/install_dependencies.sh aarch64
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh aarch64
 
       # Build
       - name: Build (macOS)
@@ -56,37 +61,37 @@ jobs:
       - name: Package .app (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          app_name="YARN"
-          echo "Removing quarentine flag for: ${app_name}.app:"
-          xattr -cr "${app_name}.app"
-          mkdir -p release/macos
-          echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
-          zip -r release/macos/${app_name}-${{ github.ref_name }}_macos.zip "${app_name}.app"
-          echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}_macos.zip:"
-          xattr -cr "release/macos/${app_name}-${{ github.ref_name }}_macos.zip"
+          mkdir -p ${{ env.MACOS_RELEASE_DIR }}
+          # Removing quarentine flag"
+          xattr -cr "${{ env.APP_NAME }}.app"
+          echo "Zipping..."
+          zip -r ${{ env.MACOS_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}_macos.zip "${{ env.APP_NAME }}.app"
+          # Removing quarentine flag for zip
+          xattr -cr "${{ env.MACOS_RELEASE_DIR }}/${{ env.APP_NAME }}-${{ github.ref_name }}_macos.zip"
+
 
       - name: Package binary (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          mkdir -p release/linux
-          chmod +x ./scripts/ubuntu/package.sh
-          ./scripts/ubuntu/package.sh x86_64
-          mv Y.A.R.N.-x86_64.AppImage release/linux/
+          mkdir -p ${{ env.LINUX_RELEASE_DIR }}
+          chmod +x ./scripts/linux/package.sh
+          ./scripts/linux/package.sh x86_64
+          mv ${{ env.TARGET_NAME }}-x86_64.AppImage ${{ env.LINUX_RELEASE_DIR }}/
           sleep 10
-          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-x86_64.tar.gz" \
+          tar -czvf "${{ env.LINUX_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}-lnx-x86_64.tar.gz" \
           --warning=no-file-changed \
-          -C release/linux Y.A.R.N.-x86_64.AppImage
+          -C ${{ env.LINUX_RELEASE_DIR }} ${{ env.TARGET_NAME }}-x86_64.AppImage
       - name: Package binary (Linux aarch64/arm64)
         if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
         run: |
-          mkdir -p release/linux
-          chmod +x ./scripts/ubuntu/package.sh
-          ./scripts/ubuntu/package.sh aarch64
-          mv Y.A.R.N.-aarch64.AppImage release/linux/
+          mkdir -p ${{ env.LINUX_RELEASE_DIR }}
+          chmod +x ./scripts/linux/package.sh
+          ./scripts/linux/package.sh aarch64
+          mv ${{ env.TARGET_NAME }}-aarch64.AppImage ${{ env.LINUX_RELEASE_DIR }}/
           sleep 10
-          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-aarch64.tar.gz" \
+          tar -czvf "${{ env.LINUX_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}-lnx-aarch64.tar.gz" \
           --warning=no-file-changed \
-          -C release/linux Y.A.R.N.-aarch64.AppImage
+          -C ${{ env.LINUX_RELEASE_DIR }} ${{ env.TARGET_NAME }}-aarch64.AppImage
 
 
       # Release with attached files
@@ -94,8 +99,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release/linux/*.tar.gz
-            release/macos/*.zip
+            ${{ env.LINUX_RELEASE_DIR }}/*.tar.gz
+            ${{ env.MACOS_RELEASE_DIR }}/*.zip
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false

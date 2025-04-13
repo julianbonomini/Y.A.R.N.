@@ -22,14 +22,14 @@ jobs:
       - name: Set up dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-macos.sh
-          ./scripts/install-requirements-macos.sh
+          chmod +x ./scripts/macos/install-dependencies.sh
+          ./scripts/macos/install-dependencies.sh
 
       - name: Set up dependencies (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/ubuntu/install_dependencies.sh
-          ./scripts/ubuntu/install_dependencies.sh
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh
 
       # Build
       - name: Build (macOS)
