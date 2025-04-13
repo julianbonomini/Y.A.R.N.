@@ -48,32 +48,39 @@ install_sfml() {
 }
 
 install_appimagetool() {
-  original_dir=$PWD
-  APP_IMG_TOOL_DIR="$HOME/AppImageTool"
-  file /usr/local/bin/appimagetool
-  if [ -e /usr/local/bin/appimagetool ]; then
-    file /usr/local/bin/appimagetool
-    if [ $? -eq 0 ]; then
-      echo "AppImageTool is already installed in $APP_IMG_TOOL_DIR. Skipping installation."
-    else
-      echo "The file $APP_IMG_TOOL_DIR exists, but there was an issue analyzing it."
-    fi
-  else
-    echo "AppImageTool not found. Cloning and building AppImageTool..."
+#  original_dir=$PWD
+#  APP_IMG_TOOL_DIR="$HOME/AppImageTool"
+#  file /usr/local/bin/appimagetool
+#  if [ -e /usr/local/bin/appimagetool ]; then
+#    file /usr/local/bin/appimagetool
+#    if [ $? -eq 0 ]; then
+#      echo "AppImageTool is already installed in $APP_IMG_TOOL_DIR. Skipping installation."
+#    else
+#      echo "The file $APP_IMG_TOOL_DIR exists, but there was an issue analyzing it."
+#    fi
+#  else
+#    echo "AppImageTool not found. Cloning and building AppImageTool..."
+#
+#    if [ -d "$APP_IMG_TOOL_DIR" ] && [ -f "$APP_IMG_TOOL_DIR/CMakeLists.txt" ]; then
+#      echo "Already cloned."
+#    else
+#      git clone https://github.com/AppImage/appimagetool.git "$APP_IMG_TOOL_DIR"
+#    fi
+#    cd "$APP_IMG_TOOL_DIR"
+#    cmake .
+#    make appimagetool
+##    sudo mv appimagetool /usr/local/bin/
+#    ls -a
+#    file /usr/local/bin/appimagetool
+#  fi
+#  cd "$original_dir"
+  wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
 
-    if [ -d "$APP_IMG_TOOL_DIR" ] && [ -f "$APP_IMG_TOOL_DIR/CMakeLists.txt" ]; then
-      echo "Already cloned."
-    else
-      git clone https://github.com/AppImage/appimagetool.git "$APP_IMG_TOOL_DIR"
-    fi
-    cd "$APP_IMG_TOOL_DIR"
-    cmake .
-    make appimagetool
-#    sudo mv appimagetool /usr/local/bin/
-    ls -a
-    file /usr/local/bin/appimagetool
-  fi
-  cd "$original_dir"
+  # Make it executable
+  chmod +x appimagetool
+
+  # Optional: Move to /usr/local/bin to use as `appimagetool`
+  sudo mv appimagetool /usr/local/bin/appimagetool
 }
 
 # Function to install dependencies (useful for both local and CI environments)
