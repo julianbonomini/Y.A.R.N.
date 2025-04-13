@@ -42,7 +42,7 @@ prepare_appimage_structure() {
   echo "Copying assets:"
   ls -l
   ls -l "$ASSETS_DIR/"
-  cp -r "$ASSETS_DIR/*" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
+  cp -r "$ASSETS_DIR/" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
 
   # Copy the desktop entry and icon (if available)
   if [ -f "$DESKTOP_FILE" ]; then
