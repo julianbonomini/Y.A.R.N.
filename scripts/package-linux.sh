@@ -40,6 +40,7 @@ install_sfml() {
 #    ldconfig -p | grep sfml
     echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/sfml.conf
     sudo ldconfig
+    ls -l /usr/local/lib | grep sfml
 
     # Go back to the original directory
   fi
@@ -68,7 +69,8 @@ install_appimagetool() {
     cd "$APP_IMG_TOOL_DIR"
     cmake .
     make appimagetool
-#    sudo mv appimagetool /usr/local/bin/
+    sudo mv "$HOME/AppImageTool" /usr/local/bin/
+    sudo mv appimagetool /usr/local/bin/
     file /usr/local/bin/appimagetool
   fi
   cd "$original_dir"
