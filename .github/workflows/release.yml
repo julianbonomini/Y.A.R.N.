@@ -6,6 +6,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta'
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
+      - 'v[0-9]+.[0-9]+.[0-9]+-debug'
 
 jobs:
   build-and-release:
@@ -57,7 +58,7 @@ jobs:
           echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
           zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
           echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}.zip:"
-          xattr -cr "release/macos/${app_name}-${{ github.ref_name }}.zip"
+          xattr -cr "release/macos/${app_name}-${{ github.ref_name }}_macos.zip"
 
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -65,9 +66,11 @@ jobs:
           chmod +x ./scripts/ubuntu/package.sh
           ./scripts/ubuntu/package.sh
           mkdir -p release/linux
-          rsync -a build/linux/YARN release/linux/YARN
+          mv Y.A.R.N-x86_64.AppImage release/linux/
           sleep 10
-          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" --warning=no-file-changed -C release/linux .
+          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-x86_64.tar.gz" \
+          --warning=no-file-changed \
+          -C release/linux Y.A.R.N-x86_64.AppImage
 
 
       # Release with attached files
