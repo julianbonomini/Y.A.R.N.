@@ -48,7 +48,7 @@ install_appimagetool() {
   echo "----------------------------------------"
   echo "----------  AppImageTool  --------------"
   echo "----------------------------------------"
-  wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+  wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage -O appimagetool
 
   # Make it executable
   chmod +x appimagetool
