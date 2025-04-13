@@ -9,7 +9,7 @@ BUILD_DIR="build/linux"
 ASSETS_DIR="./assets"
 TARGET_BINARY="YARN"
 DESKTOP_FILE="YARN.desktop"
-#ICON_FILE="YourApp.png"
+ICON_FILE="icon.jpg"
 
 # Function to prepare the AppImage structure
 prepare_appimage_structure() {

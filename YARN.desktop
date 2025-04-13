@@ -4,4 +4,4 @@ Comment=(yet another retro node) project. A BIOS inspired desk gadget to run c++
 Exec=YARN %F
 Terminal=false
 Type=Application
-Categories=Utility;Application;
+Categories=Utility;
