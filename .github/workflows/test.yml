@@ -10,7 +10,7 @@ jobs:
     name: Build and Release [test]
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04-arm]
 
     runs-on: ${{ matrix.os }}
 
