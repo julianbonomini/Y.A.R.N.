@@ -56,8 +56,8 @@ prepare_appimage_structure() {
   else
       echo "Warning: Desktop entry ($DESKTOP_FILE) not found."
   fi
-  if [ -f "$ICON_FILE" ]; then
-      cp "$APP_DIR/usr/bin/assets/images/icon.png" "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
+  if [ -f "$APP_DIR/usr/bin/assets/images/$ICON_FILE" ]; then
+      cp "$APP_DIR/usr/bin/assets/images/$ICON_FILE" "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
   else
       echo "Warning: Icon file ($ICON_FILE) not found."
   fi
