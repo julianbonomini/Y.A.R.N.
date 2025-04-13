@@ -60,6 +60,7 @@ prepare_appimage_structure() {
   ls -l "$APP_DIR/usr/share/$TARGET_BINARY/assets/images"
   if [ -f "$APP_DIR/usr/share/$TARGET_BINARY/assets/images/$ICON_FILE" ]; then
       echo "Icon directory exists, copying file..."
+      mkdir -p "$APP_DIR/usr/share/icons/hicolor/256x256/apps/"
       cp "$APP_DIR/usr/share/$TARGET_BINARY/assets/images/$ICON_FILE" "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
       ls -l "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
   else
