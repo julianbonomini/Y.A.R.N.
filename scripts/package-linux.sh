@@ -69,7 +69,6 @@ install_appimagetool() {
     cd "$APP_IMG_TOOL_DIR"
     cmake .
     make appimagetool
-    sudo mv "$HOME/AppImageTool" /usr/local/bin/
     sudo mv appimagetool /usr/local/bin/
     file /usr/local/bin/appimagetool
   fi
