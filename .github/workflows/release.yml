@@ -30,8 +30,8 @@ jobs:
       - name: Set up dependencies (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-linux.sh
-          ./scripts/install-requirements-linux.sh
+          chmod +x ./scripts/ubuntu/install_dependencies.sh
+          ./scripts/ubuntu/install_dependencies.sh
 
       # Build
       - name: Build (macOS)
@@ -42,7 +42,8 @@ jobs:
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          make clean && make linux
+          make clean
+          make linux
       
 
       # Package
@@ -61,11 +62,15 @@ jobs:
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
+          chmod +x ./scripts/ubuntu/package.sh
+          ./scripts/ubuntu/package.sh
           mkdir -p release/linux
           rsync -a build/linux/YARN release/linux/YARN
           sleep 10
           tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" --warning=no-file-changed -C release/linux .
 
+
+      # Release with attached files
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:

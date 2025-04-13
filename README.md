@@ -18,7 +18,7 @@ brew install nlohmann-json
 
 ### Linux based
 ```bash
-./install-requirements-linux.sh
+./scripts/ubuntu/install_dependencies.sh
 ```
 Should install all needed packages to clone and install SFML 3.0.
 

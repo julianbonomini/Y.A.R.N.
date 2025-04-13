@@ -17,21 +17,31 @@ prepare_appimage_structure() {
   echo "PWD is set to: $PWD"
   echo "APP_DIR is set to: $APP_DIR"
   echo "BUILD_DIR is set to: $BUILD_DIR"
+  echo "ASSETS_DIR is set to: $ASSETS_DIR"
   echo "TARGET_BINARY is set to: $TARGET_BINARY"
   echo "DESKTOP_FILE is set to: $DESKTOP_FILE"
   mkdir -p "$APP_DIR/usr/bin"
   mkdir -p "$APP_DIR/usr/lib"
 
-  # This should not be needed if everything is statically linked
-#  cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
+  # Copy the target binary to the AppDir
+  cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
 
-  # Do I need this?
-  # Copy libraries (note: you may need to copy from specific paths, especially for static linking)
-#  cp -r /usr/local/lib/* "$APP_DIR/usr/lib/"
-
+  # Copy libraries listed by ldd
+  echo "Copying shared libraries..."
+  ldd "$BUILD_DIR/$TARGET_BINARY" | grep "=>" | awk '{print $3}' | while read lib; do
+    echo "Copying $lib..."
+    # Check if the library exists and copy it
+    if [ -f "$lib" ]; then
+      cp "$lib" "$APP_DIR/usr/lib/"
+    else
+      echo "Warning: Library $lib not found!"
+    fi
+  done
 
   # Bundle assets:
   echo "Copying assets:"
+  ls -l
+  ls -l "$ASSETS_DIR/"
   cp -r "$ASSETS_DIR/*" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
 
   # Copy the desktop entry and icon (if available)
