@@ -63,11 +63,10 @@ jobs:
       - name: Package binary (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
+          mkdir -p release/linux
           chmod +x ./scripts/ubuntu/package.sh
           ./scripts/ubuntu/package.sh
-          mkdir -p release/linux
           mv Y.A.R.N.-x86_64.AppImage release/linux/
-          ls -l release/linux/
           sleep 10
           tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-x86_64.tar.gz" \
           --warning=no-file-changed \
