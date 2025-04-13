@@ -8,7 +8,7 @@ APP_DIR="AppDir"
 BUILD_DIR="build/linux"
 ASSETS_DIR="./assets"
 TARGET_BINARY="YARN"
-DESKTOP_FILE="YourApp.desktop"
+DESKTOP_FILE="YARN.desktop"
 #ICON_FILE="YourApp.png"
 
 # Function to prepare the AppImage structure
@@ -41,8 +41,7 @@ prepare_appimage_structure() {
 
   # Bundle assets:
   echo "ASSETS_DIR is: $ASSETS_DIR"
-  echo "Copying assets from $ASSETS_DIR/* to $APP_DIR/usr/share/$TARGET_BINARY/assets/"
-
+  echo "Copying assets from $ASSETS_DIR/. to $APP_DIR/usr/share/$TARGET_BINARY/assets/"
   # Ensure that files inside assets exist
   if [ -d "$ASSETS_DIR" ]; then
     echo "Assets directory exists, copying files..."
@@ -50,15 +49,6 @@ prepare_appimage_structure() {
   else
     echo "Warning: Assets directory $ASSETS_DIR not found!"
   fi
-#  echo "Copying assets:"
-#  ls -l
-#  ls -l "$ASSETS_DIR/"
-#  echo "ASSETS_DIR is: $ASSETS_DIR"
-#  echo "Copying assets from $ASSETS_DIR/* to $APP_DIR/usr/share/$TARGET_BINARY/assets/"
-#  cp -r "$ASSETS_DIR/*" "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
-##  echo "Copying assets from $ASSETS_DIR/. to $APP_DIR/usr/share/$TARGET_BINARY/assets/"
-##  cp -r "$ASSETS_DIR/." "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
-#  ls -l "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
 
   # Copy the desktop entry and icon (if available)
   if [ -f "$DESKTOP_FILE" ]; then
