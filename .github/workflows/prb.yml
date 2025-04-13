@@ -28,16 +28,18 @@ jobs:
       - name: Set up dependencies (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-linux.sh
-          ./scripts/install-requirements-linux.sh
+          chmod +x ./scripts/ubuntu/install_dependencies.sh
+          ./scripts/ubuntu/install_dependencies.sh
 
       # Build
       - name: Build (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          make clean && make macos
+          make clean
+          make macos
 
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          make clean && make linux
+          make clean
+          make linux
