@@ -37,10 +37,11 @@ jobs:
           ./scripts/ubuntu/package.sh
           mkdir -p release/linux
           mv Y.A.R.N.-x86_64.AppImage release/linux/
+          ls -l release/linux/
           sleep 10
           tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-lnx-x86_64.tar.gz" \
           --warning=no-file-changed \
-          -C release/linux Y.A.R.N-x86_64.AppImage
+          -C release/linux Y.A.R.N.-x86_64.AppImage
 
       # Release with attached files
       - name: Create Release
