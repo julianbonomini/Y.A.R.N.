@@ -6,13 +6,22 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta'
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha'
+      - 'v[0-9]+.[0-9]+.[0-9]+-debug'
+
+env:
+  BUILD_NAME: "YARN"
+  TARGET_NAME: "Y.A.R.N."
+  MACOS_RELEASE_DIR: "release/macos"
+  LINUX_RELEASE_DIR: "release/linux"
 
 jobs:
   build-and-release:
     name: Build and Release
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        # Only for public repos, ubuntu-24.04-arm is not yet supported in private repos
+        # os: [macos-latest, ubuntu-latest, ubuntu-24.04-arm]
+        os: [ macos-latest, ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -24,14 +33,18 @@ jobs:
       - name: Set up dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-macos.sh
-          ./scripts/install-requirements-macos.sh
-
-      - name: Set up dependencies (Linux)
+          chmod +x ./scripts/macos/install-dependencies.sh
+          ./scripts/macos/install-dependencies.sh
+      - name: Set up dependencies (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-linux.sh
-          ./scripts/install-requirements-linux.sh
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh x86_64
+      - name: Set up dependencies (Linux aarch64/arm64)
+        if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
+        run: |
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh aarch64
 
       # Build
       - name: Build (macOS)
@@ -40,38 +53,56 @@ jobs:
           make clean && make macos
 
       - name: Build (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm' }}
         run: |
-          make clean && make linux
+          make clean
+          make linux
       
 
       # Package
       - name: Package .app (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          app_name="YARN"
-          echo "Removing quarentine flag for: ${app_name}.app:"
-          xattr -cr "${app_name}.app"
-          mkdir -p release/macos
-          echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
-          zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
-          echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}.zip:"
-          xattr -cr "release/macos/${app_name}-${{ github.ref_name }}.zip"
+          mkdir -p ${{ env.MACOS_RELEASE_DIR }}
+          # Removing quarentine flag"
+          xattr -cr "${{ env.APP_NAME }}.app"
+          echo "Zipping..."
+          zip -r ${{ env.MACOS_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}_macos.zip "${{ env.APP_NAME }}.app"
+          # Removing quarentine flag for zip
+          xattr -cr "${{ env.MACOS_RELEASE_DIR }}/${{ env.APP_NAME }}-${{ github.ref_name }}_macos.zip"
 
-      - name: Package binary (Linux)
+
+      - name: Package binary (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          mkdir -p release/linux
-          rsync -a build/linux/YARN release/linux/YARN
+          mkdir -p ${{ env.LINUX_RELEASE_DIR }}
+          chmod +x ./scripts/linux/package.sh
+          ./scripts/linux/package.sh x86_64
+          mv ${{ env.TARGET_NAME }}-x86_64.AppImage ${{ env.LINUX_RELEASE_DIR }}/
           sleep 10
-          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}.tar.gz" --warning=no-file-changed -C release/linux .
+          tar -czvf "${{ env.LINUX_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}-lnx-x86_64.tar.gz" \
+          --warning=no-file-changed \
+          -C ${{ env.LINUX_RELEASE_DIR }} ${{ env.TARGET_NAME }}-x86_64.AppImage
+      - name: Package binary (Linux aarch64/arm64)
+        if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
+        run: |
+          mkdir -p ${{ env.LINUX_RELEASE_DIR }}
+          chmod +x ./scripts/linux/package.sh
+          ./scripts/linux/package.sh aarch64
+          mv ${{ env.TARGET_NAME }}-aarch64.AppImage ${{ env.LINUX_RELEASE_DIR }}/
+          sleep 10
+          tar -czvf "${{ env.LINUX_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}-lnx-aarch64.tar.gz" \
+          --warning=no-file-changed \
+          -C ${{ env.LINUX_RELEASE_DIR }} ${{ env.TARGET_NAME }}-aarch64.AppImage
 
+
+      # Release with attached files
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release/linux/*.tar.gz
-            release/macos/*.zip
+            ${{ env.LINUX_RELEASE_DIR }}/*.tar.gz
+            ${{ env.MACOS_RELEASE_DIR }}/*.zip
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: false

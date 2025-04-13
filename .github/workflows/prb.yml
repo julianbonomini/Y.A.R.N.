@@ -10,6 +10,8 @@ jobs:
     name: Build
     strategy:
       matrix:
+        # Only for public repos, ubuntu-24.04-arm is not yet supported in private repos
+        # os: [macos-latest, ubuntu-latest, ubuntu-24.04-arm]
         os: [ macos-latest, ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
@@ -22,22 +24,29 @@ jobs:
       - name: Set up dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-macos.sh
-          ./scripts/install-requirements-macos.sh
+          chmod +x ./scripts/macos/install-dependencies.sh
+          ./scripts/macos/install-dependencies.sh
 
-      - name: Set up dependencies (Linux)
+      - name: Set up dependencies (Linux x86_64)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          chmod +x ./scripts/install-requirements-linux.sh
-          ./scripts/install-requirements-linux.sh
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh x86_64
+      - name: Set up dependencies (Linux aarch64/arm64)
+        if: ${{ matrix.os == 'ubuntu-24.04-arm' }}
+        run: |
+          chmod +x ./scripts/linux/install_dependencies.sh
+          ./scripts/linux/install_dependencies.sh aarch64
 
       # Build
       - name: Build (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          make clean && make macos
+          make clean
+          make macos
 
       - name: Build (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          make clean && make linux
+          make clean
+          make linux

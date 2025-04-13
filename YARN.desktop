@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Y.A.R.N.
+Comment=(yet another retro node) project. A BIOS inspired desk gadget to run c++ apps, either informative or interactive.
+Exec=YARN %F
+Icon=YARN
+Terminal=false
+Type=Application
+Categories=Utility;

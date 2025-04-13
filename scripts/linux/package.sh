@@ -1,0 +1,132 @@
+#!/bin/bash
+
+# Ensure the script stops if any command fails
+set -e
+
+TARGET_ARCH=$1
+
+echo "Target arch: $TARGET_ARCH"
+
+# Define some paths
+if [ "$TARGET_ARCH" == "x86_64" ]; then
+  APP_DIR="Y.A.R.N.-x86_64.AppDir"
+elif [ "$TARGET_ARCH" == "aarch64" ]; then
+  APP_DIR="Y.A.R.N.-aarch64.AppDir"
+else
+  echo "Unsupported architecture: $TARGET_ARCH"
+  exit 1
+fi
+BUILD_DIR="build/linux"
+ASSETS_DIR="./assets"
+TARGET_BINARY="YARN"
+DESKTOP_FILE="YARN.desktop"
+ICON_FILE="icon.png"
+
+# Function to prepare the AppImage structure
+prepare_appimage_structure() {
+  echo "Preparing AppImage structure..."
+  echo "PWD is set to: $PWD"
+  echo "APP_DIR is set to: $APP_DIR"
+  echo "BUILD_DIR is set to: $BUILD_DIR"
+  echo "ASSETS_DIR is set to: $ASSETS_DIR"
+  echo "TARGET_BINARY is set to: $TARGET_BINARY"
+  echo "DESKTOP_FILE is set to: $DESKTOP_FILE"
+  mkdir -p "$APP_DIR/usr/bin"
+  mkdir -p "$APP_DIR/usr/lib"
+  mkdir -p "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
+
+  # Copy the target binary to the AppDir
+  cp "$BUILD_DIR/$TARGET_BINARY" "$APP_DIR/usr/bin/"
+
+  # Copy libraries listed by ldd
+  echo "Copying shared libraries..."
+  ldd "$BUILD_DIR/$TARGET_BINARY" | grep "=>" | awk '{print $3}' | while read lib; do
+    echo "Copying $lib..."
+    # Check if the library exists and copy it
+    if [ -f "$lib" ]; then
+      cp "$lib" "$APP_DIR/usr/lib/"
+    else
+      echo "Warning: Library $lib not found!"
+    fi
+  done
+
+  # Bundle assets:
+  echo "ASSETS_DIR is: $ASSETS_DIR"
+  echo "Copying assets from $ASSETS_DIR/. to $APP_DIR/usr/share/$TARGET_BINARY/assets/"
+  # Ensure that files inside assets exist
+  if [ -d "$ASSETS_DIR" ]; then
+    echo "Assets directory exists, copying files..."
+    cp -r "$ASSETS_DIR/." "$APP_DIR/usr/share/$TARGET_BINARY/assets/"
+  else
+    echo "Warning: Assets directory $ASSETS_DIR not found!"
+  fi
+
+  # Copy the desktop entry and icon (if available)
+  if [ -f "$DESKTOP_FILE" ]; then
+      cp "$DESKTOP_FILE" "$APP_DIR/"
+  else
+      echo "Warning: Desktop entry ($DESKTOP_FILE) not found."
+  fi
+
+  ls -l "$APP_DIR/usr/share/$TARGET_BINARY/assets/images"
+  if [ -f "$APP_DIR/usr/share/$TARGET_BINARY/assets/images/$ICON_FILE" ]; then
+      echo "Icon directory exists, copying file..."
+      mkdir -p "$APP_DIR/usr/share/icons/hicolor/256x256/apps/"
+      cp "$APP_DIR/usr/share/$TARGET_BINARY/assets/images/$ICON_FILE" "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
+      cp "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png" "$APP_DIR/YARN.png"
+      ls -l "$APP_DIR/usr/share/icons/hicolor/256x256/apps/YARN.png"
+  else
+      echo "Warning: Icon file ($ICON_FILE) not found."
+  fi
+
+  chmod +x "$APP_DIR/usr/bin/$TARGET_BINARY"
+}
+
+# Function to build the AppImage
+build_appimage() {
+  echo "Building AppImage..."
+  # Define some paths
+  if [ "$TARGET_ARCH" == "x86_64" ]; then
+    ARCH=x86_64 appimagetool "$APP_DIR"
+  elif [ "$TARGET_ARCH" == "aarch64" ]; then
+    ARCH=aarch64 appimagetool "$APP_DIR"
+  else
+    echo "Unsupported architecture: $TARGET_ARCH"
+    exit 1
+  fi
+  ARCH=aarch64 appimagetool "$APP_DIR"
+  echo "PWD is set to: $PWD"
+  ls -l
+}
+
+# Main logic
+main() {
+  echo""
+  echo""
+  echo "----------------------------------------"
+  echo "----------------------------------------"
+  echo "checking ldd for my binary"
+  ldd "$BUILD_DIR/$TARGET_BINARY"
+  echo "----------------------------------------"
+  echo "----------------------------------------"
+  echo""
+  echo""
+
+
+  echo "----------------------------------------"
+  echo "------------PREPARE IMAGE---------------"
+  echo "----------------------------------------"
+  # Prepare the AppImage structure
+  prepare_appimage_structure
+
+  # Build the AppImage
+  echo "----------------------------------------"
+  echo "-------------BUILD IMAGE----------------"
+  echo "----------------------------------------"
+  build_appimage
+
+  echo "AppImage build completed successfully!"
+}
+
+# Trigger the main function
+main

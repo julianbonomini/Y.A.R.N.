@@ -1,7 +1,6 @@
 # Compiler and Flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall
-LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 # Directories
 SRC_DIR = src
@@ -17,6 +16,7 @@ ifeq ($(shell uname), Darwin)
   MACOS_CONTENTS_DIR = $(MACOS_APP_DIR)/Contents
   MACOS_MACOS_DIR = $(MACOS_CONTENTS_DIR)/MacOS
   MACOS_RESOURCES_DIR = $(MACOS_CONTENTS_DIR)/Resources
+  LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
   LDFLAGS += -L/opt/homebrew/lib
   CXXFLAGS += -I/opt/homebrew/include
 else
@@ -24,7 +24,17 @@ else
   BUILD_DIR = build/linux
   CXXFLAGS += -I/usr/local/include
   LDFLAGS += -L/usr/local/lib
-  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lGL
+  # Add SFML static libraries explicitly
+  LDFLAGS += -L/usr/local/lib
+  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s
+
+  # Core dependencies for SFML static build
+  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
+  LDFLAGS += -lX11 -lXrandr -lXcursor -lXrender -lXfixes -lXinerama -lXext -lXi
+  LDFLAGS += -ludev -lGL -lpthread -ldl
+
+  # Static linking for standard C++ runtime
+  LDFLAGS += -static-libgcc -static-libstdc++
 endif
 
 TARGET = $(BUILD_DIR)/YARN
