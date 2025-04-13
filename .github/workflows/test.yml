@@ -1,51 +1,41 @@
-name: AppimageTest
-
-on:
-  push:
-    branches:
-      - linux-appimage
-
-jobs:
-  build-and-release:
-    name: Build and Release [test]
-    strategy:
-      matrix:
-        os: [ubuntu-24.04-arm]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up dependencies (Linux)
-        run: |
-          chmod +x ./scripts/ubuntu/install_dependencies.sh
-          ./scripts/ubuntu/install_dependencies.sh
-
-      - name: Compile (Linux)
-        run: |
-          make clean
-          make linux
-
-      - name: Package (Linux)
-        run: |
-          chmod +x ./scripts/ubuntu/package.sh
-          ./scripts/ubuntu/package.sh
-          mkdir -p release/linux
-          mv Y.A.R.N.-aarch64.AppImage release/linux/
-          ls -l release/linux/
-          sleep 10
-          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-linux-aarch64.tar.gz" \
-          --warning=no-file-changed \
-          -C release/linux Y.A.R.N.-aarch64.AppImage
-
-      # Release with attached files
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            release/linux/*.tar.gz
-          tag_name: ${{ github.ref_name }}
-          draft: false
-          prerelease: false
+#name: AppimageTest
+#
+#on:
+#  push:
+#    branches:
+#      - linux-appimage
+#
+#jobs:
+#  build-and-release:
+#    name: Build and Release [test]
+#    strategy:
+#      matrix:
+#        os: [ubuntu-24.04-arm]
+#
+#    runs-on: ${{ matrix.os }}
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Set up dependencies (Linux)
+#        run: |
+#          chmod +x ./scripts/ubuntu/install_dependencies.sh
+#          ./scripts/ubuntu/install_dependencies.sh
+#
+#      - name: Compile (Linux)
+#        run: |
+#          make clean
+#          make linux
+#
+#      - name: Package (Linux)
+#        run: |
+#          chmod +x ./scripts/ubuntu/package.sh
+#          ./scripts/ubuntu/package.sh
+#          mkdir -p release/linux
+#          mv Y.A.R.N.-aarch64.AppImage release/linux/
+#          ls -l release/linux/
+#          sleep 10
+#          tar -czvf "release/linux/${app_name}-${GITHUB_REF_NAME}-linux-aarch64.tar.gz" \
+#          --warning=no-file-changed \
+#          -C release/linux Y.A.R.N.-aarch64.AppImage

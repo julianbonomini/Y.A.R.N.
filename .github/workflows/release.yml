@@ -61,8 +61,8 @@ jobs:
           xattr -cr "${app_name}.app"
           mkdir -p release/macos
           echo "Zip: ${app_name}.app -> release/macos/${app_name}-${{ github.ref_name }}.zip:"
-          zip -r release/macos/${app_name}-${{ github.ref_name }}.zip "${app_name}.app"
-          echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}.zip:"
+          zip -r release/macos/${app_name}-${{ github.ref_name }}_macos.zip "${app_name}.app"
+          echo "Removing quarentine flag for: release/macos/${app_name}-${{ github.ref_name }}_macos.zip:"
           xattr -cr "release/macos/${app_name}-${{ github.ref_name }}_macos.zip"
 
       - name: Package binary (Linux x86_64)
