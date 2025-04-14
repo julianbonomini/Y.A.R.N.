@@ -44,7 +44,7 @@ void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTextur
     window.display();
     shownSplash = true;
 
-    sf::sleep(sf::seconds(0.3));
+    sf::sleep(sf::seconds(3));
 }
 
 int main() {
