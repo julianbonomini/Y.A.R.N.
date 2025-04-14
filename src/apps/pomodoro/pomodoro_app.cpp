@@ -203,7 +203,7 @@ void PomodoroApp::drawWorkClock() {
 
     sf::Text counter(font, counterStream.str());
     counter.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
-    counter.setCharacterSize(50);
+    counter.setCharacterSize(FontSizes::HUGE_TEXT);
     sf::FloatRect counterBounds = counter.getLocalBounds();
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
     counter.setOrigin(counterPos);
