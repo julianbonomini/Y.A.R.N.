@@ -32,6 +32,7 @@ else
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
   LDFLAGS += -lX11 -lXrandr -lXcursor -lXrender -lXfixes -lXinerama -lXext -lXi
   LDFLAGS += -ludev -lGL -lpthread -ldl
+  LDFLAGS += -lssl -lcrypto
 
   # Static linking for standard C++ runtime
   LDFLAGS += -static-libgcc -static-libstdc++

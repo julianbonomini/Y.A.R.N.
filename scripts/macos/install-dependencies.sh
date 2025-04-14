@@ -17,3 +17,4 @@ if [ $attempts -eq $max_attempts ]; then
 fi
 brew install sfml
 brew install nlohmann-json
+brew install openssl

@@ -102,7 +102,8 @@ aptget() {
     libglib2.0-dev \
     libcurl4-openssl-dev \
     libxinerama-dev \
-    nlohmann-json3-dev
+    nlohmann-json3-dev \
+    libssl-dev
 }
 
 # Function to install dependencies (useful for both local and CI environments)
