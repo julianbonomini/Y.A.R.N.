@@ -286,6 +286,15 @@ void ConfigApp::draw() {
             renderer.draw(highlightRect);
             renderer.draw(labelText);
         }
+
+        if (currentOption.changed) {
+            sf::FloatRect bounds = labelText.getGlobalBounds();
+            sf::RectangleShape highlightRect;
+            sf::Text unsaved(font, "[!]", FontSizes::LABEL);
+            unsaved.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+            unsaved.setPosition({labelPositionX + bounds.size.x + Layout::PADDING, valueYPosition});
+            renderer.draw(unsaved);
+        }
         // Increment the vertical offset to position the next label/value pair
         verticalOffset += Layout::TEXT_SPACING;
     }
@@ -293,18 +302,18 @@ void ConfigApp::draw() {
 
     // Draw if in edit mode:
     if (editModeEnabled) {
-        sf::Text editModeEnabled(font, "EDIT_MODE", FontSizes::HELP);
+        sf::Text editModeEnabled(font, "EDIT_MODE", FontSizes::TITLE);
         editModeEnabled.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-        editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
+        editModeEnabled.setPosition({BOTTOM_LEFT_ANCHOR.x + Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - editModeEnabled.getLocalBounds().size.y - Layout::PADDING});
         renderer.draw(editModeEnabled);
     }
 
     // Draw if in changes:
     if (unsavedChangesFlag) {
         const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
-        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
+        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::TITLE);
         unsavedChanges.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
+        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - unsavedChanges.getLocalBounds().size.x - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - unsavedChanges.getLocalBounds().size.y - Layout::PADDING});
         renderer.draw(unsavedChanges);
     }
 

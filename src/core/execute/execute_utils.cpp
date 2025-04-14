@@ -34,8 +34,7 @@ std::string ExecuteUtils::getResourcePath(const std::string& relativePath) {
             return (executablePath.parent_path().parent_path() / "Resources" / "Assets" / relativePath).string();
         } else {
             // Running directly (e.g., via make run)
-            std::filesystem::path resourcesPath = executablePath.parent_path().parent_path().parent_path() / "YARN.app" / "Contents"/ "Resources" / "Assets";
-            return (resourcesPath / relativePath).string();
+            return relativePath;
         }
     }
     // Fallback if we can't get the executable path (shouldn't happen in a bundle)

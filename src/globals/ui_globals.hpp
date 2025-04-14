@@ -47,6 +47,8 @@ namespace FontSizes {
     constexpr int LABEL = 15;
     constexpr int VALUE = 15;
     constexpr int HELP = 12;
+    constexpr int BIG_TEXT = 25;
+    constexpr int HUGE_TEXT = 50;
 }
 
 namespace LineStyles {
