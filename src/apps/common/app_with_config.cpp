@@ -76,6 +76,16 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
             renderer.draw(highlightRect);
             renderer.draw(labelText);
         }
+
+        if (currentOption.changed) {
+            sf::FloatRect bounds = labelText.getGlobalBounds();
+            sf::RectangleShape highlightRect;
+            sf::Text unsaved(font, "[!]", FontSizes::HELP);
+            unsaved.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+            unsaved.setPosition({labelPositionX + bounds.size.x + Layout::PADDING, valueYPosition});
+            renderer.draw(unsaved);
+        }
+
         // Increment the vertical offset to position the next label/value pair
         verticalOffset += Layout::TEXT_SPACING;
     }
@@ -84,10 +94,9 @@ void AppWithConfig::drawAppConfigOptions(const sf::FloatRect bounds) {
 
     // Draw if in changes:
     if (unsavedChangesFlag) {
-        const float helpBoxWidth = Layout::MAIN_APP_WIDTH * 0.4;
-        sf::Text unsavedChanges(font, "UNSAVED_CHANGES", FontSizes::HELP);
+        sf::Text unsavedChanges(font, "[UNSAVED_CHANGES]", FontSizes::TITLE);
         unsavedChanges.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-        unsavedChanges.setPosition({BOTTOM_RIGHT_ANCHOR.x - helpBoxWidth - 100.f - Layout::PADDING, BOTTOM_LEFT_ANCHOR.y - Layout::PADDING});
+        unsavedChanges.setPosition({labelPositionX, TOP_LEFT_ANCHOR.y + verticalOffset + Layout::TEXT_SPACING});
         renderer.draw(unsavedChanges);
     }
 }

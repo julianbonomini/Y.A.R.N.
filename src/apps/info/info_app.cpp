@@ -14,7 +14,7 @@ InfoApp::InfoApp(const std::string &appName, sf::RenderTarget &renderer, const s
     infoData.push_back({"CPU_USG:", "%"});
     infoData.push_back({"GPU:", ExecuteUtils::getGpuModel()});
     infoData.push_back({"RAM:", ExecuteUtils::getRam()});
-    infoData.push_back({"USED STORAGE:", ExecuteUtils::getStorageUsage("/")});
+    infoData.push_back({"USED_STORAGE:", ExecuteUtils::getStorageUsage("/")});
     infoData.push_back({"UPTIME:", ExecuteUtils::getUptime()});
     infoData.push_back({"NETWORK:", ExecuteUtils::getNetworkStatus()});
 }
