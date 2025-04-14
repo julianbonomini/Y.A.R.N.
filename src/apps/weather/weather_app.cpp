@@ -4,8 +4,8 @@
 #include "../../ui/utils/ui_helpers.hpp"
 
 
-WeatherApp::WeatherApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
-    : AppWithConfig(appName, renderer, font, stateMachine) {
+WeatherApp::WeatherApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, WeatherState &weatherState)
+    : AppWithConfig(appName, renderer, font, stateMachine), weatherState(weatherState) {
     initConfigFromDisk();
 }
 
@@ -53,7 +53,7 @@ void WeatherApp::handleSettings() {
 void WeatherApp::draw() {
 
     drawOverview();
-    drawHighLows();
+    drawExtraData();
     drawDetails();
     drawLastUpdated();
     drawSensorData();
@@ -75,13 +75,13 @@ void WeatherApp::drawOverview() {
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
-    sf::Text title(font, "CONDITIONS_OUTSIDE");
+    sf::Text title(font, "TEMPERATURE");
     title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
     renderer.draw(title);
 
-    sf::Text temperature(font, "24 C");
+    sf::Text temperature(font, weatherState.getWeatherData().temperature);
     temperature.setCharacterSize(FontSizes::HUGE_TEXT);
     temperature.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::FloatRect temperatureBounds = temperature.getLocalBounds();
@@ -89,7 +89,7 @@ void WeatherApp::drawOverview() {
     temperature.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f - temperatureBounds.size.y });
     renderer.draw(temperature);
 
-    sf::Text feelsLike(font, "FEELS_LIKE: 22 C");
+    sf::Text feelsLike(font, weatherState.getWeatherData().feels_like);
     feelsLike.setCharacterSize(FontSizes::BIG_TEXT);
     feelsLike.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::FloatRect feelsLikeBounds = feelsLike.getLocalBounds();
@@ -97,13 +97,13 @@ void WeatherApp::drawOverview() {
     feelsLike.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f + temperatureBounds.size.y });
     renderer.draw(feelsLike);
 
-    sf::Text sunny(font, "SUNNY");
-    sunny.setCharacterSize(FontSizes::HUGE_TEXT);
-    sunny.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-    sf::FloatRect sunnyBounds = sunny.getLocalBounds();
-    sunny.setOrigin({ sunnyBounds.position.x + sunnyBounds.size.x / 2.0f, sunnyBounds.position.y + sunnyBounds.size.y / 2.0f });
-    sunny.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y - Layout::PADDING - sunnyBounds.size.y });
-    renderer.draw(sunny);
+    // sf::Text sunny(font, weatherState.getWeatherData().weather_title);
+    // sunny.setCharacterSize(FontSizes::HUGE_TEXT);
+    // sunny.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    // sf::FloatRect sunnyBounds = sunny.getLocalBounds();
+    // sunny.setOrigin({ sunnyBounds.position.x + sunnyBounds.size.x / 2.0f, sunnyBounds.position.y + sunnyBounds.size.y / 2.0f });
+    // sunny.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y - Layout::PADDING - sunnyBounds.size.y });
+    // renderer.draw(sunny);
 
 }
 
@@ -122,16 +122,17 @@ void WeatherApp::drawLastUpdated() {
     title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
     renderer.draw(title);
 
-    sf::Text text(font, "14:02");
+    sf::Text text(font, weatherState.getWeatherData().last_weather_update);
     text.setCharacterSize(FontSizes::BIG_TEXT);
     text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::FloatRect textBounds = text.getLocalBounds();
     text.setOrigin({ textBounds.position.x + textBounds.size.x / 2.0f, textBounds.position.y + textBounds.size.y / 2.0f });
-    text.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f });
+    text.setPosition(UIHelpers::snapToGrid({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f }));
     renderer.draw(text);
 }
 
-void WeatherApp::drawHighLows() {
+void WeatherApp::drawExtraData() {
+    // TODO: draw rain, pressure, etc...
     sf::FloatRect box = getGridBox(0, 2, 2, 2);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition({box.position.x, box.position.y});
@@ -140,27 +141,27 @@ void WeatherApp::drawHighLows() {
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
-    sf::Text title(font, "HIGH/LOW");
-    title.setCharacterSize(FontSizes::TITLE);
-    title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-    title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
-    renderer.draw(title);
-
-    sf::Text high(font, "24 C");
-    high.setCharacterSize(FontSizes::HUGE_TEXT);
-    high.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-    sf::FloatRect highTextBounds = high.getLocalBounds();
-    high.setOrigin({ highTextBounds.position.x + highTextBounds.size.x / 2.0f, highTextBounds.position.y + highTextBounds.size.y / 2.0f });
-    high.setPosition(UIHelpers::snapToGrid({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f + highTextBounds.size.y + Layout::PADDING }));
-    renderer.draw(high);
-
-    sf::Text low(font, "18 C");
-    low.setCharacterSize(FontSizes::HUGE_TEXT);
-    low.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-    sf::FloatRect lowTextBounds = low.getLocalBounds();
-    low.setOrigin({ lowTextBounds.position.x + lowTextBounds.size.x / 2.0f, lowTextBounds.position.y + lowTextBounds.size.y / 2.0f });
-    low.setPosition(UIHelpers::snapToGrid({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f - lowTextBounds.size.y - Layout::PADDING }));
-    renderer.draw(low);
+    // sf::Text title(font, "HIGH/LOW");
+    // title.setCharacterSize(FontSizes::TITLE);
+    // title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    // title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
+    // renderer.draw(title);
+    //
+    // sf::Text high(font, "24 C");
+    // high.setCharacterSize(FontSizes::HUGE_TEXT);
+    // high.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    // sf::FloatRect highTextBounds = high.getLocalBounds();
+    // high.setOrigin({ highTextBounds.position.x + highTextBounds.size.x / 2.0f, highTextBounds.position.y + highTextBounds.size.y / 2.0f });
+    // high.setPosition(UIHelpers::snapToGrid({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f + highTextBounds.size.y + Layout::PADDING }));
+    // renderer.draw(high);
+    //
+    // sf::Text low(font, "18 C");
+    // low.setCharacterSize(FontSizes::HUGE_TEXT);
+    // low.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    // sf::FloatRect lowTextBounds = low.getLocalBounds();
+    // low.setOrigin({ lowTextBounds.position.x + lowTextBounds.size.x / 2.0f, lowTextBounds.position.y + lowTextBounds.size.y / 2.0f });
+    // low.setPosition(UIHelpers::snapToGrid({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f - lowTextBounds.size.y - Layout::PADDING }));
+    // renderer.draw(low);
 }
 
 void WeatherApp::drawSensorData() {
@@ -218,12 +219,12 @@ void WeatherApp::drawDetails() {
     title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
     renderer.draw(title);
 
-    sf::Text text(font, "RAIN: 18%, WIND: 12KM/H");
+    sf::Text text(font, weatherState.getWeatherData().weather_description);
     text.setCharacterSize(FontSizes::BIG_TEXT);
     text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::FloatRect textBounds = text.getLocalBounds();
     text.setOrigin({ textBounds.position.x + textBounds.size.x / 2.0f, textBounds.position.y + textBounds.size.y / 2.0f });
-    text.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f });
+    text.setPosition(UIHelpers::snapToGrid({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f }));
     renderer.draw(text);
 }
 

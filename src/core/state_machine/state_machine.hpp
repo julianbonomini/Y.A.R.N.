@@ -28,6 +28,12 @@ struct MarketConfigFile {
     int defaultRefreshIntervalInMinutes;
 };
 
+enum class WeatherCities { AMSTERDAM, BUENOS_AIRES, LONDON };
+struct WeatherConfigFile {
+    int defaultRefreshIntervalInMinutes;
+    WeatherCities city;
+};
+
 class StateMachine {
 public:
     StateMachine(int default_tab);
@@ -42,17 +48,20 @@ public:
 
     MarketConfigFile &getMarketConfig();
 
+    WeatherConfigFile &getWeatherConfig();
+
     bool healOsConfig();
 
     bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
 
-    bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions>& configOptions);
+    bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &configOptions);
 
 private:
     int activeTab;
     OsConfigFile osConfigFile;
     PomodoroConfigFile pomodoroConfigFile;
     MarketConfigFile marketConfigFile;
+    WeatherConfigFile weatherConfigFile;
 
     bool loadOsConfigFromDisk();
 

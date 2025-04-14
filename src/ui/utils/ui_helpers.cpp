@@ -1,4 +1,5 @@
 #include "ui_helpers.hpp"
+#include<sstream>
 
 #ifdef __linux__
 #include<cmath>
@@ -13,4 +14,10 @@ sf::FloatRect UIHelpers::snapToGrid(sf::FloatRect origin) {
 
 sf::Vector2f UIHelpers::snapToGrid(sf::Vector2f origin) {
     return{std::round(origin.x), std::round(origin.y)};
+}
+
+std::string UIHelpers::formatFloat(float value, int precision = 2) {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(precision) << value;
+    return oss.str();
 }
