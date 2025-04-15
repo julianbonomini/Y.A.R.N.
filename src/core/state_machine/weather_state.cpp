@@ -22,12 +22,17 @@ void WeatherState::updateFromJson(const nlohmann::json& json) {
 
         float humidity = json["main"].value("humidity", 0.0f);
         data_.humidity_pct = UIHelpers::formatFloat(humidity, 0) + "%";
+    } else {
+        data_.temperature = "!ERR";
     }
 
     if (json.contains("weather") && json["weather"].is_array() && !json["weather"].empty()) {
         const auto& weather = json["weather"][0];
         data_.weather_title = weather.value("main", "");
         data_.weather_description = weather.value("description", "");
+    } else {
+        data_.weather_title = "!ERR";
+        data_.weather_description = "!ERR";
     }
 
     if (json.contains("wind")) {
@@ -54,6 +59,8 @@ void WeatherState::updateFromJson(const nlohmann::json& json) {
         std::ostringstream oss;
         oss << std::put_time(tm, "%H:%M");
         data_.last_weather_update = oss.str();
+    } else {
+        data_.last_weather_update = "!ERR";
     }
 }
 
