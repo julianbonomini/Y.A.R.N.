@@ -10,9 +10,11 @@ struct WeatherData {
   std::string weather_title;         // e.g., "Rain"
   std::string weather_description;   // e.g., "moderate rain"
   std::string wind_speed_meters_per_second;
+  std::string wind_gust_meters_per_second;
   std::string last_weather_update;   // datetime string of weather update, not api call
   std::string cloudiness_pct;
   std::string rain_1h_mm;
+  std::string visibility_meters;
 };
 
 class WeatherState {

@@ -47,7 +47,7 @@ std::optional<nlohmann::json> Http::GET(
         }
     } else {
         std::cerr << "[HttpClient] Request failed or status != 200\n";
-        if (res) std::cerr << "Status: " << res->status << "\n";
+        if (res) std::cerr << "Response status: " << res->status << "\n";
         return std::nullopt;
     }
 }

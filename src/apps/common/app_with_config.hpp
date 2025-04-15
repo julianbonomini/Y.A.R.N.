@@ -50,6 +50,8 @@ protected:
     void closeWithUnsavedChanges();
 
     void saveAndClose(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &toBeSaved);
+
+    void handleSettingsInputs(const sf::Event::KeyPressed &keyPressed);
 };
 
 

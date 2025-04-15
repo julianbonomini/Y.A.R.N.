@@ -126,6 +126,7 @@ int main() {
     sf::Clock weatherClock;
     const sf::Time weatherInterval = sf::seconds(900); // TODO: get from config 15 mins
     nlohmann::json weatherData = OpenWeather::getWeather();
+    // nlohmann::json forecast = OpenWeather::getDailyForecast();
     weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 

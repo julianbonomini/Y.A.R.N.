@@ -261,3 +261,28 @@ void AppWithConfig::saveAndClose(AppConfigTypes appConfigType, const std::vector
     setSettingsOpen(false);
     setHasOpenModal(false);
 }
+
+void AppWithConfig::handleSettingsInputs(const sf::Event::KeyPressed &keyPressed) {
+    if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
+        moveDown();
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Right) {
+        changeOptionRight();
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Left) {
+        changeOptionLeft();
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Up) {
+        moveUp();
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Escape && unsavedChangesFlag) {
+        closeWithUnsavedChanges();
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::Escape && !unsavedChangesFlag) {
+        closeWithoutChanges();
+    }
+    if (keyPressed.scancode == sf::Keyboard::Scan::C && !unsavedChangesFlag) {
+        closeWithoutChanges();
+    }
+
+}

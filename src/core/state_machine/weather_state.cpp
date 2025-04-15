@@ -38,11 +38,19 @@ void WeatherState::updateFromJson(const nlohmann::json& json) {
     if (json.contains("wind")) {
         float wind_speed = json["wind"].value("speed", 0.0f);
         data_.wind_speed_meters_per_second = UIHelpers::formatFloat(wind_speed, 1) + "m/s";
+
+        float wind_gust = json["wind"].value("gust", 0.0f);
+        data_.wind_gust_meters_per_second = UIHelpers::formatFloat(wind_gust, 1) + "m/s";
     }
 
     if (json.contains("clouds")) {
         float clouds = json["clouds"].value("all", 0.0f);
         data_.cloudiness_pct = UIHelpers::formatFloat(clouds, 1) + "%";
+    }
+
+    if (json.contains("visibility")) {
+        float visibility = json["visibility"].get<float>();
+        data_.visibility_meters = UIHelpers::formatFloat(visibility, 0) + "m";
     }
 
     if (json.contains("rain") && json["rain"].contains("1h")) {
