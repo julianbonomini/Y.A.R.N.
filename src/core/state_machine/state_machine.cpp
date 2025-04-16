@@ -16,6 +16,7 @@ StateMachine::StateMachine(int default_tab)
     Logger::info("STATE_MACHINE", "Loading APPs config...");
     loadPomodoroAppConfigFromDisk();
     loadMarketAppConfigFromDisk();
+    loadWeatherAppConfigFromDisk();
 }
 
 int StateMachine::getActiveTab() const {
@@ -36,6 +37,10 @@ PomodoroConfigFile &StateMachine::getPomodoroConfig() {
 
 MarketConfigFile &StateMachine::getMarketConfig() {
     return marketConfigFile;
+}
+
+WeatherConfigFile &StateMachine::getWeatherConfig() {
+    return weatherConfigFile;
 }
 
 bool StateMachine::healOsConfig() {
@@ -152,12 +157,10 @@ bool StateMachine::saveAppConfigToDisk(const AppConfigTypes appConfigType, const
             return savePomodoroConfigToDisk(configOptions);
         }
         case AppConfigTypes::MARKET: {
-            std::cout << "MARKET app config not implemented" << std::endl;
-            return true;
+            return saveMarketConfigToDisk(configOptions);
         }
         case AppConfigTypes::WEATHER: {
-            std::cout << "WEATHER app config not implemented" << std::endl;
-            return true;
+            return saveWeatherConfigToDisk(configOptions);
         }
     }
 }
@@ -237,6 +240,48 @@ bool StateMachine::saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &
         j[option.label] = option.currentValue;
         if (option.label == "refresh_interval") {
             marketConfigFile.defaultRefreshIntervalInMinutes = std::stoi(option.currentValue);
+        }
+    }
+
+    file << j.dump(4); // Pretty-print with indentation
+    return true;
+}
+
+bool StateMachine::loadWeatherAppConfigFromDisk() {
+    Logger::info("STATE_MACHINE", "Loading Weather App config...");
+    std::ifstream file(ExecuteUtils::getResourcePath("assets/config/weather_config.json"));
+    if (!file.is_open()) {
+        Logger::error("STATE_MACHINE", "Could not load Weather App config...");
+        return -1;
+    }
+
+    json j;
+    try {
+        file >> j;
+        std::string refreshIntervalMinutes = j["refresh_interval_minutes"];
+        std::string city = j["city"];
+        weatherConfigFile.refreshIntervalInMinutes = std::stoi(refreshIntervalMinutes);
+        weatherConfigFile.city = city;
+    } catch (...) {
+        return -1;
+    }
+
+    return 1;
+}
+
+bool StateMachine::saveWeatherConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions) {
+    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/pomodoro_config.json"));
+    if (!file.is_open()) {
+        return false;
+    }
+    json j;
+
+    for (const auto &option: baseConfigOptions) {
+        j[option.label] = option.currentValue;
+        if (option.label == "refresh_interval_minutes") {
+            weatherConfigFile.refreshIntervalInMinutes = std::stoi(option.currentValue);
+        } else if (option.label == "city") {
+            weatherConfigFile.city = option.currentValue;
         }
     }
 

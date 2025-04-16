@@ -28,10 +28,9 @@ struct MarketConfigFile {
     int defaultRefreshIntervalInMinutes;
 };
 
-enum class WeatherCities { AMSTERDAM, BUENOS_AIRES, LONDON };
 struct WeatherConfigFile {
-    int defaultRefreshIntervalInMinutes;
-    WeatherCities city;
+    int refreshIntervalInMinutes;
+    std::string city;
 };
 
 class StateMachine {
@@ -74,6 +73,10 @@ private:
     bool loadMarketAppConfigFromDisk();
 
     bool saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
+
+    bool loadWeatherAppConfigFromDisk();
+
+    bool saveWeatherConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
 };
 
 #endif // STATE_MACHINE_HPP

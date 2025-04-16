@@ -1,6 +1,7 @@
 #include "weather_app.hpp"
 
 #include "openweather.hpp"
+#include "../../core/http/httplib.h"
 #include "../../ui/themes/theme_manager.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
@@ -10,11 +11,10 @@ WeatherApp::WeatherApp(const std::string &appName, sf::RenderTarget &renderer, c
     initConfigFromDisk();
 }
 
-
 void WeatherApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::R) {
         Logger::info("MANUAL_REFRESH");
-        nlohmann::json weatherData = OpenWeather::getWeather();
+        nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
         weatherState.updateFromJson(weatherData);
         Logger::done_separator();
     }
@@ -22,7 +22,11 @@ void WeatherApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (settingsOpen) {
         handleSettingsInputs(keyPressed);
         if (keyPressed.scancode == sf::Keyboard::Scan::Enter) {
-            // saveAndClose();
+            saveAndClose(AppConfigTypes::WEATHER, configOptions);
+            Logger::info("REFRESH after config save");
+            nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
+            weatherState.updateFromJson(weatherData);
+            Logger::done_separator();
         }
     }
 }
@@ -74,7 +78,9 @@ void WeatherApp::drawOverview() {
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
-    sf::Text title(font, "TEMPERATURE_AMSTERDAM");
+    std::stringstream tempTitle;
+    tempTitle << "TEMPERATURE_" << UIHelpers::underscoreSeparator(stateMachine.getWeatherConfig().city);
+    sf::Text title(font, tempTitle.str());
     title.setCharacterSize(FontSizes::TITLE);
     title.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     title.setPosition({box.position.x + Layout::PADDING, box.position.y + Layout::PADDING});
@@ -271,14 +277,24 @@ void WeatherApp::drawDetails() {
 void WeatherApp::initConfigFromDisk() {
     configOptions = std::vector<BaseConfigOptions>();
 
-    BaseConfigOptions asd;
-    asd.label = "default";
-    asd.type = BaseConfigOptionType::FREE_NUMBER;
-    asd.options = {};
-    asd.currentValue = "9";
-    asd.selected = false;
-    asd.changed = false;
-    asd.description = "This is a default test config without any effect.";
-    configOptions.push_back(asd);
+    BaseConfigOptions refreshInterval;
+    refreshInterval.label = "refresh_interval_minutes";
+    refreshInterval.type = BaseConfigOptionType::FREE_NUMBER;
+    refreshInterval.options = {};
+    refreshInterval.currentValue = std::to_string(stateMachine.getWeatherConfig().refreshIntervalInMinutes);
+    refreshInterval.selected = false;
+    refreshInterval.changed = false;
+    refreshInterval.description = "The default amount of time new weather data will be fetch. This doens't mean the data will be updated, that depends on how often the weather service updates its data.";
+    configOptions.push_back(refreshInterval);
+
+    BaseConfigOptions city;
+    city.label = "city";
+    city.type = BaseConfigOptionType::CYCLE;
+    city.options = {"AMSTERDAM", "LONDON", "BUENOS AIRES"};
+    city.currentValue = stateMachine.getWeatherConfig().city;
+    city.selected = false;
+    city.changed = false;
+    city.description = "The city for which to fetch the weather";
+    configOptions.push_back(city);
 
 }

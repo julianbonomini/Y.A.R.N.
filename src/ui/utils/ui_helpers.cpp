@@ -21,3 +21,8 @@ std::string UIHelpers::formatFloat(float value, int precision = 2) {
     oss << std::fixed << std::setprecision(precision) << value;
     return oss.str();
 }
+
+std::string UIHelpers::underscoreSeparator(std::string original) {
+    std::replace(original.begin(), original.end(), ' ', '_');
+    return original;
+}

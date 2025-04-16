@@ -249,7 +249,7 @@ void PomodoroApp::initConfigFromDisk() {
     defaultWorkTimeInSeconds.label = "default_work_time";
     defaultWorkTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;;
     defaultWorkTimeInSeconds.options = {};
-    int workTimeInMinutes = stateMachine.getPomodoroConfig().defaultWorkTimeInMinutes;\
+    int workTimeInMinutes = stateMachine.getPomodoroConfig().defaultWorkTimeInMinutes;
     defaultWorkTimeInSeconds.currentValue = std::to_string(workTimeInMinutes);
     defaultWorkTimeInSeconds.selected = false;
     defaultWorkTimeInSeconds.changed = false;

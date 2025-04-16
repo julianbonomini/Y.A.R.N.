@@ -122,10 +122,10 @@ int main() {
     Logger::done_separator();
 
 
-    Logger::info("Getting weather...");
+    Logger::info("Getting weather with refresh interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes);
     sf::Clock weatherClock;
-    const sf::Time weatherInterval = sf::seconds(900); // TODO: get from config 15 mins
-    nlohmann::json weatherData = OpenWeather::getWeather();
+    const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
+    nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
     // nlohmann::json forecast = OpenWeather::getDailyForecast();
     weatherState.updateFromJson(weatherData);
     Logger::done_separator();
@@ -232,7 +232,7 @@ int main() {
         // Fetch and update weather
         if (weatherClock.getElapsedTime() >= weatherInterval) {
             Logger::info("Updating weather ...");
-            nlohmann::json weatherData = OpenWeather::getWeather();
+            nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
             weatherState.updateFromJson(weatherData);
             weatherClock.restart();
             Logger::done_separator();
