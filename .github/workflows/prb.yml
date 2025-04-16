@@ -12,7 +12,8 @@ jobs:
       matrix:
         # Only for public repos, ubuntu-24.04-arm is not yet supported in private repos
         # os: [macos-latest, ubuntu-latest, ubuntu-24.04-arm]
-        os: [ macos-latest, ubuntu-latest ]
+        # macOS is too expensive, and I can validate locally
+        os: [ ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
 
