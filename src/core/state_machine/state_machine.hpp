@@ -2,6 +2,7 @@
 #define STATE_MACHINE_HPP
 #include <vector>
 #include "../../apps/common/BaseConfigOptions.hpp"
+#include <unordered_map>
 
 enum class AppConfigTypes {
     POMODORO,
