@@ -93,7 +93,9 @@ void WeatherApp::drawOverview() {
     temperature.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f - temperatureBounds.size.y });
     renderer.draw(temperature);
 
-    sf::Text feelsLike(font, weatherState.getWeatherData().feels_like);
+    std::stringstream feelsLikeStm;
+    feelsLikeStm << "FEELS_LIKE: " << weatherState.getWeatherData().feels_like;
+    sf::Text feelsLike(font, feelsLikeStm.str());
     feelsLike.setCharacterSize(FontSizes::BIG_TEXT);
     feelsLike.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::FloatRect feelsLikeBounds = feelsLike.getLocalBounds();

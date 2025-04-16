@@ -80,11 +80,11 @@ jobs:
           cp .config "${{ env.BUILD_NAME }}.app/Contents/Resources"
           
           # Removing quarantine flag
-          xattr -cr "${{ env.APP_NAME }}.app"
+          xattr -cr "${{ env.BUILD_NAME }}.app"
           echo "Zipping..."
-          zip -r ${{ env.MACOS_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}_macos.zip "${{ env.APP_NAME }}.app"
+          zip -r ${{ env.MACOS_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}_macos.zip "${{ env.BUILD_NAME }}.app"
           # Removing quarantine flag for zip
-          xattr -cr "${{ env.MACOS_RELEASE_DIR }}/${{ env.APP_NAME }}-${{ github.ref_name }}_macos.zip"
+          xattr -cr "${{ env.MACOS_RELEASE_DIR }}/${{ env.BUILD_NAME }}-${{ github.ref_name }}_macos.zip"
 
 
       - name: Package binary (Linux x86_64)
