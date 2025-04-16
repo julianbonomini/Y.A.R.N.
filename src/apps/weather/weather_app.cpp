@@ -54,7 +54,6 @@ void WeatherApp::handleSettings() {
 }
 
 void WeatherApp::draw() {
-
     drawOverview();
     drawExtraData();
     drawDetails();
@@ -101,15 +100,6 @@ void WeatherApp::drawOverview() {
     feelsLike.setOrigin({ feelsLikeBounds.position.x + feelsLikeBounds.size.x / 2.0f, feelsLikeBounds.position.y + feelsLikeBounds.size.y / 2.0f });
     feelsLike.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y / 2.0f + temperatureBounds.size.y });
     renderer.draw(feelsLike);
-
-    // sf::Text sunny(font, weatherState.getWeatherData().weather_title);
-    // sunny.setCharacterSize(FontSizes::HUGE_TEXT);
-    // sunny.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-    // sf::FloatRect sunnyBounds = sunny.getLocalBounds();
-    // sunny.setOrigin({ sunnyBounds.position.x + sunnyBounds.size.x / 2.0f, sunnyBounds.position.y + sunnyBounds.size.y / 2.0f });
-    // sunny.setPosition({ box.position.x + box.size.x / 2.0f, box.position.y + box.size.y - Layout::PADDING - sunnyBounds.size.y });
-    // renderer.draw(sunny);
-
 }
 
 void WeatherApp::drawLastUpdated() {

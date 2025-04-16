@@ -4,6 +4,8 @@
 #include<iostream>
 #include<sstream>
 
+#include "../core/env/config.hpp"
+
 class Logger {
 public:
     template<typename... Args>
@@ -31,6 +33,18 @@ public:
         oss << "!ERR: ";
         ((oss << args << " "), ...);
         std::cerr << oss.str() << std::endl;
+    }
+
+    template<typename... Args>
+    static void debug(Args&&... args) {
+        std::unordered_map<std::string, std::string> envConfig = EnvConfig::load_env_config();
+        std::string logLevel = envConfig["LOG_LEVEL"];
+        if (logLevel == "DEBUG") {
+            std::ostringstream oss;
+            oss << "DEBUG: ";
+            ((oss << args << " "), ...);
+            std::cerr << oss.str() << std::endl;
+        }
     }
 
     static void done_separator() {

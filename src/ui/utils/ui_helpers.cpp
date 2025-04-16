@@ -3,6 +3,7 @@
 
 #ifdef __linux__
 #include<cmath>
+#include <algorithm>
 #endif
 
 sf::FloatRect UIHelpers::snapToGrid(sf::FloatRect origin) {

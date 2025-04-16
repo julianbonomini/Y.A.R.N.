@@ -10,7 +10,7 @@
 class OpenWeather {
 public:
     static nlohmann::json getWeather(std::string city) {
-        std::string api_key = "e8409838ac1968c4c525799b5ac34da0";
+        std::string api_key = EnvConfig::load_env_config()["OPENWEATHER_API_KEY"];
         std::map<std::string, std::string> query_params = {
             {"q", city},
             {"appid", api_key}

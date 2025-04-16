@@ -35,7 +35,7 @@ struct WeatherConfigFile {
 
 class StateMachine {
 public:
-    StateMachine(int default_tab);
+    StateMachine(int default_tab, std::unordered_map<std::string, std::string> envConfig);
 
     int getActiveTab() const;
 
@@ -57,6 +57,7 @@ public:
 
 private:
     int activeTab;
+    std::unordered_map<std::string, std::string> envConfig;
     OsConfigFile osConfigFile;
     PomodoroConfigFile pomodoroConfigFile;
     MarketConfigFile marketConfigFile;

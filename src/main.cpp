@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 
 #include "apps/config/config_app.hpp"
-#include "core/network/network.hpp"
 #include "layout/toolbar/toolbar.hpp"
 #include "layout/footer/footer.hpp"
 #include "globals/ui_globals.hpp"
@@ -15,6 +14,7 @@
 #include "core/state_machine/state_machine.hpp"
 #include "ui/themes/theme_manager.hpp"
 #include "common/logger.hpp"
+#include "core/env/config.hpp"
 #include "core/execute/execute_utils.hpp"
 #include "core/http/http.hpp"
 
@@ -53,9 +53,13 @@ int main() {
     Logger::info("Booting...");
     Logger::done_separator();
 
+    Logger::info("Loading env config...");
+    std::unordered_map<std::string, std::string> envConfig = EnvConfig::load_env_config();
+    Logger::done_separator();
+
     // Create the StateMachine instance to manage app state.
     Logger::info("Initializing state machines from disk...");
-    StateMachine stateMachine(0);
+    StateMachine stateMachine(0, envConfig);
     OsConfigFile *os_config_file = &stateMachine.getOsConfig(); // by ref, don't copy
     OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
     WeatherState weatherState({});

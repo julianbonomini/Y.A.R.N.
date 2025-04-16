@@ -8,8 +8,8 @@
 
 using json = nlohmann::json;
 
-StateMachine::StateMachine(int default_tab)
-    : activeTab(default_tab) {
+StateMachine::StateMachine(int default_tab, std::unordered_map<std::string, std::string> envConfig)
+    : activeTab(default_tab), envConfig(envConfig) {
     // Load the config file on startup
     loadOsConfigFromDisk();
     setActiveTab(getOsConfig().defaultTab);
