@@ -270,7 +270,7 @@ bool StateMachine::loadWeatherAppConfigFromDisk() {
 }
 
 bool StateMachine::saveWeatherConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions) {
-    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/pomodoro_config.json"));
+    std::ofstream file(ExecuteUtils::getResourcePath("assets/config/weather_config.json"));
     if (!file.is_open()) {
         return false;
     }
