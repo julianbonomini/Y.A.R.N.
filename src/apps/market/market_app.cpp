@@ -20,27 +20,7 @@ void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
         marketOpen = !marketOpen;
     }
     if (settingsOpen) {
-        if (keyPressed.scancode == sf::Keyboard::Scan::Down) {
-            moveDown();
-        }
-        if (keyPressed.scancode == sf::Keyboard::Scan::Right) {
-            changeOptionRight();
-        }
-        if (keyPressed.scancode == sf::Keyboard::Scan::Left) {
-            changeOptionLeft();
-        }
-        if (keyPressed.scancode == sf::Keyboard::Scan::Up) {
-            moveUp();
-        }
-        if (keyPressed.scancode == sf::Keyboard::Scan::Escape && unsavedChangesFlag) {
-            closeWithUnsavedChanges();
-        }
-        if (keyPressed.scancode == sf::Keyboard::Scan::Escape && !unsavedChangesFlag) {
-            closeWithoutChanges();
-        }
-        if (keyPressed.scancode == sf::Keyboard::Scan::C && !unsavedChangesFlag) {
-            closeWithoutChanges();
-        }
+        handleSettingsInputs(keyPressed);
         if (keyPressed.scancode == sf::Keyboard::Scan::Enter) {
             saveAndClose(AppConfigTypes::MARKET, configOptions);
         }

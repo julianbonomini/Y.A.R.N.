@@ -42,6 +42,25 @@ std::string ExecuteUtils::getResourcePath(const std::string& relativePath) {
     return relativePath; // In other environments, assume relative to the executable
 }
 
+std::string ExecuteUtils::getEnvConfPath(const std::string& relativePath) {
+#ifdef __APPLE__
+    char path[PATH_MAX];
+    uint32_t size = sizeof(path);
+    if (_NSGetExecutablePath(path, &size) == 0) {
+        std::filesystem::path executablePath = std::filesystem::canonical(path);
+        if (executablePath.string().find(".app/Contents/MacOS/") != std::string::npos) {
+            // Running as a bundled .app
+            return (executablePath.parent_path().parent_path() / "Resources" / relativePath).string();
+        } else {
+            // Running directly (e.g., via make run)
+            return relativePath;
+        }
+    }
+    // Fallback if we can't get the executable path (shouldn't happen in a bundle)
+#endif
+    return relativePath; // In other environments, assume relative to the executable
+}
+
 std::string ExecuteUtils::execCommand(const std::string &cmd) {
     std::array<char, 128> buffer; {
     };

@@ -2,6 +2,7 @@
 #define STATE_MACHINE_HPP
 #include <vector>
 #include "../../apps/common/BaseConfigOptions.hpp"
+#include <unordered_map>
 
 enum class AppConfigTypes {
     POMODORO,
@@ -28,9 +29,14 @@ struct MarketConfigFile {
     int defaultRefreshIntervalInMinutes;
 };
 
+struct WeatherConfigFile {
+    int refreshIntervalInMinutes;
+    std::string city;
+};
+
 class StateMachine {
 public:
-    StateMachine(int default_tab);
+    StateMachine(int default_tab, std::unordered_map<std::string, std::string> envConfig);
 
     int getActiveTab() const;
 
@@ -42,17 +48,21 @@ public:
 
     MarketConfigFile &getMarketConfig();
 
+    WeatherConfigFile &getWeatherConfig();
+
     bool healOsConfig();
 
     bool saveOsConfigToDisk(const std::vector<BaseConfigOptions> &configOptions);
 
-    bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions>& configOptions);
+    bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &configOptions);
 
 private:
     int activeTab;
+    std::unordered_map<std::string, std::string> envConfig;
     OsConfigFile osConfigFile;
     PomodoroConfigFile pomodoroConfigFile;
     MarketConfigFile marketConfigFile;
+    WeatherConfigFile weatherConfigFile;
 
     bool loadOsConfigFromDisk();
 
@@ -65,6 +75,10 @@ private:
     bool loadMarketAppConfigFromDisk();
 
     bool saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
+
+    bool loadWeatherAppConfigFromDisk();
+
+    bool saveWeatherConfigToDisk(const std::vector<BaseConfigOptions> &baseConfigOptions);
 };
 
 #endif // STATE_MACHINE_HPP

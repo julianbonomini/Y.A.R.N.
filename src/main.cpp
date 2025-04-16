@@ -2,19 +2,21 @@
 #include <SFML/Graphics.hpp>
 
 #include "apps/config/config_app.hpp"
-#include "core/network/network.hpp"
 #include "layout/toolbar/toolbar.hpp"
 #include "layout/footer/footer.hpp"
 #include "globals/ui_globals.hpp"
 #include "apps/info/info_app.hpp"
 #include "apps/market/market_app.hpp"
 #include "apps/pomodoro/pomodoro_app.hpp"
+#include "apps/weather/openweather.hpp"
 #include "apps/weather/weather_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
 #include "ui/themes/theme_manager.hpp"
 #include "common/logger.hpp"
+#include "core/env/config.hpp"
 #include "core/execute/execute_utils.hpp"
+#include "core/http/http.hpp"
 
 void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTexture &renderTexture, sf::Sprite &shaderSprite, sf::Shader &crtShader, bool &shownSplash) {
     renderTexture.clear(sf::Color(50, 50, 50));
@@ -51,11 +53,16 @@ int main() {
     Logger::info("Booting...");
     Logger::done_separator();
 
+    Logger::info("Loading env config...");
+    std::unordered_map<std::string, std::string> envConfig = EnvConfig::load_env_config();
+    Logger::done_separator();
+
     // Create the StateMachine instance to manage app state.
-    Logger::info("Initializing state machine from disk...");
-    StateMachine stateMachine(0);
+    Logger::info("Initializing state machines from disk...");
+    StateMachine stateMachine(0, envConfig);
     OsConfigFile *os_config_file = &stateMachine.getOsConfig(); // by ref, don't copy
     OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
+    WeatherState weatherState({});
     Logger::done_separator();
 
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Y.A.R.N",
@@ -112,10 +119,19 @@ int main() {
     // These are ordered.
     apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
     apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine));
-    apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
     apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
     apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine, apps.size() + 1));
     Logger::info("Apps booted successfully...");
+    Logger::done_separator();
+
+
+    Logger::info("Getting weather with refresh interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes);
+    sf::Clock weatherClock;
+    const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
+    nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
+    // nlohmann::json forecast = OpenWeather::getDailyForecast();
+    weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 
     bool shownSplash = false;
@@ -214,6 +230,16 @@ int main() {
             Logger::info("Changing theme to", os_config_file->theme, "...");
             ThemeManager::instance().setTheme(os_config_file->theme);
             loadedTheme = os_config_file->theme;
+        }
+
+
+        // Fetch and update weather
+        if (weatherClock.getElapsedTime() >= weatherInterval) {
+            Logger::info("Updating weather ...");
+            nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
+            weatherState.updateFromJson(weatherData);
+            weatherClock.restart();
+            Logger::done_separator();
         }
 
         // Clear screen with base color

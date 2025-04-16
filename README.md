@@ -7,35 +7,67 @@
 - Raspberry Pi 4
 - E-Ink Paper display 800x460
 
-## Setup
+## Local Setup
+
+If you decide you want to checkout the code, build it and run it, the please do the following:
 
 ### MacOS
-- Install SFML with Homebrew:
+#### Install dependencies, you'll need brew
 ```bash
-brew install sfml
-brew install nlohmann-json
+./scripts/macos/install-dependencies.sh
 ```
-
-### Linux based
-```bash
-./scripts/ubuntu/install_dependencies.sh
-```
-Should install all needed packages to clone and install SFML 3.0.
-
-## Build macOS
+#### Build macOS
 ```bash
 make macos
 ```
+#### Config file
+```bash
+touch .config
+echo "OPENWEATHER_API_KEY=[YOUR_KEY]" >> .config
+echo "LOG_LEVEL=[INFO|DEBUG]" >> .config
+```
 
-## Run the executable:
+### Run
+#### Run the executable with make
+```bash
+make run
+```
+Better for development, but quite bad if you just want to run the app
+
+#### Run from .app bundle
+This is the better option, since you can move the .app bundle to your Applications folder and use it as any other app.
+But before moving it you have to copy the config into the .app bundle:
+```bash
+cp .config "YARN.app/Contents/Resources"
+```
+Now you can double-click the .app bundle anywhere and it should work
+
+
+### Linux
+
+#### Install dependencies
+```bash
+./scripts/linux/install-dependencies.sh
+```
+#### Build macOS
+```bash
+make linux
+```
+#### Config file
+```bash
+touch .config
+echo "OPENWEATHER_API_KEY=[YOUR_KEY]" >> .config
+echo "LOG_LEVEL=[INFO|DEBUG]" >> .config
+```
+
+### Run
+#### Run the executable with make
 ```bash
 make run
 ```
 
-## Make clean
-```bash
-make clean
-```
+#### Run with package
+// TODO
 
 ## Release
 

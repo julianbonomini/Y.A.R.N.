@@ -17,7 +17,7 @@ ifeq ($(shell uname), Darwin)
   MACOS_MACOS_DIR = $(MACOS_CONTENTS_DIR)/MacOS
   MACOS_RESOURCES_DIR = $(MACOS_CONTENTS_DIR)/Resources
   LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
-  LDFLAGS += -L/opt/homebrew/lib
+  LDFLAGS += -L/opt/homebrew/lib -lssl -lcrypto
   CXXFLAGS += -I/opt/homebrew/include
 else
   # Linux-specific settings
@@ -32,6 +32,7 @@ else
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
   LDFLAGS += -lX11 -lXrandr -lXcursor -lXrender -lXfixes -lXinerama -lXext -lXi
   LDFLAGS += -ludev -lGL -lpthread -ldl
+  LDFLAGS += -lssl -lcrypto
 
   # Static linking for standard C++ runtime
   LDFLAGS += -static-libgcc -static-libstdc++

@@ -10,6 +10,10 @@ class UIHelpers {
     static sf::FloatRect snapToGrid(sf::FloatRect origin);
 
     static sf::Vector2f snapToGrid(sf::Vector2f origin);
+
+    static std::string formatFloat(float value, int precision);
+
+    static std::string underscoreSeparator(std::string original);
 };
 
 

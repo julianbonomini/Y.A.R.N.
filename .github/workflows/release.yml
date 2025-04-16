@@ -29,6 +29,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Create .config file dynamically
+      - name: Create .config file from secrets
+        run: |
+          echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" > .config
+          echo "LOG_LEVEL=INFO" >> .config
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+
       # Dependencies
       - name: Set up dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
@@ -64,11 +73,17 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           mkdir -p ${{ env.MACOS_RELEASE_DIR }}
-          # Removing quarentine flag"
+          
+          # Create the Resources folder inside the .app bundle in case doens't exist
+          mkdir -p "${{ env.BUILD_NAME }}.app/Contents/Resources"
+          # Copy the .config file to the Resources folder
+          cp .config "${{ env.BUILD_NAME }}.app/Contents/Resources"
+          
+          # Removing quarantine flag
           xattr -cr "${{ env.APP_NAME }}.app"
           echo "Zipping..."
           zip -r ${{ env.MACOS_RELEASE_DIR }}/${{ env.TARGET_NAME }}-${{ github.ref_name }}_macos.zip "${{ env.APP_NAME }}.app"
-          # Removing quarentine flag for zip
+          # Removing quarantine flag for zip
           xattr -cr "${{ env.MACOS_RELEASE_DIR }}/${{ env.APP_NAME }}-${{ github.ref_name }}_macos.zip"
 
 

@@ -79,7 +79,7 @@ protected:
 
     const sf::Vector2f TOP_LEFT_MODAL_ANCHOR = sf::Vector2f((Layout::WINDOW_WIDTH - Layout::MODAL_WIDTH) / 2, Layout::TOOLBAR_HEIGHT + LineStyles::LINE_THICKNESS);
 
-    void drawModalRectangle(std::string modalTitle);
+    sf::FloatRect drawModalRectangle(std::string modalTitle);
 
     std::string wrapText(const std::string &text, float maxWidth, unsigned int characterSize);
 

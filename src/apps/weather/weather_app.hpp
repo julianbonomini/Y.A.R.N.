@@ -4,11 +4,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#include "../../core/state_machine/weather_state.hpp"
 #include "../common/app_with_config.hpp"
 
 class WeatherApp : public AppWithConfig {
 public:
-    WeatherApp(const std::string &appName, sf::RenderTarget &render, const sf::Font &font, StateMachine &stateMachine);
+    WeatherApp(
+        const std::string &appName,
+        sf::RenderTarget &render,
+        const sf::Font &font,
+        StateMachine &stateMachine,
+        WeatherState &weatherState
+    );
 
     void draw() override;
 
@@ -21,11 +28,13 @@ public:
     void initConfigFromDisk() override;
 
 private:
+    WeatherState &weatherState;
+
     void drawOverview();
 
     void drawLastUpdated();
 
-    void drawHighLows();
+    void drawExtraData();
 
     void drawSensorData();
 
