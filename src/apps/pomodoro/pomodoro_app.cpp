@@ -8,13 +8,14 @@
 #include "../../ui/themes/theme_manager.hpp"
 #include "../../ui/utils/ui_helpers.hpp"
 
-PomodoroApp::PomodoroApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
-    : AppWithConfig(appName, renderer, font, stateMachine) {
+PomodoroApp::PomodoroApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, PomodoroState &pomodoroState)
+    : AppWithConfig(appName, renderer, font, stateMachine), pomodoro_state_(pomodoroState) {
     initConfigFromDisk();
 }
 
 void PomodoroApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
     if (keyPressed.scancode == sf::Keyboard::Scan::Space) {
+        Logger::debug(appName, "Starting or pausing pomodoro clock");
         startPauseTimer();
     }
 
@@ -37,10 +38,10 @@ void PomodoroApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
         }
         if (keyPressed.scancode == sf::Keyboard::Scan::Escape && unsavedChangesFlag) {
             closeWithUnsavedChanges();
-            isSessionRunning = false;
-            isWorkTime = true;
-            timerClock.restart();
-            remainingTime = workTimeInSeconds;
+            pomodoro_state_.setIsSessionRunning(false);
+            pomodoro_state_.setIsWorkTime(true);
+            pomodoro_state_.restartTimerClock();
+            pomodoro_state_.setRemainingTime(pomodoro_state_.getWorkTimeInSeconds());
         }
         if (keyPressed.scancode == sf::Keyboard::Scan::Escape && !unsavedChangesFlag) {
             closeWithoutChanges();
@@ -49,11 +50,11 @@ void PomodoroApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
             closeWithoutChanges();
         }
         if (keyPressed.scancode == sf::Keyboard::Scan::Enter) {
-            isSessionRunning = false;
-            isWorkTime = true;
-            timerClock.restart();
+            pomodoro_state_.setIsSessionRunning(false);
+            pomodoro_state_.setIsWorkTime(true);
+            pomodoro_state_.restartTimerClock();
             saveAndClose(AppConfigTypes::POMODORO, configOptions);
-            remainingTime = workTimeInSeconds;
+            pomodoro_state_.setRemainingTime(pomodoro_state_.getWorkTimeInSeconds());
         }
     }
 }
@@ -69,56 +70,25 @@ void PomodoroApp::handleSettings() {
     drawAppConfigOptions(settingsBoxGlobalBounds);
 }
 
-void PomodoroApp::updateClock() {
-    if (isSessionRunning) {
-        sf::Time now = timerClock.getElapsedTime();
-        sf::Time delta = now - lastUpdate;
-
-        // Track elapsed time to update remainingTime only once per second
-        static sf::Time elapsedSinceLastUpdate = sf::Time::Zero;
-        elapsedSinceLastUpdate += delta;
-
-        if (elapsedSinceLastUpdate >= sf::seconds(1.0f)) {
-            // Update remaining time once per second
-            remainingTime -= sf::seconds(1.0f); // Subtract 1 second from remaining time
-            elapsedSinceLastUpdate = sf::Time::Zero; // Reset elapsed time tracker
-
-            if (remainingTime <= sf::Time::Zero) {
-                isWorkTime = !isWorkTime; // Switch between work/break modes
-                remainingTime = isWorkTime ? workTimeInSeconds : playTimeInSeconds;
-                // Avoid restarting the timer here if it's already running
-            }
-        }
-
-        // Make sure lastUpdate is updated after we've processed time.
-        lastUpdate = now;
-    }
-}
-
 void PomodoroApp::startPauseTimer() {
-    if (!isSessionRunning) {
-        isSessionRunning = true;
-        timerClock.restart();
-        timerClock.start();
+    if (!pomodoro_state_.getIsSessionRunning()) {
+        pomodoro_state_.setIsSessionRunning(true);
+        pomodoro_state_.restartTimerClock();
+        pomodoro_state_.startTimerClock();
         return;
     }
-    if (timerClock.isRunning()) {
-        timerClock.stop();
-    } else {
-        timerClock.start();
-    }
+    pomodoro_state_.startOrPauseClock();
 }
 
 void PomodoroApp::resetSession() {
-    isSessionRunning = false;
-    timerClock.restart();
-    lastUpdate = sf::Time::Zero;
-    remainingTime = workTimeInSeconds;
-    isWorkTime = true;
+    pomodoro_state_.setIsSessionRunning(false);
+    pomodoro_state_.restartTimerClock();
+    pomodoro_state_.setLastUpdate(sf::Time::Zero);
+    pomodoro_state_.setRemainingTime(pomodoro_state_.getWorkTimeInSeconds());
+    pomodoro_state_.setIsWorkTime(true);
 }
 
 void PomodoroApp::draw() {
-    updateClock(); // Update the clock here to reflect changes
     drawWorkClock();
     drawPlayClock();
     drawControls();
@@ -182,27 +152,27 @@ void PomodoroApp::drawWorkClock() {
     auto box = getGridBox(0, 0, 2, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
-    rect.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
+    rect.setFillColor(pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
     rect.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
     std::stringstream counterStream;
-    sf::Time timeLeft = isSessionRunning && isWorkTime ? remainingTime : workTimeInSeconds;
+    sf::Time timeLeft = pomodoro_state_.getIsSessionRunning() && pomodoro_state_.getIsWorkTime() ? pomodoro_state_.getRemainingTime() : pomodoro_state_.getWorkTimeInSeconds();
     int mins = static_cast<int>(timeLeft.asSeconds()) / 60;
     int secs = static_cast<int>(timeLeft.asSeconds()) % 60;
     counterStream << std::setfill('0') << std::setw(2) << mins << ":" << std::setw(2) << secs;
 
 
     sf::Text label(font, "WORK TIMER");
-    label.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
+    label.setFillColor(pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     label.setCharacterSize(FontSizes::LABEL);
     sf::Vector2f labelPos = UIHelpers::snapToGrid({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     label.setPosition(labelPos);
     renderer.draw(label);
 
     sf::Text counter(font, counterStream.str());
-    counter.setFillColor(isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
+    counter.setFillColor(pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     counter.setCharacterSize(FontSizes::HUGE_TEXT);
     sf::FloatRect counterBounds = counter.getLocalBounds();
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
@@ -215,25 +185,25 @@ void PomodoroApp::drawPlayClock() {
     auto box = getGridBox(3, 0, 2, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
-    rect.setFillColor(!isWorkTime ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
+    rect.setFillColor(!pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
     rect.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     rect.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(rect);
 
     std::stringstream counterStream;
-    sf::Time timeLeft = isSessionRunning && !isWorkTime ? remainingTime : playTimeInSeconds;
+    sf::Time timeLeft = pomodoro_state_.getIsSessionRunning() && !pomodoro_state_.getIsWorkTime() ? pomodoro_state_.getRemainingTime() : pomodoro_state_.getPlayTimeInSeconds();
     int mins = static_cast<int>(timeLeft.asSeconds()) / 60;
     int secs = static_cast<int>(timeLeft.asSeconds()) % 60;
     counterStream << std::setfill('0') << std::setw(2) << mins << ":" << std::setw(2) << secs;
 
     sf::Text text(font, "BREAK TIMER");
-    text.setFillColor(!isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
+    text.setFillColor(!pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     text.setCharacterSize(FontSizes::LABEL);
     text.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     renderer.draw(text);
 
     sf::Text counter(font, counterStream.str());
-    counter.setFillColor(!isWorkTime ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
+    counter.setFillColor(!pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
     counter.setCharacterSize(50);
     sf::FloatRect counterBounds = counter.getLocalBounds();
     sf::Vector2f counterPos = UIHelpers::snapToGrid({counterBounds.position.x + counterBounds.size.x / 2, counterBounds.position.y + counterBounds.size.y / 2});
@@ -255,8 +225,8 @@ void PomodoroApp::initConfigFromDisk() {
     defaultWorkTimeInSeconds.changed = false;
     defaultWorkTimeInSeconds.description = "The amount of time you will be working. In minutes";
     configOptions.push_back(defaultWorkTimeInSeconds);
-    workTimeInSeconds = sf::seconds(workTimeInMinutes * 60);
-    remainingTime = workTimeInSeconds;
+    pomodoro_state_.setWorkTimeInSeconds(sf::seconds(workTimeInMinutes * 60));
+    pomodoro_state_.setRemainingTime(pomodoro_state_.getWorkTimeInSeconds());
 
     // Default Tab
     BaseConfigOptions defaultPlayTimeInSeconds;
@@ -269,5 +239,5 @@ void PomodoroApp::initConfigFromDisk() {
     defaultPlayTimeInSeconds.changed = false;
     defaultPlayTimeInSeconds.description = "The amount of time you will be on break. In minutes";
     configOptions.push_back(defaultPlayTimeInSeconds);
-    playTimeInSeconds = sf::seconds(playTimeInMinutes * 60);
+    pomodoro_state_.setPlayTimeInSeconds(sf::seconds(playTimeInMinutes * 60));
 }

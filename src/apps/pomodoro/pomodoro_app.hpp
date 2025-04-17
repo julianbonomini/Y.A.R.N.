@@ -5,11 +5,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#include "../../core/state_machine/pomodoro_state.hpp"
 #include "../common/app_with_config.hpp"
 
 class PomodoroApp : public AppWithConfig {
 public:
-    PomodoroApp(const std::string &appName, sf::RenderTarget &render, const sf::Font &font, StateMachine &stateMachine);
+    PomodoroApp(const std::string &appName, sf::RenderTarget &render, const sf::Font &font, StateMachine &stateMachine, PomodoroState &pomodoroState);
 
     void draw() override;
 
@@ -22,16 +23,7 @@ public:
     void initConfigFromDisk() override;
 
 private:
-    sf::Time workTimeInSeconds = sf::Time::Zero;
-    sf::Time playTimeInSeconds = sf::Time::Zero;
-    sf::Time lastUpdate = sf::Time::Zero;
-    sf::Time remainingTime = sf::Time::Zero;
-    sf::Clock timerClock;
-
-    bool isSessionRunning = false;
-    bool isWorkTime = true;
-
-    void updateClock();
+    PomodoroState &pomodoro_state_;
 
     void startPauseTimer();
 

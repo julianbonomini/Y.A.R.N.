@@ -17,6 +17,7 @@
 #include "core/env/config.hpp"
 #include "core/execute/execute_utils.hpp"
 #include "core/http/http.hpp"
+#include "core/state_machine/pomodoro_state.hpp"
 
 void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTexture &renderTexture, sf::Sprite &shaderSprite, sf::Shader &crtShader, bool &shownSplash) {
     renderTexture.clear(sf::Color(50, 50, 50));
@@ -49,6 +50,32 @@ void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTextur
     sf::sleep(sf::seconds(3));
 }
 
+void updatePomodoroClockIfRunning(PomodoroState &pomodoroState) {
+    if (pomodoroState.getIsSessionRunning()) {
+        sf::Time now = pomodoroState.getTimerClock().getElapsedTime();
+        sf::Time delta = now - pomodoroState.getLastUpdate();
+
+        // Track elapsed time to update remainingTime only once per second
+        static sf::Time elapsedSinceLastUpdate = sf::Time::Zero;
+        elapsedSinceLastUpdate += delta;
+
+        if (elapsedSinceLastUpdate >= sf::seconds(1.0f)) {
+            // Update remaining time once per second
+            pomodoroState.setRemainingTime(pomodoroState.getRemainingTime() - sf::seconds(1.0f)); // Subtract 1 second from remaining time
+            elapsedSinceLastUpdate = sf::Time::Zero; // Reset elapsed time tracker
+
+            if (pomodoroState.getRemainingTime() <= sf::Time::Zero) {
+                pomodoroState.switchIsWorkTime();
+                pomodoroState.setRemainingTime(pomodoroState.getIsWorkTime() ? pomodoroState.getWorkTimeInSeconds() : pomodoroState.getPlayTimeInSeconds());
+                // Avoid restarting the timer here if it's already running
+            }
+        }
+
+        // Make sure lastUpdate is updated after we've processed time.
+        pomodoroState.setLastUpdate(now);
+    }
+}
+
 int main() {
     Logger::info("Booting...");
     Logger::done_separator();
@@ -62,7 +89,11 @@ int main() {
     StateMachine stateMachine(0, envConfig);
     OsConfigFile *os_config_file = &stateMachine.getOsConfig(); // by ref, don't copy
     OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
+    Logger::done_separator();
+
+    Logger::info("Initializing app states...");
     WeatherState weatherState({});
+    PomodoroState pomodoroState;
     Logger::done_separator();
 
     auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Y.A.R.N",
@@ -118,7 +149,7 @@ int main() {
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered.
     apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
-    apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine));
+    apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
     apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
     apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
     apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine, apps.size() + 1));
@@ -241,6 +272,9 @@ int main() {
             weatherClock.restart();
             Logger::done_separator();
         }
+
+        // Update pomodoro clock if running
+        updatePomodoroClockIfRunning(pomodoroState);
 
         // Clear screen with base color
         renderTexture.clear(ThemeManager::instance().getCurrentTheme().background());
