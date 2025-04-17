@@ -54,11 +54,11 @@ bool StateMachine::healOsConfig() {
 
     j["refresh_rate_hz"] = "60";
     j["default_tab"] = "0";
-    j["shader_enabled"] = "0";
-    j["shader"] = "none";
+    j["shader_enabled"] = "1";
+    j["shader"] = "crt_monitor";
     j["flicker_enabled"] = "0";
     j["flicker_intensity"] = "10";
-    j["theme"] = "eink";
+    j["theme"] = "dark";
     j["cycle_tab_enabled"] = "0";
     j["cycle_tab_time"] = "120";
     file << j.dump(4); // Pretty-print with indentation
@@ -67,11 +67,11 @@ bool StateMachine::healOsConfig() {
 
     osConfigFile.refreshRate = 60;
     osConfigFile.defaultTab = 0;
-    osConfigFile.shaderEnabled = 0;
-    osConfigFile.shader = "none";
+    osConfigFile.shaderEnabled = 1;
+    osConfigFile.shader = "crt_monitor";
     osConfigFile.flickerEnabled = 0;
     osConfigFile.flickerIntensity = 10;
-    osConfigFile.theme = "eink";
+    osConfigFile.theme = "dark";
     osConfigFile.cycleTabsEnabled = false;
     osConfigFile.cycleTabTimeInSeconds = 120;
     Logger::info("STATE_MACHINE", "OS config obj was also updated...");
