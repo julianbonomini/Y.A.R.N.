@@ -181,7 +181,7 @@ void AppWithConfig::changeOptionRight() {
                 }
                 case BaseConfigOptionType::FREE_NUMBER: {
                     int currValueInt = std::stoi(option.currentValue);
-                    if (currValueInt >= 99) {
+                    if (currValueInt >= 999) {
                         break;
                     }
                     option.currentValue = std::to_string(currValueInt + 1);

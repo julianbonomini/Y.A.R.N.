@@ -1,7 +1,9 @@
 {
-    "default_tab": "1",
+    "cycle_tab_enabled": "0",
+    "cycle_tab_time": "90",
+    "default_tab": "4",
     "flicker_enabled": "1",
-    "flicker_intensity": "3",
+    "flicker_intensity": "10",
     "refresh_rate_hz": "60",
     "shader": "crt_monitor",
     "shader_enabled": "1",

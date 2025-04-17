@@ -159,9 +159,17 @@ int main() {
 
     Logger::info("Getting weather with refresh interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes);
     sf::Clock weatherClock;
+    weatherClock.start();
     const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
     nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
     // nlohmann::json forecast = OpenWeather::getDailyForecast();
+    weatherState.updateFromJson(weatherData);
+    Logger::done_separator();
+
+    Logger::info("Setting clock for tab cycling every...", stateMachine.getOsConfig().cycleTabTimeInSeconds);
+    sf::Clock tabCycleClock;
+    tabCycleClock.start();
+    const sf::Time tabCycleInterval = sf::seconds(stateMachine.getOsConfig().cycleTabTimeInSeconds);
     weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 
@@ -270,6 +278,16 @@ int main() {
             nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
             weatherState.updateFromJson(weatherData);
             weatherClock.restart();
+            Logger::done_separator();
+        }
+
+        // Cycle active tab if enabled
+        if (stateMachine.getOsConfig().cycleTabsEnabled && tabCycleClock.getElapsedTime() >= tabCycleInterval) {
+            Logger::info("Cycling active tab ...");
+            int activeTab = stateMachine.getActiveTab();
+            int newActiveTab = (stateMachine.getActiveTab() + 1 + apps.size()) % apps.size();
+            stateMachine.setActiveTab(newActiveTab);
+            tabCycleClock.restart();
             Logger::done_separator();
         }
 

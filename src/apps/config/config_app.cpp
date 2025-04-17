@@ -57,7 +57,7 @@ void ConfigApp::changeOptionRight() {
                 }
                 case BaseConfigOptionType::FREE_NUMBER: {
                     int currValueInt = std::stoi(option.currentValue);
-                    if (currValueInt >= 99) {
+                    if (currValueInt >= 999) {
                         break;
                     }
                     option.currentValue = std::to_string(currValueInt + 1);
@@ -416,6 +416,28 @@ void ConfigApp::initConfigFromDisk() {
     refreshRateOption.changed = false;
     refreshRateOption.description = "This will affect the responsiveness of the OS, both for rendering and event polling. This will also affect the duration of the flickers if flicker_enabled is true.";
     configOptions.push_back(refreshRateOption);
+
+
+    BaseConfigOptions cycleTabEnabled;
+    cycleTabEnabled.label = "cycle_tab_enabled";
+    cycleTabEnabled.type = BaseConfigOptionType::TOGGLE;;
+    cycleTabEnabled.options = {};
+    cycleTabEnabled.currentValue = std::to_string(stateMachine.getOsConfig().cycleTabsEnabled);
+    cycleTabEnabled.selected = false;
+    cycleTabEnabled.changed = false;
+    cycleTabEnabled.description = "Tab cycle is an option to automatically cycle between all Y.A.R.N. apps for an amount of time defined in cycle_tab_time";
+    configOptions.push_back(cycleTabEnabled);
+
+
+    BaseConfigOptions cycleTabTimeInSeconds;
+    cycleTabTimeInSeconds.label = "cycle_tab_time";
+    cycleTabTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;;
+    cycleTabTimeInSeconds.options = {};
+    cycleTabTimeInSeconds.currentValue = std::to_string(stateMachine.getOsConfig().cycleTabTimeInSeconds);
+    cycleTabTimeInSeconds.selected = false;
+    cycleTabTimeInSeconds.changed = false;
+    cycleTabTimeInSeconds.description = "The amount of seconds that will be spent on a tab. Only if cycle_tab_enabled is ON.";
+    configOptions.push_back(cycleTabTimeInSeconds);
 }
 
 void ConfigApp::saveConfigToDisk() {
