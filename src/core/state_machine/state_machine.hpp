@@ -18,6 +18,8 @@ struct OsConfigFile {
     std::string shader;
     bool flickerEnabled;
     int flickerIntensity;
+    bool cycleTabsEnabled;
+    int cycleTabTimeInSeconds;
 };
 
 struct PomodoroConfigFile {
