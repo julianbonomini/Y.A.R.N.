@@ -7,8 +7,10 @@
 namespace DisplayConfig {
     // constexpr int SCREEN_WIDTH = 800; // EPAPER
     // constexpr int SCREEN_HEIGHT = 480; // EPAPER
-    constexpr int SCREEN_WIDTH = 1024; // LCD
-    constexpr int SCREEN_HEIGHT = 600; // LCD
+    // constexpr int SCREEN_WIDTH = 1024; // LCD
+    // constexpr int SCREEN_HEIGHT = 600; // LCD
+    constexpr int SCREEN_WIDTH = 1024; // 4:3
+    constexpr int SCREEN_HEIGHT = 768; // 4:3
     // constexpr int SCREEN_WIDTH = 1920;
     // constexpr int SCREEN_HEIGHT = 1280;
 }

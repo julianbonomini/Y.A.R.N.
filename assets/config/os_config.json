@@ -3,7 +3,7 @@
     "cycle_tab_time": "90",
     "default_tab": "4",
     "flicker_enabled": "1",
-    "flicker_intensity": "10",
+    "flicker_intensity": "20",
     "refresh_rate_hz": "60",
     "shader": "crt_monitor",
     "shader_enabled": "1",
