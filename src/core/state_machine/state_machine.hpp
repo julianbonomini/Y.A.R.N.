@@ -23,8 +23,9 @@ struct OsConfigFile {
 };
 
 struct PomodoroConfigFile {
-    int defaultWorkTimeInMinutes;
-    int defaultPlayTimeInMinutes;
+    int workTimeInMinutes;
+    int playTimeInMinutes;
+    bool switchSound;
 };
 
 struct MarketConfigFile {

@@ -216,10 +216,10 @@ void PomodoroApp::initConfigFromDisk() {
     configOptions = std::vector<BaseConfigOptions>();
     // Refresh Rate
     BaseConfigOptions defaultWorkTimeInSeconds;
-    defaultWorkTimeInSeconds.label = "default_work_time";
+    defaultWorkTimeInSeconds.label = "work_time";
     defaultWorkTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;;
     defaultWorkTimeInSeconds.options = {};
-    int workTimeInMinutes = stateMachine.getPomodoroConfig().defaultWorkTimeInMinutes;
+    int workTimeInMinutes = stateMachine.getPomodoroConfig().workTimeInMinutes;
     defaultWorkTimeInSeconds.currentValue = std::to_string(workTimeInMinutes);
     defaultWorkTimeInSeconds.selected = false;
     defaultWorkTimeInSeconds.changed = false;
@@ -230,14 +230,24 @@ void PomodoroApp::initConfigFromDisk() {
 
     // Default Tab
     BaseConfigOptions defaultPlayTimeInSeconds;
-    defaultPlayTimeInSeconds.label = "default_play_time";
+    defaultPlayTimeInSeconds.label = "play_time";
     defaultPlayTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;
     defaultPlayTimeInSeconds.options = {};
-    int playTimeInMinutes = stateMachine.getPomodoroConfig().defaultPlayTimeInMinutes;
+    int playTimeInMinutes = stateMachine.getPomodoroConfig().playTimeInMinutes;
     defaultPlayTimeInSeconds.currentValue = std::to_string(playTimeInMinutes);
     defaultPlayTimeInSeconds.selected = false;
     defaultPlayTimeInSeconds.changed = false;
     defaultPlayTimeInSeconds.description = "The amount of time you will be on break. In minutes";
     configOptions.push_back(defaultPlayTimeInSeconds);
     pomodoro_state_.setPlayTimeInSeconds(sf::seconds(playTimeInMinutes * 60));
+
+    BaseConfigOptions switchSound;
+    switchSound.label = "switch_sound";
+    switchSound.type = BaseConfigOptionType::TOGGLE;
+    switchSound.options = {};
+    switchSound.currentValue = std::to_string(stateMachine.getPomodoroConfig().switchSound);
+    switchSound.selected = false;
+    switchSound.changed = false;
+    switchSound.description = "A tone will play every time the clock ends if enabled.";
+    configOptions.push_back(switchSound);
 }

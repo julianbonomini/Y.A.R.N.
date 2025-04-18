@@ -1,7 +1,5 @@
 #include "pomodoro_state.hpp"
 
-#include "../../common/logger.hpp"
-
 
 PomodoroState::PomodoroState() {
     // Optional default initialization
@@ -74,10 +72,8 @@ void PomodoroState::startTimerClock() {
 
 void PomodoroState::startOrPauseClock() {
     if (data_.timerClock.isRunning()) {
-        Logger::debug("4");
         data_.timerClock.stop();
     } else {
-        Logger::debug("5");
         data_.timerClock.start();
     }
 };

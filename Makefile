@@ -16,7 +16,7 @@ ifeq ($(shell uname), Darwin)
   MACOS_CONTENTS_DIR = $(MACOS_APP_DIR)/Contents
   MACOS_MACOS_DIR = $(MACOS_CONTENTS_DIR)/MacOS
   MACOS_RESOURCES_DIR = $(MACOS_CONTENTS_DIR)/Resources
-  LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
+  LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
   LDFLAGS += -L/opt/homebrew/lib -lssl -lcrypto
   CXXFLAGS += -I/opt/homebrew/include
 else
@@ -26,7 +26,7 @@ else
   LDFLAGS += -L/usr/local/lib
   # Add SFML static libraries explicitly
   LDFLAGS += -L/usr/local/lib
-  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s
+  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lsfml-audio
 
   # Core dependencies for SFML static build
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
