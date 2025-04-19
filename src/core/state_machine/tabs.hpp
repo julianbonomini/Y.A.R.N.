@@ -2,6 +2,8 @@
 #define TABS_H
 
 #include<iostream>
+#include <array>
+#include <vector>
 
 // This needs to match the order in TabNames
 enum class Tab {
