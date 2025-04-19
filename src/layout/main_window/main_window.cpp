@@ -16,7 +16,7 @@ void MainWindow::draw(std::vector<std::unique_ptr<App> > &apps, StateMachine &st
 
     // --- Tabs ---
     // Needs to be after App Area because it has to cover it
-    drawTabs(apps, stateMachine.getActiveTab());
+    drawTabs(apps, Tabs::tabToIndex(stateMachine.getActiveTab()));
 
     drawActiveApp(apps, stateMachine);
 }
@@ -74,7 +74,7 @@ void MainWindow::drawAppArea() {
 
 
 void MainWindow::drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, StateMachine &stateMachine) {
-    size_t index = stateMachine.getActiveTab();
+    size_t index = Tabs::tabToIndex(stateMachine.getActiveTab());
 
     if (index >= apps.size()) {
         Logger::error("Invalid tab index:", index, "app.size", apps.size());
@@ -94,7 +94,7 @@ void MainWindow::drawActiveApp(const std::vector<std::unique_ptr<App> > &apps, S
 void MainWindow::healTab(const std::vector<std::unique_ptr<App>> &apps, StateMachine &stateMachine) {
     Logger::warning("Healing OS config, setting default active tab to 0");
     stateMachine.healOsConfig();
-    stateMachine.setActiveTab(0);
+    stateMachine.setActiveTab(Tab::INF);
 
     Logger::info("Updating config app to display latest config...");
     for (size_t i = 0; i < apps.size(); ++i) {

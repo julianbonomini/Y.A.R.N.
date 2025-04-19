@@ -10,9 +10,10 @@
 
 #include "../../core/execute/execute_utils.hpp"
 #include "../../ui/themes/theme_manager.hpp"
+#include "../../core/state_machine/tabs.hpp"
 
-ConfigApp::ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, int totalAmountOfApps)
-    : App(appName, target, font), stateMachine(stateMachine), totalAmountOfApps(totalAmountOfApps) {
+ConfigApp::ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine)
+    : App(appName, target, font), stateMachine(stateMachine) {
     initConfigFromDisk();
 }
 
@@ -327,12 +328,8 @@ void ConfigApp::initConfigFromDisk() {
     BaseConfigOptions defaultTabOption;
     defaultTabOption.label = "default_tab";
     defaultTabOption.type = BaseConfigOptionType::CYCLE;
-    std::vector<std::string> tabOptions;
-    for (int i = 0; i < totalAmountOfApps; ++i) {
-        tabOptions.push_back(std::to_string(i));
-    }
-    defaultTabOption.options = tabOptions;
-    defaultTabOption.currentValue = std::to_string(stateMachine.getOsConfig().defaultTab);
+    defaultTabOption.options = Tabs::getAllTabNames();
+    defaultTabOption.currentValue = Tabs::tabToString(stateMachine.getOsConfig().defaultTab);
     defaultTabOption.selected = false;
     defaultTabOption.changed = false;
     defaultTabOption.description = "This will be the displayed TAB when the system restarts.";
