@@ -38,7 +38,6 @@ void MarketApp::handleSettings() {
     drawAppConfigOptions(settingsBoxGlobalBounds);
 }
 
-
 void MarketApp::update(float /*deltaTime*/) {
     Logger::info("Update");
 }
@@ -66,10 +65,11 @@ void MarketApp::drawStandaloneSymbols() {
     const float rowHeight = 30.f;
     const float startX = backgroundBoxCoordinates.position.x;
     const float startY = backgroundBoxCoordinates.position.y;
+    const float sizeX = backgroundBoxCoordinates.size.x;
 
     const float labelX = startX + Layout::PADDING;
-    const float priceX = labelX + 120.f;
-    const float changeX = priceX + 100.f;
+    const float priceX = labelX + 150.f;
+    const float changeX = startX + sizeX - Layout::PADDING;
 
     // Draw background box
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
@@ -94,10 +94,11 @@ void MarketApp::drawMarketTrackers() {
 
     const float startX = backgroundBoxCoordinates.position.x;
     const float startY = backgroundBoxCoordinates.position.y;
+    const float sizeX = backgroundBoxCoordinates.size.x;
 
     const float labelX = startX + Layout::PADDING;
-    const float priceX = labelX + 120.f;
-    const float changeX = priceX + 100.f;
+    const float priceX = labelX + 150.f;
+    const float changeX = startX + sizeX - Layout::PADDING;
 
     // Draw background box
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
@@ -238,9 +239,12 @@ void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, con
     renderer.draw(headerPrice);
 
     sf::Text headerChange(font, "CHANGE");
-    headerChange.setPosition({changeX, startY + Layout::PADDING});
     headerChange.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     headerChange.setCharacterSize(FontSizes::LABEL);
+    sf::FloatRect textBounds = headerChange.getLocalBounds();
+    float alignedX = changeX - textBounds.size.x;
+    alignedX -= textBounds.position.length();
+    headerChange.setPosition({alignedX, startY + Layout::PADDING});
     renderer.draw(headerChange);
 }
 
@@ -269,9 +273,12 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
         }
         changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
         sf::Text changeText(font, changeStream.str());
-        changeText.setPosition({changeX, currentY});
-        changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         changeText.setCharacterSize(FontSizes::LABEL);
+        changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        sf::FloatRect textBounds = changeText.getLocalBounds();
+        float alignedX = changeX - textBounds.size.x;
+        alignedX -= textBounds.position.length();
+        changeText.setPosition({alignedX, currentY});
         renderer.draw(changeText);
 
         currentY += rowHeight;
@@ -288,13 +295,13 @@ void MarketApp::loadMockData() {
         {"TSM", 849.45f, +5.38f},
         {"QCOM", 849.45f, +5.38f},
         {"AMD", 849.45f, +5.38f},
-        {"MU", 849.45f, +5.38f}
+        {"MU", 849.45f, +15.38f}
     };
 
     marketTrackers = {
         {"SP500", 172.35f, +1.23f},
         {"NASDAQ100", 248.59f, -3.42f},
-        {"ALLEUROPE", 248.59f, -3.42f},
+        {"ALLEUROPE", 248.59f, -33.42f},
         {"TECH100", 248.59f, -3.42f},
     };
 }
