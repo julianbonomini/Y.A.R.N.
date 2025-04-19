@@ -66,6 +66,9 @@ void updatePomodoroClockIfRunning(PomodoroState &pomodoroState, StateMachine &st
             elapsedSinceLastUpdate = sf::Time::Zero; // Reset elapsed time tracker
 
             if (pomodoroState.getRemainingTime() <= sf::Time::Zero) {
+                // Bring focus to pomodoro clock when changing
+                stateMachine.setActiveTab(1);
+
                 bool withSound = stateMachine.getPomodoroConfig().switchSound;
                 sf::SoundBuffer buffer;
                 if (withSound && buffer.loadFromFile(ExecuteUtils::getResourcePath("assets/sounds/tone.wav"))) {
