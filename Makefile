@@ -26,7 +26,7 @@ else
   LDFLAGS += -L/usr/local/lib
   # Add SFML static libraries explicitly
   LDFLAGS += -L/usr/local/lib
-  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lsfml-audio
+  LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lsfml-audio-s
 
   # Core dependencies for SFML static build
   LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
