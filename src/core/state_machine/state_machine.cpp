@@ -190,10 +190,12 @@ bool StateMachine::loadPomodoroAppConfigFromDisk() {
     json j;
     try {
         file >> j;
-        std::string defaultWorkTimeInSeconds = j["default_work_time"];
-        std::string defaultPlayTimeInSeconds = j["default_play_time"];
-        pomodoroConfigFile.defaultWorkTimeInMinutes = std::stoi(defaultWorkTimeInSeconds);
-        pomodoroConfigFile.defaultPlayTimeInMinutes = std::stoi(defaultPlayTimeInSeconds);
+        std::string workTimeInMinutes = j["work_time"];
+        std::string playTimeInMinutes = j["play_time"];
+        std::string switchSound = j["switch_sound"];
+        pomodoroConfigFile.workTimeInMinutes = std::stoi(workTimeInMinutes);
+        pomodoroConfigFile.playTimeInMinutes = std::stoi(playTimeInMinutes);
+        pomodoroConfigFile.switchSound = std::stoi(switchSound);
     } catch (...) {
         return -1;
     }
@@ -210,10 +212,12 @@ bool StateMachine::savePomodoroConfigToDisk(const std::vector<BaseConfigOptions>
 
     for (const auto &option: baseConfigOptions) {
         j[option.label] = option.currentValue;
-        if (option.label == "default_work_time") {
-            pomodoroConfigFile.defaultWorkTimeInMinutes = std::stoi(option.currentValue);
-        } else if (option.label == "default_play_time") {
-            pomodoroConfigFile.defaultPlayTimeInMinutes = std::stoi(option.currentValue);
+        if (option.label == "work_time") {
+            pomodoroConfigFile.workTimeInMinutes = std::stoi(option.currentValue);
+        } else if (option.label == "play_time") {
+            pomodoroConfigFile.playTimeInMinutes = std::stoi(option.currentValue);
+        } else if (option.label == "switch_sound") {
+            pomodoroConfigFile.switchSound = std::stoi(option.currentValue);
         }
     }
 

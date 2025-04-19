@@ -61,7 +61,29 @@ void PomodoroApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void PomodoroApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle("HELP");
+        sf::FloatRect helpBox = drawModalRectangle("HELP");
+
+        sf::Text startClockHelp(font, "<SPACE> ");
+        startClockHelp.setCharacterSize(FontSizes::LABEL);
+        startClockHelp.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        startClockHelp.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + Layout::PADDING, helpBox.position.y + 40.f }));
+        renderer.draw(startClockHelp);
+        sf::Text startClockHelpText(font, "Start or pause the clock");
+        startClockHelpText.setCharacterSize(FontSizes::VALUE);
+        startClockHelpText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        startClockHelpText.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + helpBox.size.x / 3.0f + Layout::PADDING, helpBox.position.y + 40.f }));
+        renderer.draw(startClockHelpText);
+
+        sf::Text resetClockHelp(font, "<R> ");
+        resetClockHelp.setCharacterSize(FontSizes::LABEL);
+        resetClockHelp.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        resetClockHelp.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + Layout::PADDING, helpBox.position.y + 60.f }));
+        renderer.draw(resetClockHelp);
+        sf::Text resetClockHelpText(font, "Reset the clock");
+        resetClockHelpText.setCharacterSize(FontSizes::VALUE);
+        resetClockHelpText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        resetClockHelpText.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + helpBox.size.x / 3.0f + Layout::PADDING, helpBox.position.y + 60.f }));
+        renderer.draw(resetClockHelpText);
     }
 }
 
@@ -91,7 +113,7 @@ void PomodoroApp::resetSession() {
 void PomodoroApp::draw() {
     drawWorkClock();
     drawPlayClock();
-    drawControls();
+    // drawControls();
 
     if (isSettingsOpen()) {
         handleSettings();
@@ -149,7 +171,7 @@ void PomodoroApp::drawResetButton() {
 }
 
 void PomodoroApp::drawWorkClock() {
-    auto box = getGridBox(0, 0, 2, 4);
+    auto box = getGridBox(0, 0, 2.5, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
     rect.setFillColor(pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
@@ -164,9 +186,9 @@ void PomodoroApp::drawWorkClock() {
     counterStream << std::setfill('0') << std::setw(2) << mins << ":" << std::setw(2) << secs;
 
 
-    sf::Text label(font, "WORK TIMER");
+    sf::Text label(font, "WORK_TIME");
     label.setFillColor(pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
-    label.setCharacterSize(FontSizes::LABEL);
+    label.setCharacterSize(FontSizes::TITLE);
     sf::Vector2f labelPos = UIHelpers::snapToGrid({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     label.setPosition(labelPos);
     renderer.draw(label);
@@ -182,7 +204,7 @@ void PomodoroApp::drawWorkClock() {
 }
 
 void PomodoroApp::drawPlayClock() {
-    auto box = getGridBox(3, 0, 2, 4);
+    auto box = getGridBox(2.5, 0, 2.5, 4);
     sf::RectangleShape rect({box.size.x, box.size.y});
     rect.setPosition(box.position);
     rect.setFillColor(!pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().secondary() : ThemeManager::instance().getCurrentTheme().background());
@@ -196,9 +218,9 @@ void PomodoroApp::drawPlayClock() {
     int secs = static_cast<int>(timeLeft.asSeconds()) % 60;
     counterStream << std::setfill('0') << std::setw(2) << mins << ":" << std::setw(2) << secs;
 
-    sf::Text text(font, "BREAK TIMER");
+    sf::Text text(font, "BREAK_TIME");
     text.setFillColor(!pomodoro_state_.getIsWorkTime() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().primary());
-    text.setCharacterSize(FontSizes::LABEL);
+    text.setCharacterSize(FontSizes::TITLE);
     text.setPosition({box.position + sf::Vector2f(Layout::PADDING, Layout::PADDING)});
     renderer.draw(text);
 
@@ -216,10 +238,10 @@ void PomodoroApp::initConfigFromDisk() {
     configOptions = std::vector<BaseConfigOptions>();
     // Refresh Rate
     BaseConfigOptions defaultWorkTimeInSeconds;
-    defaultWorkTimeInSeconds.label = "default_work_time";
+    defaultWorkTimeInSeconds.label = "work_time";
     defaultWorkTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;;
     defaultWorkTimeInSeconds.options = {};
-    int workTimeInMinutes = stateMachine.getPomodoroConfig().defaultWorkTimeInMinutes;
+    int workTimeInMinutes = stateMachine.getPomodoroConfig().workTimeInMinutes;
     defaultWorkTimeInSeconds.currentValue = std::to_string(workTimeInMinutes);
     defaultWorkTimeInSeconds.selected = false;
     defaultWorkTimeInSeconds.changed = false;
@@ -230,14 +252,24 @@ void PomodoroApp::initConfigFromDisk() {
 
     // Default Tab
     BaseConfigOptions defaultPlayTimeInSeconds;
-    defaultPlayTimeInSeconds.label = "default_play_time";
+    defaultPlayTimeInSeconds.label = "play_time";
     defaultPlayTimeInSeconds.type = BaseConfigOptionType::FREE_NUMBER;
     defaultPlayTimeInSeconds.options = {};
-    int playTimeInMinutes = stateMachine.getPomodoroConfig().defaultPlayTimeInMinutes;
+    int playTimeInMinutes = stateMachine.getPomodoroConfig().playTimeInMinutes;
     defaultPlayTimeInSeconds.currentValue = std::to_string(playTimeInMinutes);
     defaultPlayTimeInSeconds.selected = false;
     defaultPlayTimeInSeconds.changed = false;
     defaultPlayTimeInSeconds.description = "The amount of time you will be on break. In minutes";
     configOptions.push_back(defaultPlayTimeInSeconds);
     pomodoro_state_.setPlayTimeInSeconds(sf::seconds(playTimeInMinutes * 60));
+
+    BaseConfigOptions switchSound;
+    switchSound.label = "switch_sound";
+    switchSound.type = BaseConfigOptionType::TOGGLE;
+    switchSound.options = {};
+    switchSound.currentValue = std::to_string(stateMachine.getPomodoroConfig().switchSound);
+    switchSound.selected = false;
+    switchSound.changed = false;
+    switchSound.description = "A tone will play every time the clock ends if enabled.";
+    configOptions.push_back(switchSound);
 }

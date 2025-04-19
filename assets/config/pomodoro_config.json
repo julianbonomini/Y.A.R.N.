@@ -1,4 +1,5 @@
 {
-    "default_play_time": "10",
-    "default_work_time": "20"
+    "play_time": "5",
+    "switch_sound": "1",
+    "work_time": "25"
 }

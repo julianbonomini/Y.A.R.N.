@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "apps/config/config_app.hpp"
 #include "layout/toolbar/toolbar.hpp"
@@ -47,10 +48,10 @@ void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTextur
     window.display();
     shownSplash = true;
 
-    sf::sleep(sf::seconds(3));
+    sleep(sf::seconds(3));
 }
 
-void updatePomodoroClockIfRunning(PomodoroState &pomodoroState) {
+void updatePomodoroClockIfRunning(PomodoroState &pomodoroState, StateMachine &stateMachine) {
     if (pomodoroState.getIsSessionRunning()) {
         sf::Time now = pomodoroState.getTimerClock().getElapsedTime();
         sf::Time delta = now - pomodoroState.getLastUpdate();
@@ -65,6 +66,20 @@ void updatePomodoroClockIfRunning(PomodoroState &pomodoroState) {
             elapsedSinceLastUpdate = sf::Time::Zero; // Reset elapsed time tracker
 
             if (pomodoroState.getRemainingTime() <= sf::Time::Zero) {
+                // Bring focus to pomodoro clock when changing
+                stateMachine.setActiveTab(1);
+
+                bool withSound = stateMachine.getPomodoroConfig().switchSound;
+                sf::SoundBuffer buffer;
+                if (withSound && buffer.loadFromFile(ExecuteUtils::getResourcePath("assets/sounds/tone.wav"))) {
+                    Logger::debug("Should play pomodoro sound. App will freeze for a second.");
+                    sf::Sound sound(buffer);
+                    sound.play();
+                    // Wait while the sound is still playing
+                    while (sound.getStatus() == sf::Sound::Status::Playing) {
+                        sleep(sf::milliseconds(100));  // Sleep to avoid CPU spin
+                    }
+                }
                 pomodoroState.switchIsWorkTime();
                 pomodoroState.setRemainingTime(pomodoroState.getIsWorkTime() ? pomodoroState.getWorkTimeInSeconds() : pomodoroState.getPlayTimeInSeconds());
                 // Avoid restarting the timer here if it's already running
@@ -162,7 +177,6 @@ int main() {
     weatherClock.start();
     const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
     nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
-    // nlohmann::json forecast = OpenWeather::getDailyForecast();
     weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 
@@ -284,7 +298,6 @@ int main() {
         // Cycle active tab if enabled
         if (stateMachine.getOsConfig().cycleTabsEnabled && tabCycleClock.getElapsedTime() >= tabCycleInterval) {
             Logger::info("Cycling active tab ...");
-            int activeTab = stateMachine.getActiveTab();
             int newActiveTab = (stateMachine.getActiveTab() + 1 + apps.size()) % apps.size();
             stateMachine.setActiveTab(newActiveTab);
             tabCycleClock.restart();
@@ -292,7 +305,7 @@ int main() {
         }
 
         // Update pomodoro clock if running
-        updatePomodoroClockIfRunning(pomodoroState);
+        updatePomodoroClockIfRunning(pomodoroState, stateMachine);
 
         // Clear screen with base color
         renderTexture.clear(ThemeManager::instance().getCurrentTheme().background());
