@@ -20,7 +20,8 @@
 #include "core/http/http.hpp"
 #include "core/state_machine/pomodoro_state.hpp"
 
-void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTexture &renderTexture, sf::Sprite &shaderSprite, sf::Shader &crtShader, bool &shownSplash) {
+void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTexture &renderTexture,
+                      sf::Sprite &shaderSprite, sf::Shader &crtShader, bool &shownSplash) {
     renderTexture.clear(sf::Color(50, 50, 50));
 
     sf::Text splash(font, "Y.A.R.N.");
@@ -62,12 +63,13 @@ void updatePomodoroClockIfRunning(PomodoroState &pomodoroState, StateMachine &st
 
         if (elapsedSinceLastUpdate >= sf::seconds(1.0f)) {
             // Update remaining time once per second
-            pomodoroState.setRemainingTime(pomodoroState.getRemainingTime() - sf::seconds(1.0f)); // Subtract 1 second from remaining time
+            pomodoroState.setRemainingTime(pomodoroState.getRemainingTime() - sf::seconds(1.0f));
+            // Subtract 1 second from remaining time
             elapsedSinceLastUpdate = sf::Time::Zero; // Reset elapsed time tracker
 
             if (pomodoroState.getRemainingTime() <= sf::Time::Zero) {
                 // Bring focus to pomodoro clock when changing
-                stateMachine.setActiveTab(1);
+                stateMachine.setActiveTab(Tab::PMD);
 
                 bool withSound = stateMachine.getPomodoroConfig().switchSound;
                 sf::SoundBuffer buffer;
@@ -77,11 +79,13 @@ void updatePomodoroClockIfRunning(PomodoroState &pomodoroState, StateMachine &st
                     sound.play();
                     // Wait while the sound is still playing
                     while (sound.getStatus() == sf::Sound::Status::Playing) {
-                        sleep(sf::milliseconds(100));  // Sleep to avoid CPU spin
+                        sleep(sf::milliseconds(100)); // Sleep to avoid CPU spin
                     }
                 }
                 pomodoroState.switchIsWorkTime();
-                pomodoroState.setRemainingTime(pomodoroState.getIsWorkTime() ? pomodoroState.getWorkTimeInSeconds() : pomodoroState.getPlayTimeInSeconds());
+                pomodoroState.setRemainingTime(pomodoroState.getIsWorkTime()
+                                                   ? pomodoroState.getWorkTimeInSeconds()
+                                                   : pomodoroState.getPlayTimeInSeconds());
                 // Avoid restarting the timer here if it's already running
             }
         }
@@ -101,7 +105,7 @@ int main() {
 
     // Create the StateMachine instance to manage app state.
     Logger::info("Initializing state machines from disk...");
-    StateMachine stateMachine(0, envConfig);
+    StateMachine stateMachine(Tab::INF, envConfig);
     OsConfigFile *os_config_file = &stateMachine.getOsConfig(); // by ref, don't copy
     OsConfigFile initial_os_config_file = stateMachine.getOsConfig(); // by ref, don't copy
     Logger::done_separator();
@@ -111,7 +115,8 @@ int main() {
     PomodoroState pomodoroState;
     Logger::done_separator();
 
-    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}), "Y.A.R.N",
+    auto window = sf::RenderWindow(sf::VideoMode({DisplayConfig::SCREEN_WIDTH, DisplayConfig::SCREEN_HEIGHT}),
+                                   "Y.A.R.N",
                                    sf::Style::Default, sf::State::Windowed);
 
     window.setFramerateLimit(initial_os_config_file.refreshRate);
@@ -162,12 +167,30 @@ int main() {
 
     Logger::info("Initializing apps...");
     std::vector<std::unique_ptr<App> > apps;
-    // These are ordered.
-    apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
-    apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
-    apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
-    apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
-    apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine, apps.size() + 1));
+    // These are ordered based on the enum on tabs.hpp
+    for (int i = 0; i < static_cast<int>(Tab::COUNT); ++i) {
+        Tab tab = static_cast<Tab>(i);
+        Logger::debug("Initializing", Tabs::tabToString(tab), "app...");
+        switch (tab) {
+            case Tab::MKT:
+                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
+                break;
+            case Tab::PMD:
+                apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
+                break;
+            case Tab::WTH:
+                apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
+                break;
+            case Tab::INF:
+                apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
+                break;
+            case Tab::CNF:
+                apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
+                break;
+            default: throw std::runtime_error("Invalid tab");
+        }
+    }
+    assert(apps.size() == static_cast<size_t>(Tab::COUNT));
     Logger::info("Apps booted successfully...");
     Logger::done_separator();
 
@@ -195,7 +218,7 @@ int main() {
             }
             // Global keys (tab switching)
             if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                auto activeApp = apps[stateMachine.getActiveTab()].get();
+                auto activeApp = apps[Tabs::tabToIndex(stateMachine.getActiveTab())].get();
                 bool activeAppOpenModal = activeApp->getHasOpenModal();
 
                 // If help modal is open, then don't take any keystrokes except Escape
@@ -225,15 +248,13 @@ int main() {
                 if (!activeAppOpenModal) {
                     // Tab left
                     if (keyPressed->scancode == sf::Keyboard::Scan::A) {
-                        int new_active_tab = (stateMachine.getActiveTab() - 1 + apps.size()) % apps.size();
-                        stateMachine.setActiveTab(new_active_tab);
+                        stateMachine.previousTab();
                         break;
                     }
 
                     // Tab right
                     if (keyPressed->scancode == sf::Keyboard::Scan::S) {
-                        int new_active_tab = (stateMachine.getActiveTab() + 1) % apps.size();
-                        stateMachine.setActiveTab(new_active_tab);
+                        stateMachine.nextTab();
                         break;
                     }
 
@@ -255,7 +276,7 @@ int main() {
                         break;
                     }
 
-                    apps[stateMachine.getActiveTab()]->handleEvent(*keyPressed);
+                    apps[Tabs::tabToIndex(stateMachine.getActiveTab())]->handleEvent(*keyPressed);
                 }
             }
         }
@@ -298,8 +319,7 @@ int main() {
         // Cycle active tab if enabled
         if (stateMachine.getOsConfig().cycleTabsEnabled && tabCycleClock.getElapsedTime() >= tabCycleInterval) {
             Logger::info("Cycling active tab ...");
-            int newActiveTab = (stateMachine.getActiveTab() + 1 + apps.size()) % apps.size();
-            stateMachine.setActiveTab(newActiveTab);
+            stateMachine.nextTab();
             tabCycleClock.restart();
             Logger::done_separator();
         }

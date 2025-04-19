@@ -4,6 +4,8 @@
 #include "../../apps/common/BaseConfigOptions.hpp"
 #include <unordered_map>
 
+#include "tabs.hpp"
+
 enum class AppConfigTypes {
     POMODORO,
     MARKET,
@@ -12,7 +14,7 @@ enum class AppConfigTypes {
 
 struct OsConfigFile {
     int refreshRate;
-    int defaultTab;
+    Tab defaultTab;
     std::string theme;
     int shaderEnabled;
     std::string shader;
@@ -39,11 +41,15 @@ struct WeatherConfigFile {
 
 class StateMachine {
 public:
-    StateMachine(int default_tab, std::unordered_map<std::string, std::string> envConfig);
+    StateMachine(Tab default_tab, std::unordered_map<std::string, std::string> envConfig);
 
-    int getActiveTab() const;
+    Tab getActiveTab() const;
 
-    void setActiveTab(int newActiveTab);
+    void nextTab();
+
+    void previousTab();
+
+    void setActiveTab(Tab newActiveTab);
 
     OsConfigFile &getOsConfig();
 
@@ -60,7 +66,7 @@ public:
     bool saveAppConfigToDisk(AppConfigTypes appConfigType, const std::vector<BaseConfigOptions> &configOptions);
 
 private:
-    int activeTab;
+    Tab activeTab;
     std::unordered_map<std::string, std::string> envConfig;
     OsConfigFile osConfigFile;
     PomodoroConfigFile pomodoroConfigFile;

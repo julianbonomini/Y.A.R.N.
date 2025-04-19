@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-StateMachine::StateMachine(int default_tab, std::unordered_map<std::string, std::string> envConfig)
+StateMachine::StateMachine(Tab default_tab, std::unordered_map<std::string, std::string> envConfig)
     : activeTab(default_tab), envConfig(envConfig) {
     // Load the config file on startup
     loadOsConfigFromDisk();
@@ -19,11 +19,19 @@ StateMachine::StateMachine(int default_tab, std::unordered_map<std::string, std:
     loadWeatherAppConfigFromDisk();
 }
 
-int StateMachine::getActiveTab() const {
+Tab StateMachine::getActiveTab() const {
     return activeTab;
 }
 
-void StateMachine::setActiveTab(int newActiveTab) {
+void StateMachine::nextTab() {
+    setActiveTab(Tabs::nextTab(activeTab));
+}
+
+void StateMachine::previousTab() {
+    setActiveTab(Tabs::previousTab(activeTab));
+}
+
+void StateMachine::setActiveTab(Tab newActiveTab) {
     activeTab = newActiveTab;
 }
 
@@ -60,13 +68,13 @@ bool StateMachine::healOsConfig() {
     j["flicker_intensity"] = "10";
     j["theme"] = "dark";
     j["cycle_tab_enabled"] = "0";
-    j["cycle_tab_time"] = "120";
+    j["cycle_tab_time"] = "90";
     file << j.dump(4); // Pretty-print with indentation
     Logger::info("STATE_MACHINE", "OS config has been overridden with defaults..");
 
 
     osConfigFile.refreshRate = 60;
-    osConfigFile.defaultTab = 0;
+    osConfigFile.defaultTab = Tab::INF;
     osConfigFile.shaderEnabled = 1;
     osConfigFile.shader = "crt_monitor";
     osConfigFile.flickerEnabled = 0;
@@ -91,7 +99,7 @@ bool StateMachine::loadOsConfigFromDisk() {
     try {
         file >> j;
         osConfigFile.refreshRate = std::stoi(std::string(j["refresh_rate_hz"]));
-        osConfigFile.defaultTab = std::stoi(std::string(j["default_tab"]));
+        osConfigFile.defaultTab = Tabs::stringToTab(std::string(j["default_tab"]));
         osConfigFile.theme = std::string(j["theme"]);
         osConfigFile.shaderEnabled = std::stoi(std::string(j["shader_enabled"]));
         osConfigFile.shader = std::string(j["shader"]);
@@ -111,7 +119,7 @@ bool StateMachine::loadDefaultOsConfig() {
     Logger::info("STATE_MACHINE", "Loading Default OS config...");
 
     osConfigFile.refreshRate = 60;
-    osConfigFile.defaultTab = 0;
+    osConfigFile.defaultTab = Tab::INF;
     osConfigFile.shaderEnabled = 0;
     osConfigFile.shader = "none";
     osConfigFile.flickerEnabled = 0;
@@ -134,7 +142,7 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
             osConfigFile.refreshRate = std::stoi(option.currentValue);
         }
         if (option.label == "default_tab") {
-            osConfigFile.defaultTab = std::stoi(option.currentValue);
+            osConfigFile.defaultTab = Tabs::stringToTab(option.currentValue);
         }
         if (option.label == "shader_enabled") {
             osConfigFile.shaderEnabled = std::stoi(option.currentValue);

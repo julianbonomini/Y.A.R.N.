@@ -9,7 +9,7 @@
 
 class ConfigApp : public App {
 public:
-    ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine, int totalAmountOfApps);
+    ConfigApp(const std::string &appName, sf::RenderTarget &target, const sf::Font &font, StateMachine &stateMachine);
 
     void draw() override;
 
@@ -24,7 +24,6 @@ public:
 private:
     StateMachine &stateMachine;
     std::vector<BaseConfigOptions> configOptions;
-    int totalAmountOfApps;
     bool editModeEnabled = false;
     bool unsavedChangesFlag = false;
 

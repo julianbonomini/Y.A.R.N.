@@ -1,7 +1,7 @@
 {
     "cycle_tab_enabled": "0",
     "cycle_tab_time": "90",
-    "default_tab": "0",
+    "default_tab": "CONFIG",
     "flicker_enabled": "1",
     "flicker_intensity": "20",
     "refresh_rate_hz": "60",
