@@ -48,7 +48,7 @@ void drawSplashScreen(sf::RenderWindow &window, sf::Font &font, sf::RenderTextur
     window.display();
     shownSplash = true;
 
-    sf::sleep(sf::seconds(1));
+    sleep(sf::seconds(3));
 }
 
 void updatePomodoroClockIfRunning(PomodoroState &pomodoroState, StateMachine &stateMachine) {
@@ -69,9 +69,13 @@ void updatePomodoroClockIfRunning(PomodoroState &pomodoroState, StateMachine &st
                 bool withSound = stateMachine.getPomodoroConfig().switchSound;
                 sf::SoundBuffer buffer;
                 if (withSound && buffer.loadFromFile(ExecuteUtils::getResourcePath("assets/sounds/tone.wav"))) {
-                    Logger::debug("should play");
+                    Logger::debug("Should play pomodoro sound. App will freeze for a second.");
                     sf::Sound sound(buffer);
                     sound.play();
+                    // Wait while the sound is still playing
+                    while (sound.getStatus() == sf::Sound::Status::Playing) {
+                        sleep(sf::milliseconds(100));  // Sleep to avoid CPU spin
+                    }
                 }
                 pomodoroState.switchIsWorkTime();
                 pomodoroState.setRemainingTime(pomodoroState.getIsWorkTime() ? pomodoroState.getWorkTimeInSeconds() : pomodoroState.getPlayTimeInSeconds());
@@ -170,7 +174,6 @@ int main() {
     weatherClock.start();
     const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
     nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
-    // nlohmann::json forecast = OpenWeather::getDailyForecast();
     weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 
