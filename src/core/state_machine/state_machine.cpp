@@ -23,6 +23,14 @@ Tab StateMachine::getActiveTab() const {
     return activeTab;
 }
 
+void StateMachine::nextTab() {
+    setActiveTab(Tabs::nextTab(activeTab));
+}
+
+void StateMachine::previousTab() {
+    setActiveTab(Tabs::previousTab(activeTab));
+}
+
 void StateMachine::setActiveTab(Tab newActiveTab) {
     activeTab = newActiveTab;
 }
@@ -60,7 +68,7 @@ bool StateMachine::healOsConfig() {
     j["flicker_intensity"] = "10";
     j["theme"] = "dark";
     j["cycle_tab_enabled"] = "0";
-    j["cycle_tab_time"] = "120";
+    j["cycle_tab_time"] = "90";
     file << j.dump(4); // Pretty-print with indentation
     Logger::info("STATE_MACHINE", "OS config has been overridden with defaults..");
 
@@ -134,7 +142,6 @@ bool StateMachine::saveOsConfigToDisk(const std::vector<BaseConfigOptions> &conf
             osConfigFile.refreshRate = std::stoi(option.currentValue);
         }
         if (option.label == "default_tab") {
-            Logger::debug(option.currentValue);
             osConfigFile.defaultTab = Tabs::stringToTab(option.currentValue);
         }
         if (option.label == "shader_enabled") {

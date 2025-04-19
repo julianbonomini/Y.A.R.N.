@@ -45,6 +45,10 @@ public:
 
     Tab getActiveTab() const;
 
+    void nextTab();
+
+    void previousTab();
+
     void setActiveTab(Tab newActiveTab);
 
     OsConfigFile &getOsConfig();

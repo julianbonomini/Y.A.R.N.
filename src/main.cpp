@@ -169,9 +169,8 @@ int main() {
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered based on the enum on tabs.hpp
     for (int i = 0; i < static_cast<int>(Tab::COUNT); ++i) {
-        Logger::debug("Initializing app %d...", i);
         Tab tab = static_cast<Tab>(i);
-        Logger::debug("2");
+        Logger::debug("Initializing", Tabs::tabToString(tab), "app...");
         switch (tab) {
             case Tab::MKT:
                 apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
@@ -249,13 +248,13 @@ int main() {
                 if (!activeAppOpenModal) {
                     // Tab left
                     if (keyPressed->scancode == sf::Keyboard::Scan::A) {
-                        stateMachine.setActiveTab(Tabs::previousTab(stateMachine.getActiveTab()));
+                        stateMachine.previousTab();
                         break;
                     }
 
                     // Tab right
                     if (keyPressed->scancode == sf::Keyboard::Scan::S) {
-                        stateMachine.setActiveTab(Tabs::nextTab(stateMachine.getActiveTab()));
+                        stateMachine.nextTab();
                         break;
                     }
 
@@ -320,7 +319,7 @@ int main() {
         // Cycle active tab if enabled
         if (stateMachine.getOsConfig().cycleTabsEnabled && tabCycleClock.getElapsedTime() >= tabCycleInterval) {
             Logger::info("Cycling active tab ...");
-            stateMachine.setActiveTab(Tabs::nextTab(stateMachine.getActiveTab()));
+            stateMachine.nextTab();
             tabCycleClock.restart();
             Logger::done_separator();
         }
