@@ -29,7 +29,7 @@ else
   LDFLAGS += -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lsfml-audio-s -logg
 
   # Core dependencies for SFML static build
-  LDFLAGS += -lfreetype -lopenal -lvorbis -lvorbisfile -lFLAC
+  LDFLAGS += -lfreetype -lopenal -lvorbisenc -lvorbis -lvorbisfile -lFLAC
   LDFLAGS += -lX11 -lXrandr -lXcursor -lXrender -lXfixes -lXinerama -lXext -lXi
   LDFLAGS += -ludev -lGL -lpthread -ldl
   LDFLAGS += -lssl -lcrypto
