@@ -174,8 +174,16 @@ int main() {
     Logger::done_separator();
 
     bool shownSplash = false;
+    sf::Vector2f lastMouseClickPos;
+    bool mouseClicked = false;
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
+            if (auto mousePress = event->getIf<sf::Event::MouseButtonPressed>()) {
+                lastMouseClickPos = window.mapPixelToCoords({mousePress->position.x, mousePress->position.y});
+                mouseClicked = true;
+                Logger::debug("EVENT:", "Mouse clicked", mousePress->position.x, mousePress->position.y);
+            }
+
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
@@ -295,7 +303,7 @@ int main() {
         // Draw everything
         toolbar.draw();
         footer.draw();
-        main_window.draw(apps, stateMachine);
+        main_window.draw(apps, stateMachine, mouseClicked, lastMouseClickPos);
         renderTexture.display();
 
 

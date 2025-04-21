@@ -31,6 +31,10 @@ public:
         return static_cast<int>(tab);
     }
 
+    static Tab indexToTab(int index) {
+        return static_cast<Tab>(index);
+    }
+
     static std::vector<std::string> getAllTabNames() {
         return std::vector<std::string>(TabNames.begin(), TabNames.end());
     }
