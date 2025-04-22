@@ -245,7 +245,7 @@ bool StateMachine::loadMarketAppConfigFromDisk() {
     try {
         file >> j;
         std::string defaultRefreshInterval = j["refresh_interval"];
-        marketConfigFile.defaultRefreshIntervalInMinutes = std::stoi(defaultRefreshInterval);
+        marketConfigFile.refreshIntervalInMinutes = std::stoi(defaultRefreshInterval);
     } catch (...) {
         return -1;
     }
@@ -263,7 +263,7 @@ bool StateMachine::saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &
     for (const auto &option: baseConfigOptions) {
         j[option.label] = option.currentValue;
         if (option.label == "refresh_interval") {
-            marketConfigFile.defaultRefreshIntervalInMinutes = std::stoi(option.currentValue);
+            marketConfigFile.refreshIntervalInMinutes = std::stoi(option.currentValue);
         }
     }
 

@@ -31,7 +31,7 @@ struct PomodoroConfigFile {
 };
 
 struct MarketConfigFile {
-    int defaultRefreshIntervalInMinutes;
+    int refreshIntervalInMinutes;
 };
 
 struct WeatherConfigFile {

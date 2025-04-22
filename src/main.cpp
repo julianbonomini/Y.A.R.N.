@@ -10,6 +10,7 @@
 #include "apps/market/market_app.hpp"
 #include "apps/pomodoro/pomodoro_app.hpp"
 #include "apps/weather/openweather.hpp"
+#include "apps/market/alpha_vantage.hpp"
 #include "apps/weather/weather_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
@@ -164,6 +165,17 @@ int main() {
     const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
     nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
     weatherState.updateFromJson(weatherData);
+    Logger::done_separator();
+
+    Logger::info("Getting market data with refresh interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
+    sf::Clock marketClock;
+    marketClock.start();
+    const sf::Time marketInterval = sf::seconds(stateMachine.getMarketConfig().refreshIntervalInMinutes * 60);
+    std::optional<AlphaVantageGlobalQuote> marketData = AlphaVantage::getGlobalQuote("AAPL");
+    if (marketData != std::nullopt) {
+
+        Logger::debug("alpha repsonse", marketData->price);
+    }
     Logger::done_separator();
 
     Logger::info("Setting clock for tab cycling every...", stateMachine.getOsConfig().cycleTabTimeInSeconds);

@@ -313,7 +313,7 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.label = "refresh_interval";
     refreshIntervalInMinutes.type = BaseConfigOptionType::FREE_NUMBER;;
     refreshIntervalInMinutes.options = {};
-    int intervalInMinutes = stateMachine.getMarketConfig().defaultRefreshIntervalInMinutes;
+    int intervalInMinutes = stateMachine.getMarketConfig().refreshIntervalInMinutes;
     refreshIntervalInMinutes.currentValue = std::to_string(intervalInMinutes);
     refreshIntervalInMinutes.selected = false;
     refreshIntervalInMinutes.changed = false;
