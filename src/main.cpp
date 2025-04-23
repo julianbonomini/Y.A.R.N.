@@ -1,6 +1,12 @@
 #include <iostream>
+#include <thread>
+#include <cstdlib>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <string>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include "apps/config/config_app.hpp"
 #include "layout/toolbar/toolbar.hpp"
@@ -10,7 +16,6 @@
 #include "apps/market/market_app.hpp"
 #include "apps/pomodoro/pomodoro_app.hpp"
 #include "apps/weather/openweather.hpp"
-#include "apps/market/alpha_vantage.hpp"
 #include "apps/weather/weather_app.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
@@ -59,8 +64,51 @@ void drawSplashScreen(
     sleep(sf::seconds(3));
 }
 
+pid_t marketDaemonPid = -1;
+
+void killMarketDaemon() {
+    Logger::info("Killing Python daemon with PID:", marketDaemonPid);
+    if (marketDaemonPid > 0) {
+        kill(marketDaemonPid, SIGTERM);
+        waitpid(marketDaemonPid, nullptr, 0);  // Wait for it to clean up
+    }
+}
+
+void signalHandler(int signum) {
+    Logger::warning("C++ app received signal", signum, ", cleaning up...");
+    if (marketDaemonPid > 0) {
+        killMarketDaemon();
+    }
+    exit(signum);
+}
+
+pid_t startMarketDaemon(const std::string &daemonPath) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        Logger::info(daemonPath);
+        // In child: replace process with the Python daemon
+        execlp("python3", "python3", daemonPath.c_str(), nullptr);
+
+        // If execlp fails:
+        Logger::error("Market daemon fork failed");
+        perror("Failed to start Python daemon");
+        exit(1);
+    } else if (pid > 0) {
+        Logger::info("Market daemon started with PID:", pid);
+        marketDaemonPid = pid;
+        return pid;
+    } else {
+        Logger::error("Market daemon fork failed");
+        perror("fork failed");
+        return -1;
+    }
+}
+
 int main() {
     Logger::info("Booting...");
+    // Register signal handler
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
     Logger::done_separator();
 
     Logger::info("Loading env config...");
@@ -167,15 +215,16 @@ int main() {
     weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 
-    Logger::info("Getting market data with refresh interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
+    Logger::info("Starting forked market data daemon...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
+    // Start the Python daemon in a separate thread
+    std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
+    marketDaemonPid = startMarketDaemon(daemonPath);
+    Logger::done_separator();
+
+    Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
     sf::Clock marketClock;
     marketClock.start();
     const sf::Time marketInterval = sf::seconds(stateMachine.getMarketConfig().refreshIntervalInMinutes * 60);
-    std::optional<AlphaVantageGlobalQuote> marketData = AlphaVantage::getGlobalQuote("AAPL");
-    if (marketData != std::nullopt) {
-
-        Logger::debug("alpha repsonse", marketData->price);
-    }
     Logger::done_separator();
 
     Logger::info("Setting clock for tab cycling every...", stateMachine.getOsConfig().cycleTabTimeInSeconds);
@@ -197,6 +246,8 @@ int main() {
             }
 
             if (event->is<sf::Event::Closed>()) {
+                Logger::info("Window closed, cleaning up services and finalising app.");
+                killMarketDaemon();
                 window.close();
             }
             // Global keys (tab switching)

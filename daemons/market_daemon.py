@@ -23,19 +23,42 @@ settings = {
 @app.route("/cached-price/<symbol>")
 def get_price(symbol):
     symbol = symbol.upper()
-    price = stock_data_cache.get(symbol)
-    if price is None:
+    data = stock_data_cache.get(symbol)
+    if data is None:
         return jsonify({"error": f"Price for symbol '{symbol}' not found"}), 404
-    return jsonify({"symbol": symbol, "price": price})
+    return jsonify(data)
 
-@app.route("/quotes")
+@app.route("/refresh-quotes")
 def refresh_and_return_all_quotes():
     log.info("Fetching all configured symbols")
     for symbol in settings["symbols"]:
         symbol = symbol.upper()
         try:
-            data = yf.Ticker(symbol).info
-            stock_data_cache[symbol] = data["regularMarketPrice"]
+            yf_data = yf.Ticker(symbol).info
+            price = yf_data.get("regularMarketPrice")
+            open_price = yf_data.get("regularMarketOpen")
+            prev_close = yf_data.get("previousClose")
+
+            change_from_open = None
+            pct_change_from_open = None
+            change_from_prev_close = None
+            pct_change_from_prev_close = None
+
+            if price is not None:
+                if open_price:
+                    change_from_open = price - open_price
+                    pct_change_from_open = (change_from_open / open_price) * 100
+                if prev_close:
+                    change_from_prev_close = price - prev_close
+                    pct_change_from_prev_close = (change_from_prev_close / prev_close) * 100
+
+            stock_data_cache[symbol] = {
+                "price": price,
+                "change_from_open": change_from_open,
+                "percent_change_from_open": pct_change_from_open,
+                "change_from_prev_close": change_from_prev_close,
+                "percent_change_from_prev_close": pct_change_from_prev_close
+            }
         except Exception as e:
             log.error(f"Error fetching {symbol}: {e}")
     return jsonify(stock_data_cache)
