@@ -18,9 +18,8 @@ public:
         std::map<std::string, std::string> headers = {};
         std::string host = "api.openweathermap.org";
         std::string path = "/data/2.5/weather";
-        std::string scheme = "https";
 
-        auto response = Http::GET(host, path, query_params, headers, scheme);
+        auto response = Http::GET(host, path, query_params, headers);
         if (response) {
             auto data = response.value();
             return data;
@@ -43,9 +42,8 @@ public:
         std::map<std::string, std::string> headers = {};
         std::string host = "api.openweathermap.org";
         std::string path = "/data/2.5/forecast/daily";
-        std::string scheme = "https";
 
-        auto response = Http::GET(host, path, query_params, headers, scheme);
+        auto response = Http::GET(host, path, query_params, headers);
         if (response) {
             auto data = response.value();
             Logger::info("forecast", data);

@@ -1,6 +1,17 @@
 #include <iostream>
+#include <thread>
+#include <cstdlib>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <string>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 #include "apps/config/config_app.hpp"
 #include "layout/toolbar/toolbar.hpp"
@@ -11,14 +22,16 @@
 #include "apps/pomodoro/pomodoro_app.hpp"
 #include "apps/weather/openweather.hpp"
 #include "apps/weather/weather_app.hpp"
+#include "apps/market/market_daemon_client.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
 #include "ui/themes/theme_manager.hpp"
 #include "common/logger.hpp"
 #include "core/env/config.hpp"
 #include "core/execute/execute_utils.hpp"
-#include "core/http/http.hpp"
+#include "core/state_machine/market_state.hpp"
 #include "core/state_machine/pomodoro_state.hpp"
+
 
 void drawSplashScreen(
     sf::RenderWindow &window,
@@ -55,11 +68,80 @@ void drawSplashScreen(
     window.display();
     shownSplash = true;
 
-    sleep(sf::seconds(3));
+    sleep(sf::seconds(1));
+}
+
+pid_t marketDaemonPid = -1;
+
+void killMarketDaemon() {
+    Logger::info("Killing Python daemon with PID:", marketDaemonPid);
+    if (marketDaemonPid > 0) {
+        kill(marketDaemonPid, SIGTERM);
+        waitpid(marketDaemonPid, nullptr, 0); // Wait for it to clean up
+    }
+}
+
+void signalHandler(int signum) {
+    Logger::warning("C++ app received signal", signum, ", cleaning up...");
+    if (marketDaemonPid > 0) {
+        killMarketDaemon();
+    }
+    exit(signum);
+}
+
+bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
+    for (int i = 0; i < maxTries; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+        bool isReady = MarketDaemonClient::ready();
+        if (isReady) {
+            return true;
+        }
+        Logger::debug("deamon not ready yet");
+    }
+    return false;
+}
+
+pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols, std::vector<std::string> &trackers) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        std::vector<const char *> args;
+        args.push_back("python3"); // argv[0]
+        args.push_back(daemonPath.c_str());
+        args.push_back("--symbols");
+        for (const auto &symbol: symbols) {
+            args.push_back(symbol.c_str());
+        }
+        args.push_back("--trackers");
+        for (const auto &tracker: trackers) {
+            args.push_back(tracker.c_str());
+        }
+        args.push_back(nullptr); // Null-terminated
+
+        // Execute the daemon
+        execvp("python3", const_cast<char * const*>(args.data()));
+        // In child: replace process with the Python daemon
+        // execlp("python3", "python3", daemonPath.c_str(), symbols, nullptr);
+
+        // If execlp fails:
+        Logger::error("Market daemon fork failed");
+        perror("Failed to start Python daemon");
+        exit(1);
+    } else if (pid > 0) {
+        Logger::info("Market daemon started with PID:", pid);
+        marketDaemonPid = pid;
+        return pid;
+    } else {
+        Logger::error("Market daemon fork failed");
+        perror("fork failed");
+        return -1;
+    }
 }
 
 int main() {
     Logger::info("Booting...");
+    // Register signal handler
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
     Logger::done_separator();
 
     Logger::info("Loading env config...");
@@ -75,6 +157,7 @@ int main() {
 
     Logger::info("Initializing app states...");
     WeatherState weatherState({});
+    MarketState marketState({});
     PomodoroState pomodoroState;
     Logger::done_separator();
 
@@ -128,6 +211,35 @@ int main() {
     Footer footer(renderTexture, font);
     Logger::done_separator();
 
+
+    Logger::info("Starting forked market data daemon...");
+    // Start the Python daemon in a separate thread
+    std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
+    marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols, stateMachine.getMarketConfig().trackers);
+    waitForDaemonStartup();
+    bool isMarketOpen = MarketDaemonClient::isMarketOpen();
+    marketState.updateMarketOpen(isMarketOpen);
+    Logger::done_separator();
+
+
+    Logger::info("Starting app clocks...");
+    // Market clock
+    Logger::debug("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes, "minutes");
+    sf::Clock marketClock;
+    marketClock.start();
+    const sf::Time marketInterval = sf::seconds(stateMachine.getMarketConfig().refreshIntervalInMinutes * 60);
+    // Weather Clock
+    Logger::debug("Setting weather data clock with interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes, "minutes");
+    sf::Clock weatherClock;
+    weatherClock.start();
+    const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
+    // Tab cycling Clock
+    Logger::debug("Setting tab cycling clock with interval...", stateMachine.getOsConfig().cycleTabTimeInSeconds, "seconds");
+    sf::Clock tabCycleClock;
+    tabCycleClock.start();
+    const sf::Time tabCycleInterval = sf::seconds(stateMachine.getOsConfig().cycleTabTimeInSeconds);
+    Logger::done_separator();
+
     Logger::info("Initializing apps...");
     std::vector<std::unique_ptr<App> > apps;
     // These are ordered based on the enum on tabs.hpp
@@ -136,7 +248,7 @@ int main() {
         Logger::debug("Initializing", Tabs::tabToString(tab), "app...");
         switch (tab) {
             case Tab::MKT:
-                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
+                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine, marketState));
                 break;
             case Tab::PMD:
                 apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
@@ -157,22 +269,8 @@ int main() {
     Logger::info("Apps booted successfully...");
     Logger::done_separator();
 
-
-    Logger::info("Getting weather with refresh interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes);
-    sf::Clock weatherClock;
-    weatherClock.start();
-    const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
-    nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
-    weatherState.updateFromJson(weatherData);
-    Logger::done_separator();
-
-    Logger::info("Setting clock for tab cycling every...", stateMachine.getOsConfig().cycleTabTimeInSeconds);
-    sf::Clock tabCycleClock;
-    tabCycleClock.start();
-    const sf::Time tabCycleInterval = sf::seconds(stateMachine.getOsConfig().cycleTabTimeInSeconds);
-    weatherState.updateFromJson(weatherData);
-    Logger::done_separator();
-
+    bool initalMarketDataLoaded = false;
+    bool initalWeatherDataLoaded = false;
     bool shownSplash = false;
     sf::Vector2f lastMouseClickPos;
     bool mouseClicked = false;
@@ -185,6 +283,8 @@ int main() {
             }
 
             if (event->is<sf::Event::Closed>()) {
+                Logger::info("Window closed, cleaning up services and finalising app.");
+                killMarketDaemon();
                 window.close();
             }
             // Global keys (tab switching)
@@ -277,8 +377,16 @@ int main() {
             loadedTheme = os_config_file->theme;
         }
 
+        // Init weather data
+        if (!initalWeatherDataLoaded) {
+            Logger::info("Init weather data ...");
+            nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
+            weatherState.updateFromJson(weatherData);
+            initalWeatherDataLoaded = true;
+            Logger::done_separator();
+        }
 
-        // Fetch and update weather
+        // Refersh weather data
         if (weatherClock.getElapsedTime() >= weatherInterval) {
             Logger::info("Updating weather ...");
             nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
@@ -323,6 +431,55 @@ int main() {
             window.draw(shaderSprite);
         }
         window.display();
+
+        // Market data can be quite slow, for this reason there is a mocked init until data is available
+
+        // Init market data once
+        if (!initalMarketDataLoaded) {
+            Logger::info("Init stock quotes async ...");
+            // Only trigger a fetch if one isn't already in progress
+            static std::atomic<bool> fetching = false;
+            if (!fetching) {
+                fetching = true;
+                std::thread([] {
+                    MarketDaemonClient::fetchAllQuotesAsync(&fetching);
+                }).detach();
+            }
+            Logger::info("Getting stock quotes ...");
+            initalMarketDataLoaded = true;
+            Logger::done_separator();
+        }
+
+        // Refresh market data
+        if (marketClock.getElapsedTime() >= marketInterval) {
+            Logger::info("Fetching stock quotes async ...");
+            bool isMarketOpen = MarketDaemonClient::isMarketOpen();
+            if (isMarketOpen != marketState.getIsMarketOpen()) {
+                marketState.updateMarketOpen(isMarketOpen);
+            }
+            if (isMarketOpen) {
+                // Only trigger a fetch if one isn't already in progress
+                static std::atomic<bool> fetching = false;
+                if (!fetching) {
+                    fetching = true;
+                    std::thread([] {
+                        MarketDaemonClient::fetchAllQuotesAsync(&fetching);
+                    }).detach();
+                }
+                Logger::info("Getting stock quotes ...");
+            } else {
+                Logger::debug("Market closed, not fetching anything");
+            }
+            marketClock.restart();
+            Logger::done_separator();
+        }
+        // Apply new quotes if available
+        if (MarketDaemonClient::areQuotesReady()) {
+            Logger::debug("Updating market state with async quotes");
+            auto quotes = MarketDaemonClient::getLatestQuotes();
+            marketState.updateAllQuotes(quotes);
+            MarketDaemonClient::setQuotesReadyToFalse();
+        }
     }
 
     return 0;

@@ -4,20 +4,24 @@
 #include <iomanip>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <thread>
+#include <atomic>
 
 #include "../../core/execute/execute_utils.hpp"
+#include "../../core/state_machine/market_state.hpp"
 #include "../../ui/themes/theme_manager.hpp"
+#include "../../ui/utils/ui_helpers.hpp"
 
 
-MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
-    : AppWithConfig(appName, renderer, font, stateMachine) {
-    loadMockData();
+MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, MarketState &marketState)
+    : AppWithConfig(appName, renderer, font, stateMachine), marketState(marketState) {
     initConfigFromDisk();
+    initMockedQuotes();
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
-    if (keyPressed.scancode == sf::Keyboard::Scan::T) {
-        marketOpen = !marketOpen;
+    if (keyPressed.scancode == sf::Keyboard::Scan::R) {
+        update();
     }
     if (settingsOpen) {
         handleSettingsInputs(keyPressed);
@@ -29,7 +33,18 @@ void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void MarketApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle("HELP");
+        sf::FloatRect helpBox = drawModalRectangle("HELP");
+
+        sf::Text refreshDataLabel(font, "<R> ");
+        refreshDataLabel.setCharacterSize(FontSizes::LABEL);
+        refreshDataLabel.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        refreshDataLabel.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + Layout::PADDING, helpBox.position.y + 40.f }));
+        renderer.draw(refreshDataLabel);
+        sf::Text refreshDataValue(font, "Manually update data");
+        refreshDataValue.setCharacterSize(FontSizes::VALUE);
+        refreshDataValue.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        refreshDataValue.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + helpBox.size.x / 3.0f + Layout::PADDING, helpBox.position.y + 40.f }));
+        renderer.draw(refreshDataValue);
     }
 }
 
@@ -38,15 +53,24 @@ void MarketApp::handleSettings() {
     drawAppConfigOptions(settingsBoxGlobalBounds);
 }
 
-void MarketApp::update(float /*deltaTime*/) {
-    Logger::info("Update");
+void MarketApp::update() {
+    Logger::info("[MARKET_APP] Manual data refresh");
+    initMockedQuotes();
+    static std::atomic<bool> fetching = false;
+    if (!fetching) {
+        fetching = true;
+        std::thread([] {
+            MarketDaemonClient::fetchAllQuotesAsync(&fetching);
+        }).detach();
+    }
+    Logger::done_separator();
 }
 
 void MarketApp::draw() {
     drawStandaloneSymbols();
     drawMarketTrackers();
     drawMarketStatus();
-    drawMarketSession();
+    drawLastUpdate();
 
     drawMarketSentiment();
 
@@ -85,7 +109,7 @@ void MarketApp::drawStandaloneSymbols() {
     // Stock rows
     float currentY = startY + Layout::PADDING + rowHeight;
 
-    drawLabelsAndValues(stocks, rowHeight, labelX, priceX, changeX, currentY);
+    drawLabelsAndValues(marketState.getStockQuotes(), rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketTrackers() {
@@ -113,13 +137,13 @@ void MarketApp::drawMarketTrackers() {
     // Stock rows
     float currentY = startY + Layout::PADDING + rowHeight;
 
-    drawLabelsAndValues(marketTrackers, rowHeight, labelX, priceX, changeX, currentY);
+    drawLabelsAndValues(marketState.getTrackerQuotes(), rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketStatus() {
     // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
-    sf::Color textColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
+    sf::Color backgroundColor = !marketState.getIsMarketOpen() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
+    sf::Color textColor = !marketState.getIsMarketOpen() ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
 
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 0, 1, 1);
@@ -130,12 +154,18 @@ void MarketApp::drawMarketStatus() {
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
+    sf::Text boxTitle(font, "MARKET_STATUS");
+    boxTitle.setCharacterSize(FontSizes::TITLE); // Adjust size as needed
+    boxTitle.setFillColor(textColor);
+    boxTitle.setPosition({backgroundBoxCoordinates.position.x + Layout::PADDING, backgroundBoxCoordinates.position.y + Layout::PADDING});
+    renderer.draw(boxTitle);
+
     // Draw market status text (OPEN or CLOSED)
     sf::Text marketStatusText(font);
     marketStatusText.setCharacterSize(20); // Adjust size as needed
     marketStatusText.setFillColor(textColor);
 
-    if (marketOpen) {
+    if (marketState.getIsMarketOpen()) {
         marketStatusText.setString("OPEN");
     } else {
         marketStatusText.setString("CLOSED");
@@ -148,30 +178,29 @@ void MarketApp::drawMarketStatus() {
     renderer.draw(marketStatusText);
 }
 
-void MarketApp::drawMarketSession() {
-    // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
-    sf::Color textColor = marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
-
+void MarketApp::drawLastUpdate() {
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 1, 1, 1);
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
-    backgroundBox.setFillColor(backgroundColor);
+    backgroundBox.setFillColor(ThemeManager::instance().getCurrentTheme().background());
     backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
-    // Draw market status text (OPEN or CLOSED)
-    sf::Text marketStatusText(font, "14:23 left");
-    marketStatusText.setCharacterSize(20); // Adjust size as needed
-    marketStatusText.setFillColor(textColor);
+    sf::Text boxTitle(font, "UPDATED_AT");
+    boxTitle.setCharacterSize(FontSizes::TITLE); // Adjust size as needed
+    boxTitle.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    boxTitle.setPosition({backgroundBoxCoordinates.position.x + Layout::PADDING, backgroundBoxCoordinates.position.y + Layout::PADDING});
+    renderer.draw(boxTitle);
 
-    // Center the text within the background box
-    sf::FloatRect textBounds = marketStatusText.getLocalBounds();
-    marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
-    marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    renderer.draw(marketStatusText);
+    sf::Text lastUpdateText(font, marketState.getLastUpdate());
+    lastUpdateText.setCharacterSize(20); // Adjust size as needed
+    lastUpdateText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    sf::FloatRect textBounds = lastUpdateText.getLocalBounds();
+    lastUpdateText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    lastUpdateText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
+    renderer.draw(lastUpdateText);
 }
 
 void MarketApp::drawMarketSentiment() {
@@ -184,16 +213,16 @@ void MarketApp::drawMarketSentiment() {
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
-    sf::Text text(font, "BEAR");
-    text.setCharacterSize(20);
-    text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-
-
-    // Center the text within the background box
-    sf::FloatRect textBounds = text.getLocalBounds();
-    text.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
-    text.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    renderer.draw(text);
+    // sf::Text text(font, "BEAR");
+    // text.setCharacterSize(20);
+    // text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    //
+    //
+    // // Center the text within the background box
+    // sf::FloatRect textBounds = text.getLocalBounds();
+    // text.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    // text.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
+    // renderer.draw(text);
 }
 
 void MarketApp::drawStonksMeme() {
@@ -248,10 +277,10 @@ void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, con
     renderer.draw(headerChange);
 }
 
-void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const float rowHeight, const float labelX, const float priceX, const float changeX, float currentY) {
-    for (const auto &symbol: symbols) {
+void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &quotes, const float rowHeight, const float labelX, const float priceX, const float changeX, float currentY) {
+    for (const auto &market_quote: quotes) {
         // Symbol
-        sf::Text labelText(font, symbol.ticker);
+        sf::Text labelText(font, market_quote.second.symbol);
         labelText.setPosition({labelX, currentY});
         labelText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         labelText.setCharacterSize(FontSizes::LABEL);
@@ -259,8 +288,9 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
 
         // Price
         std::ostringstream priceStream;
-        priceStream << "$" << std::fixed << std::setprecision(2) << symbol.price;
-        sf::Text priceText(font, priceStream.str());
+        priceStream << "$" << std::fixed << std::setprecision(2) << market_quote.second.price;
+        std::string priceTextValue = market_quote.second.price == 0 ? "loading..." : priceStream.str();
+        sf::Text priceText(font, priceTextValue);
         priceText.setPosition({priceX, currentY});
         priceText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         priceText.setCharacterSize(FontSizes::LABEL);
@@ -268,11 +298,16 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
 
         // Change %
         std::ostringstream changeStream;
-        if (symbol.changeFromOpen > 0) {
-            changeStream << "+";
+        if (market_quote.second.changeFromPreviousClose.has_value()) {
+            if (market_quote.second.changeFromPreviousClose > 0) {
+                changeStream << "+";
+            }
+            changeStream << std::fixed << std::setprecision(2) << market_quote.second.changeFromPreviousClose.value() << "%";
+        } else {
+            changeStream << "no_data";
         }
-        changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
-        sf::Text changeText(font, changeStream.str());
+        std::string changeTextValue = market_quote.second.changeFromPreviousClose.has_value() && market_quote.second.changeFromPreviousClose == 0 ? "loading..." : changeStream.str();
+        sf::Text changeText(font, changeTextValue);
         changeText.setCharacterSize(FontSizes::LABEL);
         changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         sf::FloatRect textBounds = changeText.getLocalBounds();
@@ -285,25 +320,27 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
     }
 }
 
-void MarketApp::loadMockData() {
-    stocks = {
-        {"AAPL", 172.35f, +1.23f},
-        {"MSFT", 248.59f, -3.42f},
-        {"AMZN", 135.72f, +0.75f},
-        {"NVDA", 317.25f, -0.67f},
-        {"GOOG", 849.45f, +5.38f},
-        {"TSM", 849.45f, +5.38f},
-        {"QCOM", 849.45f, +5.38f},
-        {"AMD", 849.45f, +5.38f},
-        {"MU", 849.45f, +15.38f}
-    };
-
-    marketTrackers = {
-        {"SP500", 172.35f, +1.23f},
-        {"NASDAQ100", 248.59f, -3.42f},
-        {"ALLEUROPE", 248.59f, -33.42f},
-        {"TECH100", 248.59f, -3.42f},
-    };
+void MarketApp::initMockedQuotes() {
+    std::map<std::string, MarketQuote> mockQuotes = {};
+    for (std::string symbol: stateMachine.getMarketConfig().symbols) {
+        MarketQuote quote;
+        quote.symbol = symbol;
+        quote.type = "stock";
+        quote.price = 0;
+        quote.changeFromOpen = 0;
+        quote.changeFromPreviousClose = 0;
+        mockQuotes[symbol] = quote;
+    }
+    for (std::string tracker: stateMachine.getMarketConfig().trackers) {
+        MarketQuote quote;
+        quote.symbol = tracker;
+        quote.type = "index";
+        quote.price = 0;
+        quote.changeFromOpen = 0;
+        quote.changeFromPreviousClose = 0;
+        mockQuotes[tracker] = quote;
+    }
+    marketState.updateAllQuotes(mockQuotes);
 }
 
 void MarketApp::initConfigFromDisk() {
@@ -313,20 +350,10 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.label = "refresh_interval";
     refreshIntervalInMinutes.type = BaseConfigOptionType::FREE_NUMBER;;
     refreshIntervalInMinutes.options = {};
-    int intervalInMinutes = stateMachine.getMarketConfig().defaultRefreshIntervalInMinutes;
+    int intervalInMinutes = stateMachine.getMarketConfig().refreshIntervalInMinutes;
     refreshIntervalInMinutes.currentValue = std::to_string(intervalInMinutes);
     refreshIntervalInMinutes.selected = false;
     refreshIntervalInMinutes.changed = false;
     refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
-
-    BaseConfigOptions asd;
-    asd.label = "TEST";
-    asd.type = BaseConfigOptionType::TOGGLE;;
-    asd.options = {};
-    asd.currentValue = "1";
-    asd.selected = false;
-    asd.changed = false;
-    asd.description = "Checkbox test";
-    configOptions.push_back(asd);
 }

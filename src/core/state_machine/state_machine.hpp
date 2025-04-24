@@ -31,7 +31,9 @@ struct PomodoroConfigFile {
 };
 
 struct MarketConfigFile {
-    int defaultRefreshIntervalInMinutes;
+    std::vector<std::string> symbols;
+    std::vector<std::string> trackers;
+    int refreshIntervalInMinutes;
 };
 
 struct WeatherConfigFile {
