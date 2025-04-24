@@ -187,16 +187,16 @@ void MarketApp::drawMarketSentiment() {
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
-    sf::Text text(font, "BEAR");
-    text.setCharacterSize(20);
-    text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
-
-
-    // Center the text within the background box
-    sf::FloatRect textBounds = text.getLocalBounds();
-    text.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
-    text.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    renderer.draw(text);
+    // sf::Text text(font, "BEAR");
+    // text.setCharacterSize(20);
+    // text.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    //
+    //
+    // // Center the text within the background box
+    // sf::FloatRect textBounds = text.getLocalBounds();
+    // text.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    // text.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
+    // renderer.draw(text);
 }
 
 void MarketApp::drawStonksMeme() {
@@ -307,16 +307,6 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
 
-    // symbols = stateMachine.getMarketConfig().symbols;
-    // for (const auto &symbol : symbols) {
-    //     MarketQuote quote;
-    //     quote.symbol = symbol;
-    //     quote.price = 1;
-    //     quote.changeFromOpen = 1;
-    //     quote.changeFromPreviousClose = 1;
-    //     stocksQuotes[symbol] = quote;
-    // }
-
     // TODO: add this con config when finish testing
     // "symbols": [
     //     "AAPL",
@@ -334,14 +324,4 @@ void MarketApp::initConfigFromDisk() {
     //     "AVGO",
     //     "LRCX"
     // ],
-
-    // trackers = stateMachine.getMarketConfig().trackers;
-    // for (const auto &tracker : trackers) {
-    //     MarketQuote quote;
-    //     quote.symbol = tracker;
-    //     quote.price = 1;
-    //     quote.changeFromOpen = 1;
-    //     quote.changeFromPreviousClose = 1;
-    //     trackersQuotes[tracker] = quote;
-    // }
 }
