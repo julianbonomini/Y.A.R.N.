@@ -40,8 +40,8 @@ void MarketApp::handleSettings() {
 
 void MarketApp::update() {
     Logger::info("[MARKET_APP] Manual data refresh");
-    std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
-    marketState.updateStockQuotes(stockQuotes);
+    std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
+    marketState.updateAllQuotes(quotes);
     Logger::done_separator();
 }
 
@@ -168,7 +168,7 @@ void MarketApp::drawLastUpdate() {
     renderer.draw(boxTitle);
 
 
-    sf::Text lastUpdateText(font, marketState.getLastStockUpdateTime());
+    sf::Text lastUpdateText(font, marketState.getLastUpdate());
     lastUpdateText.setCharacterSize(20); // Adjust size as needed
     lastUpdateText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     sf::FloatRect textBounds = lastUpdateText.getLocalBounds();

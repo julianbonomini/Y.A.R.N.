@@ -17,6 +17,7 @@ struct MarketQuote {
     double price;
     std::optional<double> changeFromOpen;
     std::optional<double> changeFromPreviousClose;
+    std::string type;
 };
 
 struct MarketStatus {
@@ -73,6 +74,7 @@ public:
         MarketQuote quote;
         quote.symbol = response->at("symbol");
         quote.price = response->at("price");
+        quote.type = response->at("type");
         if (response->contains("changeFromOpen"))
             quote.changeFromOpen = response->at("changeFromOpen");
         if (response->contains("changeFromPreviousClose"))
@@ -93,6 +95,7 @@ public:
         MarketQuote quote;
         quote.symbol = response->at("symbol");
         quote.price = response->at("price");
+        quote.type = response->at("type");
         if (response->contains("changeFromOpen"))
             quote.changeFromOpen = response->at("changeFromOpen");
         if (response->contains("changeFromPreviousClose"))
@@ -167,6 +170,7 @@ public:
             MarketQuote quote;
             quote.symbol = key;
             quote.price = val["price"];
+            quote.type = val["type"];
             if (val.contains("changeFromOpen"))
                 quote.changeFromOpen = val["changeFromOpen"];
             if (val.contains("changeFromPreviousClose"))

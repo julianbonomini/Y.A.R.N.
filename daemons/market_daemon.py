@@ -18,7 +18,33 @@ log.addHandler(handler)
 stock_data_cache = {}
 settings = {
     "symbols": [],
+    "trackers": [],
 }
+
+def cacheSymbolData(symbol, typeOfSymbol):
+    yf_data = yf.Ticker(symbol).info
+    price = yf_data.get("regularMarketPrice")
+    open_price = yf_data.get("regularMarketOpen")
+    prev_close = yf_data.get("previousClose")
+    change_from_open = None
+    pct_change_from_open = None
+    change_from_prev_close = None
+    pct_change_from_prev_close = None
+    if price is not None:
+        if open_price:
+            change_from_open = price - open_price
+            pct_change_from_open = (change_from_open / open_price) * 100
+        if prev_close:
+            change_from_prev_close = price - prev_close
+            pct_change_from_prev_close = (change_from_prev_close / prev_close) * 100
+    stock_data_cache[symbol] = {
+        "price": price,
+        "change_from_open": change_from_open,
+        "percent_change_from_open": pct_change_from_open,
+        "change_from_prev_close": change_from_prev_close,
+        "percent_change_from_prev_close": pct_change_from_prev_close,
+        "type": typeOfSymbol,
+    }
 
 @app.route("/market-status")
 def get_market_status():
@@ -40,34 +66,11 @@ def get_cached_quote(symbol):
 def get_quote(symbol):
     symbol = symbol.upper()
     try:
-        yf_data = yf.Ticker(symbol).info
-        price = yf_data.get("regularMarketPrice")
-        open_price = yf_data.get("regularMarketOpen")
-        prev_close = yf_data.get("previousClose")
-
-        change_from_open = None
-        pct_change_from_open = None
-        change_from_prev_close = None
-        pct_change_from_prev_close = None
-
-        if price is not None:
-            if open_price:
-                change_from_open = price - open_price
-                pct_change_from_open = (change_from_open / open_price) * 100
-            if prev_close:
-                change_from_prev_close = price - prev_close
-                pct_change_from_prev_close = (change_from_prev_close / prev_close) * 100
-
-        stock_data_cache[symbol] = {
-            "price": price,
-            "change_from_open": change_from_open,
-            "percent_change_from_open": pct_change_from_open,
-            "change_from_prev_close": change_from_prev_close,
-            "percent_change_from_prev_close": pct_change_from_prev_close
-        }
+        cacheSymbolData(symbol, "stock")
     except Exception as e:
         log.error(f"Error fetching {symbol}: {e}")
     return jsonify(stock_data_cache[symbol])
+
 
 @app.route("/quotes")
 def get_all_quotes():
@@ -75,32 +78,15 @@ def get_all_quotes():
     for symbol in settings["symbols"]:
         symbol = symbol.upper()
         try:
-            yf_data = yf.Ticker(symbol).info
-            price = yf_data.get("regularMarketPrice")
-            open_price = yf_data.get("regularMarketOpen")
-            prev_close = yf_data.get("previousClose")
-
-            change_from_open = None
-            pct_change_from_open = None
-            change_from_prev_close = None
-            pct_change_from_prev_close = None
-
-            if price is not None:
-                if open_price:
-                    change_from_open = price - open_price
-                    pct_change_from_open = (change_from_open / open_price) * 100
-                if prev_close:
-                    change_from_prev_close = price - prev_close
-                    pct_change_from_prev_close = (change_from_prev_close / prev_close) * 100
-
-            stock_data_cache[symbol] = {
-                "price": price,
-                "change_from_open": change_from_open,
-                "percent_change_from_open": pct_change_from_open,
-                "change_from_prev_close": change_from_prev_close,
-                "percent_change_from_prev_close": pct_change_from_prev_close
-            }
-            time.sleep(1) # throttle to avoid limiting
+            cacheSymbolData(symbol, "stock")
+            time.sleep(0.25) # throttle to avoid limiting
+        except Exception as e:
+            log.error(f"Error fetching {symbol}: {e}")
+    for tracker in settings["trackers"]:
+        tracker = tracker.upper()
+        try:
+            cacheSymbolData(tracker, "index")
+            time.sleep(0.25) # throttle to avoid limiting
         except Exception as e:
             log.error(f"Error fetching {symbol}: {e}")
     return jsonify(stock_data_cache)
@@ -110,6 +96,8 @@ def update_config():
     json = request.get_json()
     if "symbols" in json:
         settings["symbols"] = [s.upper() for s in json["symbols"]]
+    if "trackers" in json:
+        settings["trackers"] = [s.upper() for s in json["trackers"]]
     return jsonify({"status": "ok", "settings": settings})
 
 @app.route("/ready")
@@ -122,10 +110,15 @@ if __name__ == "__main__":
         "--symbols", nargs="+", default=[],
         help="Initial list of stock symbols (space-separated)"
     )
+    parser.add_argument(
+        "--trackers", nargs="+", default=[],
+        help="Initial list of market trackers (space-separated)"
+    )
     args = parser.parse_args()
 
     settings["symbols"] = [s.upper() for s in args.symbols]
+    settings["trackers"] = [s.upper() for s in args.trackers]
 
-    print(f"[MARKET_DAEMON]: Starting with symbols={settings['symbols']}")
+    print(f"[MARKET_DAEMON]: Starting with symbols={settings['symbols']}, trackers={settings['trackers']}")
 
     app.run(host="0.0.0.0", port=8080)

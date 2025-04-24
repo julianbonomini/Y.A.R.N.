@@ -97,7 +97,7 @@ bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
     return false;
 }
 
-pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols) {
+pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols, std::vector<std::string> &trackers) {
     pid_t pid = fork();
     if (pid == 0) {
         Logger::info(daemonPath);
@@ -105,8 +105,12 @@ pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> 
         args.push_back("python3"); // argv[0]
         args.push_back(daemonPath.c_str());
         args.push_back("--symbols");
-        for (const auto& symbol : symbols) {
+        for (const auto &symbol : symbols) {
             args.push_back(symbol.c_str());
+        }
+        args.push_back("--trackers");
+        for (const auto &tracker : trackers) {
+            args.push_back(tracker.c_str());
         }
         args.push_back(nullptr); // Null-terminated
 
@@ -216,7 +220,7 @@ int main() {
     Logger::info("Starting forked market data daemon...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
-    marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols);
+    marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols, stateMachine.getMarketConfig().trackers);
     waitForDaemonStartup();
     bool isMarketOpen = MarketDaemonClient::isMarketOpen();
     marketState.updateMarketOpen(isMarketOpen);
@@ -373,8 +377,8 @@ int main() {
         // Init market data once
         if (!initalMarketDataLoaded) {
             Logger::info("Init stock quotes ...");
-            std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
-            marketState.updateStockQuotes(stockQuotes);
+            std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
+            marketState.updateAllQuotes(quotes);
             initalMarketDataLoaded = true;
             Logger::done_separator();
         }
@@ -384,8 +388,8 @@ int main() {
             marketState.updateMarketOpen(isMarketOpen);
             if (isMarketOpen) {
                 Logger::info("Getting stock quotes ...");
-                std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
-                marketState.updateStockQuotes(stockQuotes);
+                std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
+                marketState.updateAllQuotes(quotes);
                 marketClock.restart();
                 Logger::done_separator();
             }

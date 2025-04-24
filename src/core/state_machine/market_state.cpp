@@ -22,15 +22,24 @@ std::string MarketState::getFormattedNow() {
     return oss.str();
 }
 
-void MarketState::updateStockQuotes(const std::map<std::string, MarketQuote> quotes) {
-    stocksQuotes = quotes;
-    lastStockUpdate = getFormattedNow();
-}
-
-
-void MarketState::updateTrackerQuotes(const std::map<std::string, MarketQuote> quotes) {
-    trackersQuotes = quotes;
-    lastTrackerUpdate = getFormattedNow();
+void MarketState::updateAllQuotes(const std::map<std::string, MarketQuote> quotes) {
+    Logger::debug("saving symbols", quotes.size());
+    allQuotes = quotes;
+    std::map<std::string, MarketQuote> filteredStocksQuotes = {};
+    std::map<std::string, MarketQuote> filteredTrackerQuotes = {};
+    for (const auto& pair : quotes) {
+        Logger::debug("quote type", pair.second.type);
+        if (pair.second.type == "stock") {
+            filteredStocksQuotes[pair.first] = pair.second;
+        }
+        if (pair.second.type == "index") {
+            filteredTrackerQuotes[pair.first] = pair.second;
+        }
+    }
+    Logger::debug("saving symbols");
+    stocksQuotes = filteredStocksQuotes;
+    trackersQuotes = filteredTrackerQuotes;
+    lastUpdate = getFormattedNow();
 }
 
 std::map<std::string, MarketQuote> MarketState::getStockQuotes() const {
@@ -38,17 +47,13 @@ std::map<std::string, MarketQuote> MarketState::getStockQuotes() const {
 }
 
 std::map<std::string, MarketQuote> MarketState::getTrackerQuotes() const {
-    return stocksQuotes;
+    return trackersQuotes;
 }
 
 bool MarketState::getIsMarketOpen() const {
     return isMarketOpen;
 }
 
-std::string MarketState::getLastStockUpdateTime() const {
-    return lastStockUpdate;
-}
-
-std::string MarketState::getLastTrackerUpdateTime() const {
-    return lastTrackerUpdate;
+std::string MarketState::getLastUpdate() const {
+    return lastUpdate;
 }

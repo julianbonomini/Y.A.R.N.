@@ -1,5 +1,5 @@
 {
-    "refresh_interval": "10",
+    "refresh_interval": "1",
     "symbols": [
         "AAPL"
     ],

@@ -13,9 +13,7 @@ public:
 
     void updateMarketOpen(bool isOpen);
 
-    void updateStockQuotes(const std::map<std::string, MarketQuote> quotes);
-
-    void updateTrackerQuotes(const std::map<std::string, MarketQuote> quotes);
+    void updateAllQuotes(std::map<std::string, MarketQuote> quotes);
 
     std::map<std::string, MarketQuote> getStockQuotes() const;
 
@@ -23,19 +21,16 @@ public:
 
     bool getIsMarketOpen() const;
 
-    std::string getLastStockUpdateTime() const;
-
-    std::string getLastTrackerUpdateTime() const;
+    std::string getLastUpdate() const;
 
 private:
     std::map<std::string, MarketQuote> stocksQuotes;
     std::map<std::string, MarketQuote> trackersQuotes;
+    std::map<std::string, MarketQuote> allQuotes;
     bool isMarketOpen;
-    std::string lastStockUpdate;
-    std::string lastTrackerUpdate;
+    std::string lastUpdate;
 
     std::string getFormattedNow();
-
 };
 
 
