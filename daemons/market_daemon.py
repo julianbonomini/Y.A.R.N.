@@ -105,6 +105,10 @@ def update_config():
         settings["symbols"] = [s.upper() for s in json["symbols"]]
     return jsonify({"status": "ok", "settings": settings})
 
+@app.route("/ready")
+def health():
+    return jsonify({"status": "ok"}), 200
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Stock Quote Daemon")
     parser.add_argument(

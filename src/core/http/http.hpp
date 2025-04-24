@@ -19,6 +19,14 @@ public:
                                              const std::string &scheme
     );
 
+    static std::optional<nlohmann::json> SILENT_GET(const std::string &host,
+                                                    const std::string &path,
+                                                    const std::map<std::string,
+                                                        std::string> &query_params,
+                                                    const std::map<std::string,
+                                                        std::string> &headers,
+                                                    const std::string &scheme);
+
     static std::optional<nlohmann::json> POST(const std::string &host,
                                               const std::string &path,
                                               const nlohmann::json &body,

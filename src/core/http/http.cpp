@@ -52,6 +52,48 @@ std::optional<nlohmann::json> Http::GET(
     }
 }
 
+std::optional<nlohmann::json> Http::SILENT_GET(
+    const std::string &host,
+    const std::string &path,
+    const std::map<std::string, std::string> &query_params,
+    const std::map<std::string, std::string> &headers,
+    const std::string &scheme
+) {
+    std::unique_ptr<httplib::SSLClient> client;
+
+    // if (scheme == "https") {
+    // Use SSLClient for HTTPS
+    client = std::make_unique<httplib::SSLClient>(host);
+    // } else {
+    // Use regular Client for HTTP
+    // client = std::make_unique<httplib::Client>(host);
+    // }
+
+    std::string full_path = path;
+    std::string query = BuildQueryString(query_params);
+    if (!query.empty()) {
+        full_path += "?" + query;
+    }
+
+    httplib::Headers req_headers;
+    for (const auto &[key, value]: headers) {
+        req_headers.emplace(key, value);
+    }
+
+    auto res = client->Get(full_path.c_str(), req_headers);
+
+    if (res && res->status == 200) {
+        try {
+            auto j = nlohmann::json::parse(res->body);
+            return j;
+        } catch (nlohmann::json::parse_error &e) {
+            return std::nullopt;
+        }
+    } else {
+        return std::nullopt;
+    }
+}
+
 std::optional<nlohmann::json> Http::POST(
     const std::string &host,
     const std::string &path,

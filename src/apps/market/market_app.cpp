@@ -11,8 +11,8 @@
 
 MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
     : AppWithConfig(appName, renderer, font, stateMachine) {
-    loadMockData();
     initConfigFromDisk();
+    getAllQuotes();
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
@@ -85,7 +85,7 @@ void MarketApp::drawStandaloneSymbols() {
     // Stock rows
     float currentY = startY + Layout::PADDING + rowHeight;
 
-    drawLabelsAndValues(stocks, rowHeight, labelX, priceX, changeX, currentY);
+    drawLabelsAndValues(stocksQuotes, rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketTrackers() {
@@ -113,7 +113,7 @@ void MarketApp::drawMarketTrackers() {
     // Stock rows
     float currentY = startY + Layout::PADDING + rowHeight;
 
-    drawLabelsAndValues(marketTrackers, rowHeight, labelX, priceX, changeX, currentY);
+    drawLabelsAndValues(trackersQuotes, rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketStatus() {
@@ -248,10 +248,10 @@ void MarketApp::drawSymbolsHeaderRow(const float startY, const float labelX, con
     renderer.draw(headerChange);
 }
 
-void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const float rowHeight, const float labelX, const float priceX, const float changeX, float currentY) {
-    for (const auto &symbol: symbols) {
+void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &quotes, const float rowHeight, const float labelX, const float priceX, const float changeX, float currentY) {
+    for (const auto &market_quote: quotes) {
         // Symbol
-        sf::Text labelText(font, symbol.ticker);
+        sf::Text labelText(font, market_quote.second.symbol);
         labelText.setPosition({labelX, currentY});
         labelText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         labelText.setCharacterSize(FontSizes::LABEL);
@@ -259,7 +259,7 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
 
         // Price
         std::ostringstream priceStream;
-        priceStream << "$" << std::fixed << std::setprecision(2) << symbol.price;
+        priceStream << "$" << std::fixed << std::setprecision(2) << market_quote.second.price;
         sf::Text priceText(font, priceStream.str());
         priceText.setPosition({priceX, currentY});
         priceText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
@@ -268,10 +268,10 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
 
         // Change %
         std::ostringstream changeStream;
-        if (symbol.changeFromOpen > 0) {
+        if (market_quote.second.changeFromOpen > 0) {
             changeStream << "+";
         }
-        changeStream << std::fixed << std::setprecision(2) << symbol.changeFromOpen << "%";
+        changeStream << std::fixed << std::setprecision(2) << "%";
         sf::Text changeText(font, changeStream.str());
         changeText.setCharacterSize(FontSizes::LABEL);
         changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
@@ -285,25 +285,21 @@ void MarketApp::drawLabelsAndValues(const std::vector<StockData> &symbols, const
     }
 }
 
-void MarketApp::loadMockData() {
-    stocks = {
-        {"AAPL", 172.35f, +1.23f},
-        {"MSFT", 248.59f, -3.42f},
-        {"AMZN", 135.72f, +0.75f},
-        {"NVDA", 317.25f, -0.67f},
-        {"GOOG", 849.45f, +5.38f},
-        {"TSM", 849.45f, +5.38f},
-        {"QCOM", 849.45f, +5.38f},
-        {"AMD", 849.45f, +5.38f},
-        {"MU", 849.45f, +15.38f}
-    };
 
-    marketTrackers = {
-        {"SP500", 172.35f, +1.23f},
-        {"NASDAQ100", 248.59f, -3.42f},
-        {"ALLEUROPE", 248.59f, -33.42f},
-        {"TECH100", 248.59f, -3.42f},
-    };
+void MarketApp::getAllQuotes() {
+    Logger::debug("Getting all quotes, this can take a minute or two...");
+    std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
+    for (const auto& [symbol, quote] : quotes) {
+        // Check if the symbol is in our list of tracked symbols
+        if (std::find(symbols.begin(), symbols.end(), symbol) != symbols.end()) {
+            stocksQuotes[symbol] = quote;
+        }
+
+        // Check if the symbol is in our list of tracked trackers
+        if (std::find(trackers.begin(), trackers.end(), symbol) != trackers.end()) {
+            trackersQuotes[symbol] = quote;
+        }
+    }
 }
 
 void MarketApp::initConfigFromDisk() {
@@ -320,13 +316,24 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
 
-    BaseConfigOptions asd;
-    asd.label = "TEST";
-    asd.type = BaseConfigOptionType::TOGGLE;;
-    asd.options = {};
-    asd.currentValue = "1";
-    asd.selected = false;
-    asd.changed = false;
-    asd.description = "Checkbox test";
-    configOptions.push_back(asd);
+    symbols = stateMachine.getMarketConfig().symbols;
+    for (const auto &symbol : symbols) {
+        MarketQuote quote;
+        quote.symbol = symbol;
+        quote.price = 1;
+        quote.changeFromOpen = 1;
+        quote.changeFromPreviousClose = 1;
+        stocksQuotes[symbol] = quote;
+    }
+
+
+    trackers = stateMachine.getMarketConfig().trackers;
+    for (const auto &tracker : trackers) {
+        MarketQuote quote;
+        quote.symbol = tracker;
+        quote.price = 1;
+        quote.changeFromOpen = 1;
+        quote.changeFromPreviousClose = 1;
+        trackersQuotes[tracker] = quote;
+    }
 }

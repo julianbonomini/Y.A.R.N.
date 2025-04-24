@@ -6,13 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../common/app_with_config.hpp"
-
-// Represents a single stock's data
-struct StockData {
-    std::string ticker;
-    float price;
-    float changeFromOpen;
-};
+#include "./market_daemon_client.hpp"
 
 class MarketApp : public AppWithConfig {
 public:
@@ -32,8 +26,10 @@ public:
 
 
 private:
-    std::vector<StockData> stocks;
-    std::vector<StockData> marketTrackers;
+    std::vector<std::string> symbols;
+    std::vector<std::string> trackers;
+    std::map<std::string, MarketQuote> stocksQuotes;
+    std::map<std::string, MarketQuote> trackersQuotes;
     bool marketOpen = true;
 
     void drawStandaloneSymbols();
@@ -50,9 +46,9 @@ private:
 
     void drawSymbolsHeaderRow(float startY, float labelX, float priceX, float changeX);
 
-    void drawLabelsAndValues(const std::vector<StockData> &symbols, float rowHeight, float labelX, float priceX, float changeX, float currentY);
+    void drawLabelsAndValues(const std::map<std::string, MarketQuote> &quotes, float rowHeight, float labelX, float priceX, float changeX, float currentY);
 
-    void loadMockData(); // For now, simulate some data
+    void getAllQuotes();
 };
 
 

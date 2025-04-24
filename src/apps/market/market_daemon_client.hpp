@@ -5,9 +5,8 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <optional>
-#include <curl/curl.h>
+#include <map>
 #include <nlohmann/json.hpp>
 
 #include "../../core/http/http.hpp"
@@ -18,8 +17,6 @@ struct MarketQuote {
     std::optional<double> changeFromOpen;
     std::optional<double> changeFromPreviousClose;
 };
-
-std::string market_api_host = "http://localhost:8080";
 
 
 class MarketDaemonClient {
@@ -34,7 +31,7 @@ public:
         };
 
         // Perform the POST request
-        auto response_json = Http::POST(market_api_host, path, payload, headers, scheme);
+        auto response_json = Http::POST("http://localhost:8080", path, payload, headers, "http");
 
         // Handle the response
         if (response_json.has_value()) {
@@ -63,7 +60,7 @@ public:
         std::string path = "/cached-quote" + symbol;
         std::string scheme = "http";
 
-        auto response = Http::GET(host, path, query_params, headers, scheme);
+        auto response = Http::GET("http://localhost:8080", path, query_params, headers, scheme);
 
         if (!response || response->contains("error")) return std::nullopt;
 
@@ -84,7 +81,7 @@ public:
         std::string path = "/quote" + symbol;
         std::string scheme = "http";
 
-        auto response = Http::GET(market_api_host, path, query_params, headers, scheme);
+        auto response = Http::GET("http://localhost:8080", path, query_params, headers, scheme);
 
         if (!response || response->contains("error")) return std::nullopt;
 
@@ -99,7 +96,22 @@ public:
         return quote;
     };
 
-    static std::unordered_map<std::string, MarketQuote> getAllQuotes() {
+    static bool ready() {
+        std::map<std::string, std::string> query_params = {};
+        std::map<std::string, std::string> headers = {};
+        std::string path = "/ready";
+        std::string scheme = "http";
+
+        auto response = Http::SILENT_GET("http://localhost:8080", path, query_params, headers, scheme);
+
+        if (response && (*response)["status"] == "ok") {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    static std::map<std::string, MarketQuote> getAllQuotes() {
         std::map<std::string, std::string> query_params = {};
         std::map<std::string, std::string> headers = {};
         std::string host = "http://localhost:8080";
@@ -108,7 +120,7 @@ public:
 
         auto response = Http::GET(host, path, query_params, headers, scheme);
 
-        std::unordered_map<std::string, MarketQuote> result;
+        std::map<std::string, MarketQuote> result;
         for (auto& [key, val] : response->items()) {
             MarketQuote quote;
             quote.symbol = key;

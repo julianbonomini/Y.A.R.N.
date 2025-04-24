@@ -18,6 +18,7 @@
 #include "apps/pomodoro/pomodoro_app.hpp"
 #include "apps/weather/openweather.hpp"
 #include "apps/weather/weather_app.hpp"
+#include "apps/market/market_daemon_client.hpp"
 #include "layout/main_window/main_window.hpp"
 #include "core/state_machine/state_machine.hpp"
 #include "ui/themes/theme_manager.hpp"
@@ -25,6 +26,7 @@
 #include "core/env/config.hpp"
 #include "core/execute/execute_utils.hpp"
 #include "core/http/http.hpp"
+#include "core/state_machine/market_state.hpp"
 #include "core/state_machine/pomodoro_state.hpp"
 
 void drawSplashScreen(
@@ -83,6 +85,18 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
+bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
+    for (int i = 0; i < maxTries; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+        bool isReady = MarketDaemonClient::ready();
+        // auto res = Http::GET(host, "/health", {}, {}, "http");
+        if (isReady) {
+            return true;
+        }
+    }
+    return false;
+}
+
 pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols) {
     pid_t pid = fork();
     if (pid == 0) {
@@ -136,6 +150,7 @@ int main() {
 
     Logger::info("Initializing app states...");
     WeatherState weatherState({});
+    MarketState marketState({});
     PomodoroState pomodoroState;
     Logger::done_separator();
 
@@ -189,35 +204,6 @@ int main() {
     Footer footer(renderTexture, font);
     Logger::done_separator();
 
-    Logger::info("Initializing apps...");
-    std::vector<std::unique_ptr<App> > apps;
-    // These are ordered based on the enum on tabs.hpp
-    for (int i = 0; i < static_cast<int>(Tab::COUNT); ++i) {
-        Tab tab = static_cast<Tab>(i);
-        Logger::debug("Initializing", Tabs::tabToString(tab), "app...");
-        switch (tab) {
-            case Tab::MKT:
-                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
-                break;
-            case Tab::PMD:
-                apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
-                break;
-            case Tab::WTH:
-                apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
-                break;
-            case Tab::INF:
-                apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
-                break;
-            case Tab::CNF:
-                apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
-                break;
-            default: throw std::runtime_error("Invalid tab");
-        }
-    }
-    assert(apps.size() == static_cast<size_t>(Tab::COUNT));
-    Logger::info("Apps booted successfully...");
-    Logger::done_separator();
-
 
     Logger::info("Getting weather with refresh interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes);
     sf::Clock weatherClock;
@@ -231,6 +217,7 @@ int main() {
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
     marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols);
+    waitForDaemonStartup();
     Logger::done_separator();
 
     Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
@@ -243,9 +230,38 @@ int main() {
     sf::Clock tabCycleClock;
     tabCycleClock.start();
     const sf::Time tabCycleInterval = sf::seconds(stateMachine.getOsConfig().cycleTabTimeInSeconds);
-    weatherState.updateFromJson(weatherData);
     Logger::done_separator();
 
+    Logger::info("Initializing apps...");
+    std::vector<std::unique_ptr<App> > apps;
+    // These are ordered based on the enum on tabs.hpp
+    for (int i = 0; i < static_cast<int>(Tab::COUNT); ++i) {
+        Tab tab = static_cast<Tab>(i);
+        Logger::debug("Initializing", Tabs::tabToString(tab), "app...");
+        switch (tab) {
+            case Tab::MKT:
+                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
+            break;
+            case Tab::PMD:
+                apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
+            break;
+            case Tab::WTH:
+                apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
+            break;
+            case Tab::INF:
+                apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
+            break;
+            case Tab::CNF:
+                apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
+            break;
+            default: throw std::runtime_error("Invalid tab");
+        }
+    }
+    assert(apps.size() == static_cast<size_t>(Tab::COUNT));
+    Logger::info("Apps booted successfully...");
+    Logger::done_separator();
+
+    bool initalMarketDataLoaded = false;
     bool shownSplash = false;
     sf::Vector2f lastMouseClickPos;
     bool mouseClicked = false;
@@ -352,6 +368,15 @@ int main() {
             loadedTheme = os_config_file->theme;
         }
 
+        // Fetch market data
+        // TODO: once the app has init AND every x ammount of time:
+        if (marketClock.getElapsedTime() >= marketInterval || !initalMarketDataLoaded) {
+            Logger::info("Getting stock quotes ...");
+            std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
+            marketClock.restart();
+            initalMarketDataLoaded = true;
+            Logger::done_separator();
+        }
 
         // Fetch and update weather
         if (weatherClock.getElapsedTime() >= weatherInterval) {
