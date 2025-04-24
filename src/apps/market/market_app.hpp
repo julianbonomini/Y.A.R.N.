@@ -19,6 +19,8 @@ public:
 
     void handleSettings() override;
 
+    void initMockedQuotes();
+
     void handleHelp() override;
 
     void initConfigFromDisk() override;

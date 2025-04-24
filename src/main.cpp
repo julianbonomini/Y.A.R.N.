@@ -64,7 +64,7 @@ void drawSplashScreen(
     window.display();
     shownSplash = true;
 
-    sleep(sf::seconds(3));
+    sleep(sf::seconds(1));
 }
 
 pid_t marketDaemonPid = -1;
@@ -100,7 +100,6 @@ bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
 pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols, std::vector<std::string> &trackers) {
     pid_t pid = fork();
     if (pid == 0) {
-        Logger::info(daemonPath);
         std::vector<const char*> args;
         args.push_back("python3"); // argv[0]
         args.push_back(daemonPath.c_str());
@@ -209,15 +208,7 @@ int main() {
     Logger::done_separator();
 
 
-    Logger::info("Getting weather with refresh interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes);
-    sf::Clock weatherClock;
-    weatherClock.start();
-    const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
-    nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
-    weatherState.updateFromJson(weatherData);
-    Logger::done_separator();
-
-    Logger::info("Starting forked market data daemon...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
+    Logger::info("Starting forked market data daemon...");
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
     marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols, stateMachine.getMarketConfig().trackers);
@@ -226,13 +217,20 @@ int main() {
     marketState.updateMarketOpen(isMarketOpen);
     Logger::done_separator();
 
-    Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
+
+    Logger::info("Starting app clocks...");
+    // Market clock
+    Logger::debug("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes, "minutes");
     sf::Clock marketClock;
     marketClock.start();
     const sf::Time marketInterval = sf::seconds(stateMachine.getMarketConfig().refreshIntervalInMinutes * 60);
-    Logger::done_separator();
-
-    Logger::info("Setting clock for tab cycling every...", stateMachine.getOsConfig().cycleTabTimeInSeconds);
+    // Weather Clock
+    Logger::debug("Setting weather data clock with interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes, "minutes");
+    sf::Clock weatherClock;
+    weatherClock.start();
+    const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
+    // Tab cycling Clock
+    Logger::debug("Setting tab cycling clock with interval...", stateMachine.getOsConfig().cycleTabTimeInSeconds, "seconds");
     sf::Clock tabCycleClock;
     tabCycleClock.start();
     const sf::Time tabCycleInterval = sf::seconds(stateMachine.getOsConfig().cycleTabTimeInSeconds);
@@ -268,6 +266,7 @@ int main() {
     Logger::done_separator();
 
     bool initalMarketDataLoaded = false;
+    bool initalWeatherDataLoaded = false;
     bool shownSplash = false;
     sf::Vector2f lastMouseClickPos;
     bool mouseClicked = false;
@@ -374,29 +373,16 @@ int main() {
             loadedTheme = os_config_file->theme;
         }
 
-        // Init market data once
-        if (!initalMarketDataLoaded) {
-            Logger::info("Init stock quotes ...");
-            std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
-            marketState.updateAllQuotes(quotes);
-            initalMarketDataLoaded = true;
+        // Init weather data
+        if (!initalWeatherDataLoaded) {
+            Logger::info("Init weather data ...");
+            nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
+            weatherState.updateFromJson(weatherData);
+            initalWeatherDataLoaded = true;
             Logger::done_separator();
         }
-        // Refresh market data
-        if (marketClock.getElapsedTime() >= marketInterval) {
-            bool isMarketOpen = MarketDaemonClient::isMarketOpen();
-            marketState.updateMarketOpen(isMarketOpen);
-            if (isMarketOpen) {
-                Logger::info("Getting stock quotes ...");
-                std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
-                marketState.updateAllQuotes(quotes);
-                marketClock.restart();
-                Logger::done_separator();
-            }
-            Logger::debug("Market closed, not fetching anything");
-        }
 
-        // Fetch and update weather
+        // Refersh weather data
         if (weatherClock.getElapsedTime() >= weatherInterval) {
             Logger::info("Updating weather ...");
             nlohmann::json weatherData = OpenWeather::getWeather(stateMachine.getWeatherConfig().city);
@@ -441,6 +427,32 @@ int main() {
             window.draw(shaderSprite);
         }
         window.display();
+
+        // Market data can be quite slow, for this reason there is a mocked init until data is available
+
+        // Init market data once
+        if (!initalMarketDataLoaded) {
+            Logger::info("Init stock quotes ...");
+            std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
+            marketState.updateAllQuotes(quotes);
+            initalMarketDataLoaded = true;
+            Logger::done_separator();
+        }
+
+        // Refresh market data
+        if (marketClock.getElapsedTime() >= marketInterval) {
+            bool isMarketOpen = MarketDaemonClient::isMarketOpen();
+            marketState.updateMarketOpen(isMarketOpen);
+            if (isMarketOpen) {
+                Logger::info("Getting stock quotes ...");
+                std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
+                marketState.updateAllQuotes(quotes);
+            } else {
+                Logger::debug("Market closed, not fetching anything");
+            }
+            marketClock.restart();
+            Logger::done_separator();
+        }
     }
 
     return 0;

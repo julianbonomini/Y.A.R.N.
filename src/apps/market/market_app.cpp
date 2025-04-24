@@ -13,6 +13,7 @@
 MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, MarketState &marketState)
     : AppWithConfig(appName, renderer, font, stateMachine), marketState(marketState) {
     initConfigFromDisk();
+    initMockedQuotes();
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
@@ -133,6 +134,12 @@ void MarketApp::drawMarketStatus() {
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
+    sf::Text boxTitle(font, "MARKET_STATUS");
+    boxTitle.setCharacterSize(FontSizes::TITLE); // Adjust size as needed
+    boxTitle.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    boxTitle.setPosition({backgroundBoxCoordinates.position.x + Layout::PADDING, backgroundBoxCoordinates.position.y + Layout::PADDING});
+    renderer.draw(boxTitle);
+
     // Draw market status text (OPEN or CLOSED)
     sf::Text marketStatusText(font);
     marketStatusText.setCharacterSize(20); // Adjust size as needed
@@ -166,7 +173,6 @@ void MarketApp::drawLastUpdate() {
     boxTitle.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
     boxTitle.setPosition({backgroundBoxCoordinates.position.x + Layout::PADDING, backgroundBoxCoordinates.position.y + Layout::PADDING});
     renderer.draw(boxTitle);
-
 
     sf::Text lastUpdateText(font, marketState.getLastUpdate());
     lastUpdateText.setCharacterSize(20); // Adjust size as needed
@@ -263,7 +269,8 @@ void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &qu
         // Price
         std::ostringstream priceStream;
         priceStream << "$" << std::fixed << std::setprecision(2) << market_quote.second.price;
-        sf::Text priceText(font, priceStream.str());
+        std::string priceTextValue = market_quote.second.price == 0 ? "loading..." : priceStream.str();
+        sf::Text priceText(font, priceTextValue);
         priceText.setPosition({priceX, currentY});
         priceText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         priceText.setCharacterSize(FontSizes::LABEL);
@@ -279,7 +286,8 @@ void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &qu
         } else {
             changeStream << "no_data";
         }
-        sf::Text changeText(font, changeStream.str());
+        std::string changeTextValue = market_quote.second.changeFromPreviousClose.has_value() && market_quote.second.changeFromOpen == 0 ? "loading..." : changeStream.str();
+        sf::Text changeText(font, changeTextValue);
         changeText.setCharacterSize(FontSizes::LABEL);
         changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
         sf::FloatRect textBounds = changeText.getLocalBounds();
@@ -292,6 +300,28 @@ void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &qu
     }
 }
 
+void MarketApp::initMockedQuotes() {
+    std::map<std::string, MarketQuote> mockQuotes = {};
+    for (std::string symbol: stateMachine.getMarketConfig().symbols) {
+        MarketQuote quote;
+        quote.symbol = symbol;
+        quote.type = "stock";
+        quote.price = 0;
+        quote.changeFromOpen = 0;
+        quote.changeFromPreviousClose = 0;
+        mockQuotes[symbol] = quote;
+    }
+    for (std::string tracker: stateMachine.getMarketConfig().trackers) {
+        MarketQuote quote;
+        quote.symbol = tracker;
+        quote.type = "index";
+        quote.price = 0;
+        quote.changeFromOpen = 0;
+        quote.changeFromPreviousClose = 0;
+        mockQuotes[tracker] = quote;
+    }
+    marketState.updateAllQuotes(mockQuotes);
+}
 
 void MarketApp::initConfigFromDisk() {
     configOptions = std::vector<BaseConfigOptions>();
@@ -306,24 +336,4 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.changed = false;
     refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
-
-    // TODO: Maybe use symbols and trackers to init stuff as 0 (or no_data), that way we show something while we fetch
-
-    // TODO: add this con config when finish testing
-    // "symbols": [
-    //     "AAPL",
-    //     "MSFT",
-    //     "AMZN",
-    //     "NVDA",
-    //     "GOOG",
-    //     "TSM",
-    //     "QCOM",
-    //     "AMD",
-    //     "MU",
-    //     "ASML",
-    //     "SMCI",
-    //     "AMAT",
-    //     "AVGO",
-    //     "LRCX"
-    // ],
 }

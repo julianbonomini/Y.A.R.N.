@@ -23,12 +23,10 @@ std::string MarketState::getFormattedNow() {
 }
 
 void MarketState::updateAllQuotes(const std::map<std::string, MarketQuote> quotes) {
-    Logger::debug("saving symbols", quotes.size());
     allQuotes = quotes;
     std::map<std::string, MarketQuote> filteredStocksQuotes = {};
     std::map<std::string, MarketQuote> filteredTrackerQuotes = {};
     for (const auto& pair : quotes) {
-        Logger::debug("quote type", pair.second.type);
         if (pair.second.type == "stock") {
             filteredStocksQuotes[pair.first] = pair.second;
         }
@@ -36,7 +34,6 @@ void MarketState::updateAllQuotes(const std::map<std::string, MarketQuote> quote
             filteredTrackerQuotes[pair.first] = pair.second;
         }
     }
-    Logger::debug("saving symbols");
     stocksQuotes = filteredStocksQuotes;
     trackersQuotes = filteredTrackerQuotes;
     lastUpdate = getFormattedNow();
