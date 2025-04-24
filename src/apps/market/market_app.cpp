@@ -4,10 +4,13 @@
 #include <iomanip>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <thread>
+#include <atomic>
 
 #include "../../core/execute/execute_utils.hpp"
 #include "../../core/state_machine/market_state.hpp"
 #include "../../ui/themes/theme_manager.hpp"
+#include "../../ui/utils/ui_helpers.hpp"
 
 
 MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, MarketState &marketState)
@@ -30,7 +33,18 @@ void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
 
 void MarketApp::handleHelp() {
     if (helpOpen) {
-        drawModalRectangle("HELP");
+        sf::FloatRect helpBox = drawModalRectangle("HELP");
+
+        sf::Text refreshDataLabel(font, "<R> ");
+        refreshDataLabel.setCharacterSize(FontSizes::LABEL);
+        refreshDataLabel.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        refreshDataLabel.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + Layout::PADDING, helpBox.position.y + 40.f }));
+        renderer.draw(refreshDataLabel);
+        sf::Text refreshDataValue(font, "Manually update data");
+        refreshDataValue.setCharacterSize(FontSizes::VALUE);
+        refreshDataValue.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+        refreshDataValue.setPosition(UIHelpers::snapToGrid({ helpBox.position.x + helpBox.size.x / 3.0f + Layout::PADDING, helpBox.position.y + 40.f }));
+        renderer.draw(refreshDataValue);
     }
 }
 
@@ -41,8 +55,14 @@ void MarketApp::handleSettings() {
 
 void MarketApp::update() {
     Logger::info("[MARKET_APP] Manual data refresh");
-    std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
-    marketState.updateAllQuotes(quotes);
+    initMockedQuotes();
+    static std::atomic<bool> fetching = false;
+    if (!fetching) {
+        fetching = true;
+        std::thread([] {
+            MarketDaemonClient::fetchAllQuotesAsync(&fetching);
+        }).detach();
+    }
     Logger::done_separator();
 }
 

@@ -33,20 +33,6 @@
 #include "core/state_machine/pomodoro_state.hpp"
 
 
-std::map<std::string, MarketQuote> latestQuotes;
-std::mutex quoteMutex;
-std::atomic<bool> quotesReady = false;
-
-void fetchQuotesAsync(std::atomic<bool> *fetchingFlag) {
-    std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes(); {
-        std::lock_guard<std::mutex> lock(quoteMutex);
-        latestQuotes = std::move(quotes);
-        quotesReady = true;
-    }
-    Logger::debug("Finished fetching async quotes...");
-    *fetchingFlag = false;
-}
-
 void drawSplashScreen(
     sf::RenderWindow &window,
     sf::Font &font,
@@ -452,12 +438,12 @@ int main() {
         if (!initalMarketDataLoaded) {
             Logger::info("Init stock quotes async ...");
             // Only trigger a fetch if one isn't already in progress
-            std::atomic<bool> fetching = false;
+            static std::atomic<bool> fetching = false;
             if (!fetching) {
                 fetching = true;
-                std::thread([](std::atomic<bool> *f) {
-                    fetchQuotesAsync(f);
-                }, &fetching).detach();
+                std::thread([] {
+                    MarketDaemonClient::fetchAllQuotesAsync(&fetching);
+                }).detach();
             }
             Logger::info("Getting stock quotes ...");
             initalMarketDataLoaded = true;
@@ -473,12 +459,12 @@ int main() {
             }
             if (isMarketOpen) {
                 // Only trigger a fetch if one isn't already in progress
-                std::atomic<bool> fetching = false;
+                static std::atomic<bool> fetching = false;
                 if (!fetching) {
                     fetching = true;
-                    std::thread([](std::atomic<bool> *f) {
-                        fetchQuotesAsync(f);
-                    }, &fetching).detach();
+                    std::thread([] {
+                        MarketDaemonClient::fetchAllQuotesAsync(&fetching);
+                    }).detach();
                 }
                 Logger::info("Getting stock quotes ...");
             } else {
@@ -488,11 +474,11 @@ int main() {
             Logger::done_separator();
         }
         // Apply new quotes if available
-        if (quotesReady) {
-            Logger::debug("Async quotes are ready to update marketState...");
-            std::lock_guard<std::mutex> lock(quoteMutex);
-            marketState.updateAllQuotes(latestQuotes);
-            quotesReady = false;
+        if (MarketDaemonClient::areQuotesReady()) {
+            Logger::debug("Updating market state with async quotes");
+            auto quotes = MarketDaemonClient::getLatestQuotes();
+            marketState.updateAllQuotes(quotes);
+            MarketDaemonClient::setQuotesReadyToFalse();
         }
     }
 

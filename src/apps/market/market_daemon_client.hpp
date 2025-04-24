@@ -30,6 +30,16 @@ struct MarketStatus {
 
 class MarketDaemonClient {
 public:
+    static void fetchAllQuotesAsync(std::atomic<bool> *fetchingFlag);
+
+    static bool areQuotesReady();
+
+    static void setQuotesReadyToFalse() {
+        quotesReady.store(false);
+    }
+
+    static std::map<std::string, MarketQuote> &getLatestQuotes();
+
     static bool setConfig(const std::vector<std::string> &symbols) {
         nlohmann::json payload;
         payload["symbols"] = symbols;
@@ -166,7 +176,7 @@ public:
         auto response = Http::GET_UNSECURE(host, path, query_params, headers);
 
         std::map<std::string, MarketQuote> result;
-        for (auto& [key, val] : response->items()) {
+        for (auto &[key, val]: response->items()) {
             MarketQuote quote;
             quote.symbol = key;
             quote.price = val["price"];
@@ -180,6 +190,11 @@ public:
 
         return result;
     };
+
+private:
+    static std::map<std::string, MarketQuote> latestQuotes;
+    static std::mutex quoteMutex;
+    static std::atomic<bool> quotesReady;
 };
 
 #endif //MARKET_DAEMON_CLIENT_H
