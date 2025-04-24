@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <memory>
 
+#include "../../common/logger.hpp"
+
 std::optional<nlohmann::json> Http::GET(
     const std::string &host,
     const std::string &path,
@@ -42,14 +44,16 @@ std::optional<nlohmann::json> Http::GET(
             auto j = nlohmann::json::parse(res->body);
             return j;
         } catch (nlohmann::json::parse_error &e) {
-            std::cerr << "[HttpClient] JSON parse error: " << e.what() << std::endl;
+            Logger::error("[HTTP_CLIENT]", "JSON parse error:", e.what());
             return std::nullopt;
         }
-    } else {
-        std::cerr << "[HttpClient] Request failed or status != 200\n";
-        if (res) std::cerr << "Response status: " << res->status << "\n";
-        return std::nullopt;
     }
+
+    Logger::error("[HTTP_CLIENT]", "Request failed or status != 200");
+    if (res) {
+        Logger::error("[HTTP_CLIENT]", "Response status:", res->status);
+    }
+    return std::nullopt;
 }
 
 std::optional<nlohmann::json> Http::SILENT_GET(
@@ -89,9 +93,9 @@ std::optional<nlohmann::json> Http::SILENT_GET(
         } catch (nlohmann::json::parse_error &e) {
             return std::nullopt;
         }
-    } else {
-        return std::nullopt;
     }
+
+    return std::nullopt;
 }
 
 std::optional<nlohmann::json> Http::POST(
@@ -127,17 +131,17 @@ std::optional<nlohmann::json> Http::POST(
             auto j = nlohmann::json::parse(res->body);
             return j;
         } catch (nlohmann::json::parse_error &e) {
-            std::cerr << "[HttpClient] JSON parse error: " << e.what() << std::endl;
+            Logger::error("[HTTP_CLIENT]", "JSON parse error:", e.what());
             return std::nullopt;
         }
-    } else {
-        std::cerr << "[HttpClient] POST request failed or status not in [200-299]\n";
-        if (res) {
-            std::cerr << "Response status: " << res->status << "\n";
-            std::cerr << "Response body: " << res->body << "\n"; // Log the response body for debugging
-        }
-        return std::nullopt;
     }
+
+    Logger::error("[HTTP_CLIENT]", "POST request failed or status not in [200-299]");
+    if (res) {
+        Logger::error("[HTTP_CLIENT]", "Response status:", res->status);
+        Logger::error("[HTTP_CLIENT]", "Response body:", res->body);
+    }
+    return std::nullopt;
 }
 
 std::string Http::UrlEncode(const std::string &value) {
