@@ -79,7 +79,7 @@ def get_all_quotes():
         symbol = symbol.upper()
         try:
             cacheSymbolData(symbol, "stock")
-            time.sleep(0.25) # throttle to avoid limiting
+            time.sleep(0.1) # throttle to avoid limiting
         except Exception as e:
             log.error(f"Error fetching {symbol}: {e}")
     for tracker in settings["trackers"]:

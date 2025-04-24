@@ -75,10 +75,10 @@ public:
         quote.symbol = response->at("symbol");
         quote.price = response->at("price");
         quote.type = response->at("type");
-        if (response->contains("changeFromOpen"))
-            quote.changeFromOpen = response->at("changeFromOpen");
-        if (response->contains("changeFromPreviousClose"))
-            quote.changeFromPreviousClose = response->at("changeFromPreviousClose");
+        if (response->contains("percent_change_from_open"))
+            quote.changeFromOpen = response->at("percent_change_from_open");
+        if (response->contains("percent_change_from_prev_close"))
+            quote.changeFromPreviousClose = response->at("percent_change_from_prev_close");
 
         return quote;
     };
@@ -96,10 +96,10 @@ public:
         quote.symbol = response->at("symbol");
         quote.price = response->at("price");
         quote.type = response->at("type");
-        if (response->contains("changeFromOpen"))
-            quote.changeFromOpen = response->at("changeFromOpen");
-        if (response->contains("changeFromPreviousClose"))
-            quote.changeFromPreviousClose = response->at("changeFromPreviousClose");
+        if (response->contains("percent_change_from_open"))
+            quote.changeFromOpen = response->at("percent_change_from_open");
+        if (response->contains("percent_change_from_prev_close"))
+            quote.changeFromPreviousClose = response->at("percent_change_from_prev_close");
 
         return quote;
     };
@@ -171,10 +171,10 @@ public:
             quote.symbol = key;
             quote.price = val["price"];
             quote.type = val["type"];
-            if (val.contains("changeFromOpen"))
-                quote.changeFromOpen = val["changeFromOpen"];
-            if (val.contains("changeFromPreviousClose"))
-                quote.changeFromPreviousClose = val["changeFromPreviousClose"];
+            if (val.contains("percent_change_from_open"))
+                quote.changeFromOpen = val["percent_change_from_open"];
+            if (val.contains("percent_change_from_prev_close"))
+                quote.changeFromPreviousClose = val["percent_change_from_prev_close"];
             result[key] = quote;
         }
 

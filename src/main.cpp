@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 #include "apps/config/config_app.hpp"
 #include "layout/toolbar/toolbar.hpp"
@@ -28,6 +31,21 @@
 #include "core/execute/execute_utils.hpp"
 #include "core/state_machine/market_state.hpp"
 #include "core/state_machine/pomodoro_state.hpp"
+
+
+std::map<std::string, MarketQuote> latestQuotes;
+std::mutex quoteMutex;
+std::atomic<bool> quotesReady = false;
+
+void fetchQuotesAsync(std::atomic<bool> *fetchingFlag) {
+    std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes(); {
+        std::lock_guard<std::mutex> lock(quoteMutex);
+        latestQuotes = std::move(quotes);
+        quotesReady = true;
+    }
+    Logger::debug("Finished fetching async quotes...");
+    *fetchingFlag = false;
+}
 
 void drawSplashScreen(
     sf::RenderWindow &window,
@@ -73,7 +91,7 @@ void killMarketDaemon() {
     Logger::info("Killing Python daemon with PID:", marketDaemonPid);
     if (marketDaemonPid > 0) {
         kill(marketDaemonPid, SIGTERM);
-        waitpid(marketDaemonPid, nullptr, 0);  // Wait for it to clean up
+        waitpid(marketDaemonPid, nullptr, 0); // Wait for it to clean up
     }
 }
 
@@ -100,21 +118,21 @@ bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
 pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols, std::vector<std::string> &trackers) {
     pid_t pid = fork();
     if (pid == 0) {
-        std::vector<const char*> args;
+        std::vector<const char *> args;
         args.push_back("python3"); // argv[0]
         args.push_back(daemonPath.c_str());
         args.push_back("--symbols");
-        for (const auto &symbol : symbols) {
+        for (const auto &symbol: symbols) {
             args.push_back(symbol.c_str());
         }
         args.push_back("--trackers");
-        for (const auto &tracker : trackers) {
+        for (const auto &tracker: trackers) {
             args.push_back(tracker.c_str());
         }
         args.push_back(nullptr); // Null-terminated
 
         // Execute the daemon
-        execvp("python3", const_cast<char* const*>(args.data()));
+        execvp("python3", const_cast<char * const*>(args.data()));
         // In child: replace process with the Python daemon
         // execlp("python3", "python3", daemonPath.c_str(), symbols, nullptr);
 
@@ -245,19 +263,19 @@ int main() {
         switch (tab) {
             case Tab::MKT:
                 apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine, marketState));
-            break;
+                break;
             case Tab::PMD:
                 apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
-            break;
+                break;
             case Tab::WTH:
                 apps.push_back(std::make_unique<WeatherApp>("WTH", renderTexture, font, stateMachine, weatherState));
-            break;
+                break;
             case Tab::INF:
                 apps.push_back(std::make_unique<InfoApp>("INF", renderTexture, font));
-            break;
+                break;
             case Tab::CNF:
                 apps.push_back(std::make_unique<ConfigApp>("CNF", renderTexture, font, stateMachine));
-            break;
+                break;
             default: throw std::runtime_error("Invalid tab");
         }
     }
@@ -432,26 +450,49 @@ int main() {
 
         // Init market data once
         if (!initalMarketDataLoaded) {
-            Logger::info("Init stock quotes ...");
-            std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
-            marketState.updateAllQuotes(quotes);
+            Logger::info("Init stock quotes async ...");
+            // Only trigger a fetch if one isn't already in progress
+            std::atomic<bool> fetching = false;
+            if (!fetching) {
+                fetching = true;
+                std::thread([](std::atomic<bool> *f) {
+                    fetchQuotesAsync(f);
+                }, &fetching).detach();
+            }
+            Logger::info("Getting stock quotes ...");
             initalMarketDataLoaded = true;
             Logger::done_separator();
         }
 
         // Refresh market data
         if (marketClock.getElapsedTime() >= marketInterval) {
+            Logger::info("Fetching stock quotes async ...");
             bool isMarketOpen = MarketDaemonClient::isMarketOpen();
-            marketState.updateMarketOpen(isMarketOpen);
+            if (isMarketOpen != marketState.getIsMarketOpen()) {
+                marketState.updateMarketOpen(isMarketOpen);
+            }
             if (isMarketOpen) {
+                // Only trigger a fetch if one isn't already in progress
+                std::atomic<bool> fetching = false;
+                if (!fetching) {
+                    fetching = true;
+                    std::thread([](std::atomic<bool> *f) {
+                        fetchQuotesAsync(f);
+                    }, &fetching).detach();
+                }
                 Logger::info("Getting stock quotes ...");
-                std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
-                marketState.updateAllQuotes(quotes);
             } else {
                 Logger::debug("Market closed, not fetching anything");
             }
             marketClock.restart();
             Logger::done_separator();
+        }
+        // Apply new quotes if available
+        if (quotesReady) {
+            Logger::debug("Async quotes are ready to update marketState...");
+            std::lock_guard<std::mutex> lock(quoteMutex);
+            marketState.updateAllQuotes(latestQuotes);
+            quotesReady = false;
         }
     }
 

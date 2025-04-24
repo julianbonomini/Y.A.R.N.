@@ -136,7 +136,7 @@ void MarketApp::drawMarketStatus() {
 
     sf::Text boxTitle(font, "MARKET_STATUS");
     boxTitle.setCharacterSize(FontSizes::TITLE); // Adjust size as needed
-    boxTitle.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    boxTitle.setFillColor(textColor);
     boxTitle.setPosition({backgroundBoxCoordinates.position.x + Layout::PADDING, backgroundBoxCoordinates.position.y + Layout::PADDING});
     renderer.draw(boxTitle);
 
@@ -286,7 +286,7 @@ void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &qu
         } else {
             changeStream << "no_data";
         }
-        std::string changeTextValue = market_quote.second.changeFromPreviousClose.has_value() && market_quote.second.changeFromOpen == 0 ? "loading..." : changeStream.str();
+        std::string changeTextValue = market_quote.second.changeFromPreviousClose.has_value() && market_quote.second.changeFromPreviousClose == 0 ? "loading..." : changeStream.str();
         sf::Text changeText(font, changeTextValue);
         changeText.setCharacterSize(FontSizes::LABEL);
         changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
