@@ -101,30 +101,36 @@ bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
     return false;
 }
 
-pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols, std::vector<std::string> &trackers) {
+pid_t startMarketDaemon(const std::string &daemonPath, const std::vector<std::string> &symbols, const std::vector<std::string> &trackers) {
     pid_t pid = fork();
     if (pid == 0) {
-        std::vector<const char *> args;
-        args.push_back("python3"); // argv[0]
-        args.push_back(daemonPath.c_str());
-        args.push_back("--symbols");
-        for (const auto &symbol: symbols) {
-            args.push_back(symbol.c_str());
+        // We're in the child process
+        // Ensure venv exists and install dependencies (ideally done once before this)
+        std::string reqPath = ExecuteUtils::getResourcePath("assets/daemons/requirements.txt");
+        std::string setupCommand = "python3 -m venv yarn-venv && ./yarn-venv/bin/pip install -r " + reqPath;
+        int setupResult = std::system(setupCommand.c_str());
+        if (setupResult != 0) {
+            perror("Failed to set up virtual environment or install requirements");
+            exit(1);
         }
-        args.push_back("--trackers");
-        for (const auto &tracker: trackers) {
-            args.push_back(tracker.c_str());
-        }
-        args.push_back(nullptr); // Null-terminated
 
-        // Execute the daemon
-        execvp("python3", const_cast<char * const*>(args.data()));
-        // In child: replace process with the Python daemon
-        // execlp("python3", "python3", daemonPath.c_str(), symbols, nullptr);
+        // Construct args for daemon execution
+        std::vector<std::string> rawArgs = {"./myenv/bin/python", daemonPath, "--symbols"};
+        rawArgs.insert(rawArgs.end(), symbols.begin(), symbols.end());
+        rawArgs.push_back("--trackers");
+        rawArgs.insert(rawArgs.end(), trackers.begin(), trackers.end());
 
-        // If execlp fails:
-        Logger::error("Market daemon fork failed");
-        perror("Failed to start Python daemon");
+        // Convert to const char* array
+        std::vector<char *> args;
+        for (auto &arg: rawArgs)
+            args.push_back(const_cast<char *>(arg.c_str()));
+        args.push_back(nullptr); // Null-terminate for execvp
+
+        // Execute Python daemon
+        execvp(args[0], args.data());
+
+        // If execvp fails
+        perror("execvp failed");
         exit(1);
     } else if (pid > 0) {
         Logger::info("Market daemon started with PID:", pid);
@@ -136,6 +142,7 @@ pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> 
         return -1;
     }
 }
+
 
 int main() {
     Logger::info("Booting...");
@@ -215,7 +222,8 @@ int main() {
     Logger::info("Starting forked market data daemon...");
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("assets/daemons/market_daemon.py");
-    marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols, stateMachine.getMarketConfig().trackers);
+    marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols,
+                                        stateMachine.getMarketConfig().trackers);
     waitForDaemonStartup();
     bool isMarketOpen = MarketDaemonClient::isMarketOpen();
     marketState.updateMarketOpen(isMarketOpen);
@@ -224,17 +232,20 @@ int main() {
 
     Logger::info("Starting app clocks...");
     // Market clock
-    Logger::debug("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes, "minutes");
+    Logger::debug("Starting market data clock with interval...",
+                  stateMachine.getMarketConfig().refreshIntervalInMinutes, "minutes");
     sf::Clock marketClock;
     marketClock.start();
     const sf::Time marketInterval = sf::seconds(stateMachine.getMarketConfig().refreshIntervalInMinutes * 60);
     // Weather Clock
-    Logger::debug("Setting weather data clock with interval...", stateMachine.getWeatherConfig().refreshIntervalInMinutes, "minutes");
+    Logger::debug("Setting weather data clock with interval...",
+                  stateMachine.getWeatherConfig().refreshIntervalInMinutes, "minutes");
     sf::Clock weatherClock;
     weatherClock.start();
     const sf::Time weatherInterval = sf::seconds(stateMachine.getWeatherConfig().refreshIntervalInMinutes * 60);
     // Tab cycling Clock
-    Logger::debug("Setting tab cycling clock with interval...", stateMachine.getOsConfig().cycleTabTimeInSeconds, "seconds");
+    Logger::debug("Setting tab cycling clock with interval...", stateMachine.getOsConfig().cycleTabTimeInSeconds,
+                  "seconds");
     sf::Clock tabCycleClock;
     tabCycleClock.start();
     const sf::Time tabCycleInterval = sf::seconds(stateMachine.getOsConfig().cycleTabTimeInSeconds);

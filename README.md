@@ -12,7 +12,7 @@
 If you decide you want to checkout the code, build it and run it, the please do the following:
 
 ### MacOS
-#### Install dependencies, you'll need brew
+#### Install dependencies, you'll need brew & python3/pip3
 ```bash
 ./scripts/macos/install-dependencies.sh
 ```
