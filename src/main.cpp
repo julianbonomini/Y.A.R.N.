@@ -214,7 +214,7 @@ int main() {
 
     Logger::info("Starting forked market data daemon...");
     // Start the Python daemon in a separate thread
-    std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
+    std::string daemonPath = ExecuteUtils::getResourcePath("assets/daemons/market_daemon.py");
     marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols, stateMachine.getMarketConfig().trackers);
     waitForDaemonStartup();
     bool isMarketOpen = MarketDaemonClient::isMarketOpen();
