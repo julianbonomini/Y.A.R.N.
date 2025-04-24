@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "apps/config/config_app.hpp"
 #include "layout/toolbar/toolbar.hpp"
@@ -82,12 +83,23 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-pid_t startMarketDaemon(const std::string &daemonPath) {
+pid_t startMarketDaemon(const std::string &daemonPath, std::vector<std::string> &symbols) {
     pid_t pid = fork();
     if (pid == 0) {
         Logger::info(daemonPath);
+        std::vector<const char*> args;
+        args.push_back("python3"); // argv[0]
+        args.push_back(daemonPath.c_str());
+        args.push_back("--symbols");
+        for (const auto& symbol : symbols) {
+            args.push_back(symbol.c_str());
+        }
+        args.push_back(nullptr); // Null-terminated
+
+        // Execute the daemon
+        execvp("python3", const_cast<char* const*>(args.data()));
         // In child: replace process with the Python daemon
-        execlp("python3", "python3", daemonPath.c_str(), nullptr);
+        // execlp("python3", "python3", daemonPath.c_str(), symbols, nullptr);
 
         // If execlp fails:
         Logger::error("Market daemon fork failed");
@@ -218,7 +230,7 @@ int main() {
     Logger::info("Starting forked market data daemon...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
-    marketDaemonPid = startMarketDaemon(daemonPath);
+    marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols);
     Logger::done_separator();
 
     Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);

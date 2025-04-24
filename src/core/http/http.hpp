@@ -16,7 +16,15 @@ public:
                                              const std::string &path,
                                              const std::map<std::string, std::string> &query_params,
                                              const std::map<std::string, std::string> &headers,
-                                             const std::string &scheme);
+                                             const std::string &scheme
+    );
+
+    static std::optional<nlohmann::json> POST(const std::string &host,
+                                              const std::string &path,
+                                              const nlohmann::json &body,
+                                              const std::map<std::string, std::string> &headers,
+                                              const std::string &scheme
+    );
 
 private:
     static std::string UrlEncode(const std::string &value);

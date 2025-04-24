@@ -52,6 +52,52 @@ std::optional<nlohmann::json> Http::GET(
     }
 }
 
+std::optional<nlohmann::json> Http::POST(
+    const std::string &host,
+    const std::string &path,
+    const nlohmann::json &body,
+    const std::map<std::string, std::string> &headers,
+    const std::string &scheme
+) {
+    std::unique_ptr<httplib::SSLClient> client;
+
+    // if (scheme == "https") {
+    // Use SSLClient for HTTPS
+    client = std::make_unique<httplib::SSLClient>(host);
+    // } else {
+    // Use regular Client for HTTP
+    // client = std::make_unique<httplib::Client>(host);
+    // }
+
+    httplib::Headers req_headers;
+    for (const auto &[key, value]: headers) {
+        req_headers.emplace(key, value);
+    }
+
+    // Ensure the Content-Type header is set for JSON
+    req_headers.emplace("Content-Type", "application/json");
+
+    std::string body_str = body.dump();
+    auto res = client->Post(path.c_str(), req_headers, body_str, "application/json");
+
+    if (res && res->status >= 200 && res->status < 300) {
+        try {
+            auto j = nlohmann::json::parse(res->body);
+            return j;
+        } catch (nlohmann::json::parse_error &e) {
+            std::cerr << "[HttpClient] JSON parse error: " << e.what() << std::endl;
+            return std::nullopt;
+        }
+    } else {
+        std::cerr << "[HttpClient] POST request failed or status not in [200-299]\n";
+        if (res) {
+            std::cerr << "Response status: " << res->status << "\n";
+            std::cerr << "Response body: " << res->body << "\n"; // Log the response body for debugging
+        }
+        return std::nullopt;
+    }
+}
+
 std::string Http::UrlEncode(const std::string &value) {
     std::ostringstream encoded;
     for (unsigned char c: value) {

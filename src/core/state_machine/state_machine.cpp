@@ -244,8 +244,12 @@ bool StateMachine::loadMarketAppConfigFromDisk() {
     json j;
     try {
         file >> j;
-        std::string defaultRefreshInterval = j["refresh_interval"];
-        marketConfigFile.refreshIntervalInMinutes = std::stoi(defaultRefreshInterval);
+        std::string refreshInterval = j["refresh_interval"];
+        std::vector<std::string> symbols = j["symbols"].get<std::vector<std::string>>();
+        std::vector<std::string> trackers = j["trackers"].get<std::vector<std::string>>();
+        marketConfigFile.refreshIntervalInMinutes = std::stoi(refreshInterval);
+        marketConfigFile.symbols = symbols;
+        marketConfigFile.trackers = trackers;
     } catch (...) {
         return -1;
     }

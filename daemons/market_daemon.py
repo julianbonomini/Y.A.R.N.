@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import yfinance as yf
 import argparse
 import logging
+import time
 
 app = Flask(__name__)
 
@@ -20,16 +21,49 @@ settings = {
 }
 
 
-@app.route("/cached-price/<symbol>")
-def get_price(symbol):
+@app.route("/cached-quote/<symbol>")
+def get_cached_quote(symbol):
     symbol = symbol.upper()
     data = stock_data_cache.get(symbol)
     if data is None:
         return jsonify({"error": f"Price for symbol '{symbol}' not found"}), 404
     return jsonify(data)
 
-@app.route("/refresh-quotes")
-def refresh_and_return_all_quotes():
+@app.route("/quote/<symbol>")
+def get_quote(symbol):
+    symbol = symbol.upper()
+    try:
+        yf_data = yf.Ticker(symbol).info
+        price = yf_data.get("regularMarketPrice")
+        open_price = yf_data.get("regularMarketOpen")
+        prev_close = yf_data.get("previousClose")
+
+        change_from_open = None
+        pct_change_from_open = None
+        change_from_prev_close = None
+        pct_change_from_prev_close = None
+
+        if price is not None:
+            if open_price:
+                change_from_open = price - open_price
+                pct_change_from_open = (change_from_open / open_price) * 100
+            if prev_close:
+                change_from_prev_close = price - prev_close
+                pct_change_from_prev_close = (change_from_prev_close / prev_close) * 100
+
+        stock_data_cache[symbol] = {
+            "price": price,
+            "change_from_open": change_from_open,
+            "percent_change_from_open": pct_change_from_open,
+            "change_from_prev_close": change_from_prev_close,
+            "percent_change_from_prev_close": pct_change_from_prev_close
+        }
+    except Exception as e:
+        log.error(f"Error fetching {symbol}: {e}")
+    return jsonify(stock_data_cache[symbol])
+
+@app.route("/quotes")
+def get_all_quotes():
     log.info("Fetching all configured symbols")
     for symbol in settings["symbols"]:
         symbol = symbol.upper()
@@ -59,6 +93,7 @@ def refresh_and_return_all_quotes():
                 "change_from_prev_close": change_from_prev_close,
                 "percent_change_from_prev_close": pct_change_from_prev_close
             }
+            time.sleep(1) # throttle to avoid limiting
         except Exception as e:
             log.error(f"Error fetching {symbol}: {e}")
     return jsonify(stock_data_cache)

@@ -31,6 +31,8 @@ struct PomodoroConfigFile {
 };
 
 struct MarketConfigFile {
+    std::vector<std::string> symbols;
+    std::vector<std::string> trackers;
     int refreshIntervalInMinutes;
 };
 

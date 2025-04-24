@@ -1,3 +1,25 @@
 {
-    "refresh_interval": "10"
+    "refresh_interval": "10",
+    "symbols": [
+        "AAPL",
+        "MSFT",
+        "AMZN",
+        "NVDA",
+        "GOOG",
+        "TSM",
+        "QCOM",
+        "AMD",
+        "MU",
+        "ASML",
+        "SMCI",
+        "AMAT",
+        "AVGO",
+        "LRCX"
+    ],
+    "trackers": [
+        "SPY",
+        "QQQ",
+        "VEU",
+        "VWO"
+    ]
 }
