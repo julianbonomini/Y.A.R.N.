@@ -31,7 +31,7 @@ public:
         };
 
         // Perform the POST request
-        auto response_json = Http::POST("http://localhost:8080", path, payload, headers, "http");
+        auto response_json = Http::POST_UNSECURE("127.0.0.1:8080", path, payload, headers);
 
         // Handle the response
         if (response_json.has_value()) {
@@ -58,9 +58,8 @@ public:
         std::map<std::string, std::string> query_params = {};
         std::map<std::string, std::string> headers = {};
         std::string path = "/cached-quote" + symbol;
-        std::string scheme = "http";
 
-        auto response = Http::GET("http://localhost:8080", path, query_params, headers, scheme);
+        auto response = Http::GET_UNSECURE("127.0.0.1:8080", path, query_params, headers);
 
         if (!response || response->contains("error")) return std::nullopt;
 
@@ -79,9 +78,8 @@ public:
         std::map<std::string, std::string> query_params = {};
         std::map<std::string, std::string> headers = {};
         std::string path = "/quote" + symbol;
-        std::string scheme = "http";
 
-        auto response = Http::GET("http://localhost:8080", path, query_params, headers, scheme);
+        auto response = Http::GET_UNSECURE("127.0.0.1:8080", path, query_params, headers);
 
         if (!response || response->contains("error")) return std::nullopt;
 
@@ -100,25 +98,23 @@ public:
         std::map<std::string, std::string> query_params = {};
         std::map<std::string, std::string> headers = {};
         std::string path = "/ready";
-        std::string scheme = "http";
 
-        auto response = Http::SILENT_GET("http://localhost:8080", path, query_params, headers, scheme);
+        auto response = Http::GET_UNSECURE("127.0.0.1:8080", path, query_params, headers);
 
         if (response && (*response)["status"] == "ok") {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     };
 
     static std::map<std::string, MarketQuote> getAllQuotes() {
         std::map<std::string, std::string> query_params = {};
         std::map<std::string, std::string> headers = {};
-        std::string host = "http://localhost:8080";
+        std::string host = "127.0.0.1:8080";
         std::string path = "/quotes";
-        std::string scheme = "http";
 
-        auto response = Http::GET(host, path, query_params, headers, scheme);
+        auto response = Http::GET_UNSECURE(host, path, query_params, headers);
 
         std::map<std::string, MarketQuote> result;
         for (auto& [key, val] : response->items()) {

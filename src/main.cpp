@@ -85,14 +85,14 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
+bool waitForDaemonStartup(int maxTries = 100, int delayMs = 1000) {
     for (int i = 0; i < maxTries; ++i) {
         std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
         bool isReady = MarketDaemonClient::ready();
-        // auto res = Http::GET(host, "/health", {}, {}, "http");
         if (isReady) {
             return true;
         }
+        Logger::debug("deamon not ready yet");
     }
     return false;
 }
@@ -217,7 +217,8 @@ int main() {
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
     marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols);
-    waitForDaemonStartup();
+    bool daemonStarted = waitForDaemonStartup();
+    Logger::debug("ASDASDASDAS", daemonStarted);
     Logger::done_separator();
 
     Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);

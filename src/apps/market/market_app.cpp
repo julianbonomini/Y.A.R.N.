@@ -309,6 +309,23 @@ void MarketApp::initConfigFromDisk() {
         stocksQuotes[symbol] = quote;
     }
 
+    // TODO: add this con config when finish testing
+    // "symbols": [
+    //     "AAPL",
+    //     "MSFT",
+    //     "AMZN",
+    //     "NVDA",
+    //     "GOOG",
+    //     "TSM",
+    //     "QCOM",
+    //     "AMD",
+    //     "MU",
+    //     "ASML",
+    //     "SMCI",
+    //     "AMAT",
+    //     "AVGO",
+    //     "LRCX"
+    // ],
 
     trackers = stateMachine.getMarketConfig().trackers;
     for (const auto &tracker : trackers) {
