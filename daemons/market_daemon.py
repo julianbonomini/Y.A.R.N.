@@ -24,8 +24,7 @@ settings = {
 def get_market_status():
     try:
         us_market = yf.Market("US")
-        status_data = us_market.status
-        return jsonify(status_data), 200
+        return jsonify(us_market.status), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

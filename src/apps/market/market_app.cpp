@@ -16,8 +16,8 @@ MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, con
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
-    if (keyPressed.scancode == sf::Keyboard::Scan::T) {
-        marketOpen = !marketOpen;
+    if (keyPressed.scancode == sf::Keyboard::Scan::R) {
+        update();
     }
     if (settingsOpen) {
         handleSettingsInputs(keyPressed);
@@ -38,15 +38,18 @@ void MarketApp::handleSettings() {
     drawAppConfigOptions(settingsBoxGlobalBounds);
 }
 
-void MarketApp::update(float /*deltaTime*/) {
-    Logger::info("Update");
+void MarketApp::update() {
+    Logger::info("[MARKET_APP] Manual data refresh");
+    std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
+    marketState.updateStockQuotes(stockQuotes);
+    Logger::done_separator();
 }
 
 void MarketApp::draw() {
     drawStandaloneSymbols();
     drawMarketTrackers();
     drawMarketStatus();
-    drawMarketSession();
+    drawLastUpdate();
 
     drawMarketSentiment();
 
@@ -118,8 +121,8 @@ void MarketApp::drawMarketTrackers() {
 
 void MarketApp::drawMarketStatus() {
     // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
-    sf::Color textColor = !marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
+    sf::Color backgroundColor = !marketState.getIsMarketOpen() ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
+    sf::Color textColor = !marketState.getIsMarketOpen() ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
 
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 0, 1, 1);
@@ -135,7 +138,7 @@ void MarketApp::drawMarketStatus() {
     marketStatusText.setCharacterSize(20); // Adjust size as needed
     marketStatusText.setFillColor(textColor);
 
-    if (marketOpen) {
+    if (marketState.getIsMarketOpen()) {
         marketStatusText.setString("OPEN");
     } else {
         marketStatusText.setString("CLOSED");
@@ -148,30 +151,30 @@ void MarketApp::drawMarketStatus() {
     renderer.draw(marketStatusText);
 }
 
-void MarketApp::drawMarketSession() {
-    // Determine background color and text color based on marketOpen
-    sf::Color backgroundColor = marketOpen ? ThemeManager::instance().getCurrentTheme().background() : ThemeManager::instance().getCurrentTheme().secondary();
-    sf::Color textColor = marketOpen ? ThemeManager::instance().getCurrentTheme().primary() : ThemeManager::instance().getCurrentTheme().background();
-
+void MarketApp::drawLastUpdate() {
     // Draw background box
     auto backgroundBoxCoordinates = getGridBox(4, 1, 1, 1);
     sf::RectangleShape backgroundBox({backgroundBoxCoordinates.size.x, backgroundBoxCoordinates.size.y});
     backgroundBox.setPosition({backgroundBoxCoordinates.position.x, backgroundBoxCoordinates.position.y});
-    backgroundBox.setFillColor(backgroundColor);
+    backgroundBox.setFillColor(ThemeManager::instance().getCurrentTheme().background());
     backgroundBox.setOutlineColor(ThemeManager::instance().getCurrentTheme().secondary());
     backgroundBox.setOutlineThickness(LineStyles::LINE_THICKNESS);
     renderer.draw(backgroundBox);
 
-    // Draw market status text (OPEN or CLOSED)
-    sf::Text marketStatusText(font, "14:23 left");
-    marketStatusText.setCharacterSize(20); // Adjust size as needed
-    marketStatusText.setFillColor(textColor);
+    sf::Text boxTitle(font, "UPDATED_AT");
+    boxTitle.setCharacterSize(FontSizes::TITLE); // Adjust size as needed
+    boxTitle.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    boxTitle.setPosition({backgroundBoxCoordinates.position.x + Layout::PADDING, backgroundBoxCoordinates.position.y + Layout::PADDING});
+    renderer.draw(boxTitle);
 
-    // Center the text within the background box
-    sf::FloatRect textBounds = marketStatusText.getLocalBounds();
-    marketStatusText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
-    marketStatusText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
-    renderer.draw(marketStatusText);
+
+    sf::Text lastUpdateText(font, marketState.getLastStockUpdateTime());
+    lastUpdateText.setCharacterSize(20); // Adjust size as needed
+    lastUpdateText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
+    sf::FloatRect textBounds = lastUpdateText.getLocalBounds();
+    lastUpdateText.setOrigin({textBounds.getCenter().x, textBounds.getCenter().y});
+    lastUpdateText.setPosition({backgroundBoxCoordinates.position.x + backgroundBoxCoordinates.size.x / 2, backgroundBoxCoordinates.position.y + backgroundBoxCoordinates.size.y / 2});
+    renderer.draw(lastUpdateText);
 }
 
 void MarketApp::drawMarketSentiment() {

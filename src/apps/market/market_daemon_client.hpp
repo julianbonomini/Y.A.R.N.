@@ -10,12 +10,20 @@
 #include <nlohmann/json.hpp>
 
 #include "../../core/http/http.hpp"
+#include "../../common/logger.hpp"
 
 struct MarketQuote {
     std::string symbol;
     double price;
     std::optional<double> changeFromOpen;
     std::optional<double> changeFromPreviousClose;
+};
+
+struct MarketStatus {
+    std::string name;
+    std::string yfit_market_id;
+    std::string status;
+    std::string message;
 };
 
 
@@ -37,7 +45,7 @@ public:
         if (response_json.has_value()) {
             nlohmann::json response = response_json.value();
             // Log the successful response (optional)
-            std::cout << "Config set successfully. Response:\n" << response.dump(4) << std::endl;
+            Logger::debug("Config set successfully. Response:", response.dump(4));
 
             // You might want to check the response for a specific success indicator
             if (response.contains("status") && response["status"] == "success") {
@@ -48,10 +56,9 @@ public:
                 std::cerr << "Warning: Config set, but success status not explicitly confirmed in response.\n";
                 return true; // Or false, depending on how critical explicit confirmation is
             }
-        } else {
-            std::cerr << "Error setting config. POST request failed.\n";
-            return false;
         }
+        std::cerr << "Error setting config. POST request failed.\n";
+        return false;
     };
 
     static std::optional<MarketQuote> getCachedQuote(const std::string &symbol) {
@@ -103,6 +110,45 @@ public:
 
         if (response && (*response)["status"] == "ok") {
             return true;
+        }
+
+        return false;
+    };
+
+    static std::optional<MarketStatus> getMarketStatus() {
+        std::map<std::string, std::string> query_params = {};
+        std::map<std::string, std::string> headers = {};
+        std::string path = "/market-status";
+        Logger::debug("a");
+        auto response = Http::GET_UNSECURE("127.0.0.1:8080", path, query_params, headers);
+        Logger::debug("b");
+        if (!response || response->contains("error")) return std::nullopt;
+
+        if (response && (*response)["status"] == "ok") {
+            Logger::debug("c");
+            MarketStatus status;
+            status.name = response->at("name");
+            status.yfit_market_id = response->at("yfit_market_id");
+            status.status = response->at("status");
+            status.message = response->at("message");
+            Logger::debug("d");
+            return status;
+        }
+
+        return std::nullopt;
+    };
+
+    static bool isMarketOpen() {
+        std::map<std::string, std::string> query_params = {};
+        std::map<std::string, std::string> headers = {};
+        std::string path = "/market-status";
+
+        auto response = Http::GET_UNSECURE("127.0.0.1:8080", path, query_params, headers);
+
+        if (!response || response->contains("error")) return false;
+
+        if (response) {
+            return response->at("status") == "open";
         }
 
         return false;

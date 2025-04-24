@@ -218,6 +218,8 @@ int main() {
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
     marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols);
     waitForDaemonStartup();
+    bool isMarketOpen = MarketDaemonClient::isMarketOpen();
+    marketState.updateMarketOpen(isMarketOpen);
     Logger::done_separator();
 
     Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
@@ -368,14 +370,26 @@ int main() {
             loadedTheme = os_config_file->theme;
         }
 
-        // Fetch market data
-        if (marketClock.getElapsedTime() >= marketInterval || !initalMarketDataLoaded) {
-            Logger::info("Getting stock quotes ...");
+        // Init market data once
+        if (!initalMarketDataLoaded) {
+            Logger::info("Init stock quotes ...");
             std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
             marketState.updateStockQuotes(stockQuotes);
-            marketClock.restart();
             initalMarketDataLoaded = true;
             Logger::done_separator();
+        }
+        // Refresh market data
+        if (marketClock.getElapsedTime() >= marketInterval) {
+            bool isMarketOpen = MarketDaemonClient::isMarketOpen();
+            marketState.updateMarketOpen(isMarketOpen);
+            if (isMarketOpen) {
+                Logger::info("Getting stock quotes ...");
+                std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
+                marketState.updateStockQuotes(stockQuotes);
+                marketClock.restart();
+                Logger::done_separator();
+            }
+            Logger::debug("Market closed, not fetching anything");
         }
 
         // Fetch and update weather

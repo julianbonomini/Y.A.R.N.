@@ -21,8 +21,6 @@ public:
 
     void handleHelp() override;
 
-    void update(float deltaTime);
-
     void initConfigFromDisk() override;
 
 
@@ -30,7 +28,6 @@ private:
     MarketState &marketState;
     std::vector<std::string> symbols;
     std::vector<std::string> trackers;
-    bool marketOpen = true;
 
     void drawStandaloneSymbols();
 
@@ -38,7 +35,7 @@ private:
 
     void drawMarketStatus();
 
-    void drawMarketSession();
+    void drawLastUpdate();
 
     void drawMarketSentiment();
 
@@ -47,6 +44,8 @@ private:
     void drawSymbolsHeaderRow(float startY, float labelX, float priceX, float changeX);
 
     void drawLabelsAndValues(const std::map<std::string, MarketQuote> &quotes, float rowHeight, float labelX, float priceX, float changeX, float currentY);
+
+    void update();
 };
 
 
