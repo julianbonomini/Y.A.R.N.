@@ -14,24 +14,23 @@ void MarketState::updateMarketOpen(bool isOpen) {
     isMarketOpen = isOpen;
 }
 
-void MarketState::updateStockQuotes(const std::map<std::string, MarketQuote> quotes) {
-    stocksQuotes = quotes;
+std::string MarketState::getFormattedNow() {
     std::time_t now = std::time(nullptr);
     std::tm *localTime = std::localtime(&now);
     std::ostringstream oss;
-    oss << std::put_time(localTime, "%H:%M");
-    std::string formattedTime = oss.str();
-    lastStockUpdate = formattedTime;
+    oss << std::put_time(localTime, "%H:%M:%S");
+    return oss.str();
 }
+
+void MarketState::updateStockQuotes(const std::map<std::string, MarketQuote> quotes) {
+    stocksQuotes = quotes;
+    lastStockUpdate = getFormattedNow();
+}
+
 
 void MarketState::updateTrackerQuotes(const std::map<std::string, MarketQuote> quotes) {
     trackersQuotes = quotes;
-    std::time_t now = std::time(nullptr);
-    std::tm *localTime = std::localtime(&now);
-    std::ostringstream oss;
-    oss << std::put_time(localTime, "%H:%M");
-    std::string formattedTime = oss.str();
-    lastTrackerUpdate = formattedTime;
+    lastTrackerUpdate = getFormattedNow();
 }
 
 std::map<std::string, MarketQuote> MarketState::getStockQuotes() const {

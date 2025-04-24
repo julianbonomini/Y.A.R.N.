@@ -33,6 +33,9 @@ private:
     bool isMarketOpen;
     std::string lastStockUpdate;
     std::string lastTrackerUpdate;
+
+    std::string getFormattedNow();
+
 };
 
 
