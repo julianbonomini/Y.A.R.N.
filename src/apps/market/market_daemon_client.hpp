@@ -8,6 +8,8 @@
 #include <optional>
 #include <map>
 #include <nlohmann/json.hpp>
+#include <mutex>
+#include <atomic>
 
 #include "../../core/http/http.hpp"
 #include "../../common/logger.hpp"
