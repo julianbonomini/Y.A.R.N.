@@ -12,7 +12,6 @@
 MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
     : AppWithConfig(appName, renderer, font, stateMachine) {
     initConfigFromDisk();
-    getAllQuotes();
 }
 
 void MarketApp::handleEvent(const sf::Event::KeyPressed &keyPressed) {
@@ -285,22 +284,6 @@ void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &qu
     }
 }
 
-
-void MarketApp::getAllQuotes() {
-    Logger::debug("Getting all quotes, this can take a minute or two...");
-    std::map<std::string, MarketQuote> quotes = MarketDaemonClient::getAllQuotes();
-    for (const auto& [symbol, quote] : quotes) {
-        // Check if the symbol is in our list of tracked symbols
-        if (std::find(symbols.begin(), symbols.end(), symbol) != symbols.end()) {
-            stocksQuotes[symbol] = quote;
-        }
-
-        // Check if the symbol is in our list of tracked trackers
-        if (std::find(trackers.begin(), trackers.end(), symbol) != trackers.end()) {
-            trackersQuotes[symbol] = quote;
-        }
-    }
-}
 
 void MarketApp::initConfigFromDisk() {
     configOptions = std::vector<BaseConfigOptions>();

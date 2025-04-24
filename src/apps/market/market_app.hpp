@@ -47,8 +47,6 @@ private:
     void drawSymbolsHeaderRow(float startY, float labelX, float priceX, float changeX);
 
     void drawLabelsAndValues(const std::map<std::string, MarketQuote> &quotes, float rowHeight, float labelX, float priceX, float changeX, float currentY);
-
-    void getAllQuotes();
 };
 
 
