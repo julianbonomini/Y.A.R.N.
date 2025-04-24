@@ -307,6 +307,8 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
 
+    // TODO: Maybe use symbols and trackers to init stuff as 0 (or no_data), that way we show something while we fetch
+
     // TODO: add this con config when finish testing
     // "symbols": [
     //     "AAPL",

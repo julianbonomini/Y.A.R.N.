@@ -26,8 +26,8 @@ public:
 
 private:
     MarketState &marketState;
-    std::vector<std::string> symbols;
-    std::vector<std::string> trackers;
+    // std::vector<std::string> symbols;
+    // std::vector<std::string> trackers;
 
     void drawStandaloneSymbols();
 
