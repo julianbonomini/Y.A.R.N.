@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 #include "apps/config/config_app.hpp"
 #include "layout/toolbar/toolbar.hpp"
@@ -25,7 +26,6 @@
 #include "common/logger.hpp"
 #include "core/env/config.hpp"
 #include "core/execute/execute_utils.hpp"
-#include "core/http/http.hpp"
 #include "core/state_machine/market_state.hpp"
 #include "core/state_machine/pomodoro_state.hpp"
 
