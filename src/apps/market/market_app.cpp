@@ -6,11 +6,12 @@
 #include <string>
 
 #include "../../core/execute/execute_utils.hpp"
+#include "../../core/state_machine/market_state.hpp"
 #include "../../ui/themes/theme_manager.hpp"
 
 
-MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine)
-    : AppWithConfig(appName, renderer, font, stateMachine) {
+MarketApp::MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, MarketState &marketState)
+    : AppWithConfig(appName, renderer, font, stateMachine), marketState(marketState) {
     initConfigFromDisk();
 }
 
@@ -84,7 +85,7 @@ void MarketApp::drawStandaloneSymbols() {
     // Stock rows
     float currentY = startY + Layout::PADDING + rowHeight;
 
-    drawLabelsAndValues(stocksQuotes, rowHeight, labelX, priceX, changeX, currentY);
+    drawLabelsAndValues(marketState.getStockQuotes(), rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketTrackers() {
@@ -112,7 +113,7 @@ void MarketApp::drawMarketTrackers() {
     // Stock rows
     float currentY = startY + Layout::PADDING + rowHeight;
 
-    drawLabelsAndValues(trackersQuotes, rowHeight, labelX, priceX, changeX, currentY);
+    drawLabelsAndValues(marketState.getTrackerQuotes(), rowHeight, labelX, priceX, changeX, currentY);
 }
 
 void MarketApp::drawMarketStatus() {
@@ -267,10 +268,14 @@ void MarketApp::drawLabelsAndValues(const std::map<std::string, MarketQuote> &qu
 
         // Change %
         std::ostringstream changeStream;
-        if (market_quote.second.changeFromOpen > 0) {
-            changeStream << "+";
+        if (market_quote.second.changeFromPreviousClose.has_value()) {
+            if (market_quote.second.changeFromPreviousClose > 0) {
+                changeStream << "+";
+            }
+            changeStream << std::fixed << std::setprecision(2) << market_quote.second.changeFromPreviousClose.value() << "%";
+        } else {
+            changeStream << "no_data";
         }
-        changeStream << std::fixed << std::setprecision(2) << "%";
         sf::Text changeText(font, changeStream.str());
         changeText.setCharacterSize(FontSizes::LABEL);
         changeText.setFillColor(ThemeManager::instance().getCurrentTheme().primary());
@@ -299,15 +304,15 @@ void MarketApp::initConfigFromDisk() {
     refreshIntervalInMinutes.description = "How often all the symbols will be refreshed. This also affects any other type of information on this app, like market status. In seconds";
     configOptions.push_back(refreshIntervalInMinutes);
 
-    symbols = stateMachine.getMarketConfig().symbols;
-    for (const auto &symbol : symbols) {
-        MarketQuote quote;
-        quote.symbol = symbol;
-        quote.price = 1;
-        quote.changeFromOpen = 1;
-        quote.changeFromPreviousClose = 1;
-        stocksQuotes[symbol] = quote;
-    }
+    // symbols = stateMachine.getMarketConfig().symbols;
+    // for (const auto &symbol : symbols) {
+    //     MarketQuote quote;
+    //     quote.symbol = symbol;
+    //     quote.price = 1;
+    //     quote.changeFromOpen = 1;
+    //     quote.changeFromPreviousClose = 1;
+    //     stocksQuotes[symbol] = quote;
+    // }
 
     // TODO: add this con config when finish testing
     // "symbols": [
@@ -327,13 +332,13 @@ void MarketApp::initConfigFromDisk() {
     //     "LRCX"
     // ],
 
-    trackers = stateMachine.getMarketConfig().trackers;
-    for (const auto &tracker : trackers) {
-        MarketQuote quote;
-        quote.symbol = tracker;
-        quote.price = 1;
-        quote.changeFromOpen = 1;
-        quote.changeFromPreviousClose = 1;
-        trackersQuotes[tracker] = quote;
-    }
+    // trackers = stateMachine.getMarketConfig().trackers;
+    // for (const auto &tracker : trackers) {
+    //     MarketQuote quote;
+    //     quote.symbol = tracker;
+    //     quote.price = 1;
+    //     quote.changeFromOpen = 1;
+    //     quote.changeFromPreviousClose = 1;
+    //     trackersQuotes[tracker] = quote;
+    // }
 }

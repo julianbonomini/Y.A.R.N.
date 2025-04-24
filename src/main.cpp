@@ -85,7 +85,7 @@ void signalHandler(int signum) {
     exit(signum);
 }
 
-bool waitForDaemonStartup(int maxTries = 100, int delayMs = 1000) {
+bool waitForDaemonStartup(int maxTries = 10, int delayMs = 1000) {
     for (int i = 0; i < maxTries; ++i) {
         std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
         bool isReady = MarketDaemonClient::ready();
@@ -217,8 +217,7 @@ int main() {
     // Start the Python daemon in a separate thread
     std::string daemonPath = ExecuteUtils::getResourcePath("daemons/market_daemon.py");
     marketDaemonPid = startMarketDaemon(daemonPath, stateMachine.getMarketConfig().symbols);
-    bool daemonStarted = waitForDaemonStartup();
-    Logger::debug("ASDASDASDAS", daemonStarted);
+    waitForDaemonStartup();
     Logger::done_separator();
 
     Logger::info("Starting market data clock with interval...", stateMachine.getMarketConfig().refreshIntervalInMinutes);
@@ -241,7 +240,7 @@ int main() {
         Logger::debug("Initializing", Tabs::tabToString(tab), "app...");
         switch (tab) {
             case Tab::MKT:
-                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine));
+                apps.push_back(std::make_unique<MarketApp>("MKT", renderTexture, font, stateMachine, marketState));
             break;
             case Tab::PMD:
                 apps.push_back(std::make_unique<PomodoroApp>("PMD", renderTexture, font, stateMachine, pomodoroState));
@@ -370,10 +369,10 @@ int main() {
         }
 
         // Fetch market data
-        // TODO: once the app has init AND every x ammount of time:
         if (marketClock.getElapsedTime() >= marketInterval || !initalMarketDataLoaded) {
             Logger::info("Getting stock quotes ...");
             std::map<std::string, MarketQuote> stockQuotes = MarketDaemonClient::getAllQuotes();
+            marketState.updateStockQuotes(stockQuotes);
             marketClock.restart();
             initalMarketDataLoaded = true;
             Logger::done_separator();

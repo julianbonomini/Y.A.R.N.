@@ -7,10 +7,11 @@
 
 #include "../common/app_with_config.hpp"
 #include "./market_daemon_client.hpp"
+#include "../../core/state_machine/market_state.hpp"
 
 class MarketApp : public AppWithConfig {
 public:
-    MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine);
+    MarketApp(const std::string &appName, sf::RenderTarget &renderer, const sf::Font &font, StateMachine &stateMachine, MarketState &marketState);
 
     void handleEvent(const sf::Event::KeyPressed &keyPressed) override;
 
@@ -26,10 +27,9 @@ public:
 
 
 private:
+    MarketState &marketState;
     std::vector<std::string> symbols;
     std::vector<std::string> trackers;
-    std::map<std::string, MarketQuote> stocksQuotes;
-    std::map<std::string, MarketQuote> trackersQuotes;
     bool marketOpen = true;
 
     void drawStandaloneSymbols();
