@@ -262,6 +262,7 @@ bool StateMachine::saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &
     if (!file.is_open()) {
         return false;
     }
+
     json j;
 
     for (const auto &option: baseConfigOptions) {
@@ -269,6 +270,8 @@ bool StateMachine::saveMarketConfigToDisk(const std::vector<BaseConfigOptions> &
         if (option.label == "refresh_interval") {
             marketConfigFile.refreshIntervalInMinutes = std::stoi(option.currentValue);
         }
+        j["symbols"] = getMarketConfig().symbols;
+        j["trackers"] = getMarketConfig().trackers;
     }
 
     file << j.dump(4); // Pretty-print with indentation
