@@ -32,7 +32,7 @@ public:
 
     // paid
     static nlohmann::json getDailyForecast() {
-        std::string api_key = "e8409838ac1968c4c525799b5ac34da0"; // Replace with your OpenWeatherMap API key
+        std::string api_key = "whaaa"; // Replace with your OpenWeatherMap API key
         std::string city = "Amsterdam";
         std::map<std::string, std::string> query_params = {
             {"q", city},
